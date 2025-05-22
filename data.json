@@ -3,85 +3,14 @@
   "lastUpdated": "2024-03-20T12:00:00Z",
   "investments": [
     {
-      "id": "1747934019487",
-      "name": "mmds",
+      "id": "usa1",
+      "name": "USA Real Estate Loan 1",
       "is_active": true,
-      "start_date": "2025-05-22",
+      "start_date": "2017-12-04",
       "end_date": null,
-      "initial_amount": 234000,
-      "currency": "ILS",
-      "current_amount": 235000,
-      "profit_type": "price",
-      "notes": "sdgfs sfgs",
-      "is_liquid": true,
-      "investment_type": "stocks",
-      "liquidity_date": "2025-05-22",
-      "updates": [
-        {
-          "date": "2025-03-22",
-          "amount": 234000
-        },
-        {
-          "date": "2025-05-22",
-          "amount": 235000
-        }
-      ]
-    },
-    {
-      "id": "1747942357769",
-      "name": "sdfsfs",
-      "is_active": true,
-      "start_date": "2025-05-22",
-      "end_date": null,
-      "initial_amount": 100,
+      "initial_amount": 35000,
       "currency": "USD",
-      "current_amount": 100,
-      "profit_type": "price",
-      "notes": "asdfs dss",
-      "is_liquid": true,
-      "investment_type": "stocks",
-      "liquidity_date": "2025-05-22",
-      "updates": [
-        {
-          "date": "2025-05-22",
-          "amount": 100
-        }
-      ]
-    },
-    {
-      "id": "1747943406877",
-      "name": "bank",
-      "is_active": true,
-      "start_date": "2025-03-06",
-      "end_date": null,
-      "initial_amount": 30000,
-      "currency": "ILS",
-      "current_amount": 30100,
-      "profit_type": "price",
-      "notes": "ghugg",
-      "is_liquid": false,
-      "investment_type": "whiskey",
-      "liquidity_date": null,
-      "updates": [
-        {
-          "date": "2025-03-06",
-          "amount": 30000
-        },
-        {
-          "date": "2025-05-22",
-          "amount": 30100
-        }
-      ]
-    },
-    {
-      "id": "1747946713653",
-      "name": "usa",
-      "is_active": true,
-      "start_date": "2025-03-22",
-      "end_date": null,
-      "initial_amount": 10000,
-      "currency": "USD",
-      "current_amount": 10000,
+      "current_amount": 35000,
       "profit_type": "commission",
       "notes": "",
       "is_liquid": false,
@@ -89,11 +18,489 @@
       "liquidity_date": null,
       "updates": [
         {
-          "date": "2025-03-22",
-          "amount": 10000
+          "date": "2017-12-04",
+          "amount": 35000
         }
       ],
-      "profit_rate": 10
+      "profit_rate": 6.75
+    },
+    {
+      "id": "usa2",
+      "name": "USA Real Estate Loan 2",
+      "is_active": true,
+      "start_date": "2019-02-21",
+      "end_date": null,
+      "initial_amount": 12000,
+      "currency": "USD",
+      "current_amount": 12000,
+      "profit_type": "commission",
+      "notes": "",
+      "is_liquid": false,
+      "investment_type": "real_estate_loan",
+      "liquidity_date": null,
+      "updates": [
+        {
+          "date": "2019-02-21",
+          "amount": 12000
+        }
+      ],
+      "profit_rate": 6.75
+    },
+    {
+      "id": "usa3",
+      "name": "USA Real Estate Loan 3",
+      "is_active": true,
+      "start_date": "2020-11-01",
+      "end_date": null,
+      "initial_amount": 5000,
+      "currency": "USD",
+      "current_amount": 5000,
+      "profit_type": "commission",
+      "notes": "",
+      "is_liquid": false,
+      "investment_type": "real_estate_loan",
+      "liquidity_date": null,
+      "updates": [
+        {
+          "date": "2020-11-01",
+          "amount": 5000
+        }
+      ],
+      "profit_rate": 6.75
+    },
+    {
+      "id": "1747948000000",
+      "name": "Blender",
+      "is_active": false,
+      "start_date": "2018-10-23",
+      "end_date": null,
+      "initial_amount": 30000,
+      "currency": "ILS",
+      "current_amount": 0,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": false,
+      "investment_type": "b2b_loan",
+      "liquidity_date": null,
+      "updates": [
+        { "date": "2018-10-23", "amount": 30000 },
+        { "date": "2019-03-28", "amount": 30741 },
+        { "date": "2019-08-27", "amount": 31613 },
+        { "date": "2020-03-12", "amount": 28805 },
+        { "date": "2020-11-03", "amount": 1015 },
+        { "date": "2022-01-08", "amount": 0 },
+        { "date": "2023-04-15", "amount": 0 }
+      ]
+    },
+    {
+      "id": "1747949000000",
+      "name": "Peoplbiz - Cannibal 1",
+      "is_active": true,
+      "start_date": "2019-01-01",
+      "end_date": null,
+      "initial_amount": 5157,
+      "currency": "ILS",
+      "current_amount": 5157,
+      "profit_type": "price",
+      "notes": "750 shares",
+      "is_liquid": false,
+      "investment_type": "company_shares",
+      "liquidity_date": null,
+      "updates": [
+        { "date": "2019-01-01", "amount": 5157 }
+      ]
+    },
+    {
+      "id": "1747950000000",
+      "name": "Peoplbiz - Brightcode",
+      "is_active": false,
+      "start_date": "2019-03-13",
+      "end_date": null,
+      "initial_amount": 5416,
+      "currency": "ILS",
+      "current_amount": 5416,
+      "profit_type": "price",
+      "notes": "100 shares",
+      "is_liquid": false,
+      "investment_type": "company_shares",
+      "liquidity_date": null,
+      "updates": [
+        { "date": "2019-03-13", "amount": 5416 }
+      ]
+    },
+    {
+      "id": "1747951000000",
+      "name": "Peoplbiz - Cannibal 2",
+      "is_active": true,
+      "start_date": "2019-03-15",
+      "end_date": null,
+      "initial_amount": 20625,
+      "currency": "ILS",
+      "current_amount": 20625,
+      "profit_type": "price",
+      "notes": "3000 shares, 15000 of father",
+      "is_liquid": false,
+      "investment_type": "company_shares",
+      "liquidity_date": null,
+      "updates": [
+        { "date": "2019-03-15", "amount": 20625 }
+      ]
+    },
+    {
+      "id": "1747952000000",
+      "name": "Hishtalmut Menahal",
+      "is_active": true,
+      "start_date": "2012-08-31",
+      "end_date": null,
+      "initial_amount": 30133,
+      "currency": "ILS",
+      "current_amount": 42248.63,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": true,
+      "investment_type": "gov_funds",
+      "liquidity_date": null,
+      "updates": [
+        { "date": "2012-08-31", "amount": 30133 },
+        { "date": "2019-05-16", "amount": 30859 },
+        { "date": "2019-08-27", "amount": 31118 },
+        { "date": "2020-03-12", "amount": 31953 },
+        { "date": "2020-11-03", "amount": 32979 },
+        { "date": "2022-01-08", "amount": 38085 },
+        { "date": "2023-04-15", "amount": 34880.95 },
+        { "date": "2024-04-28", "amount": 38900 },
+        { "date": "2024-07-13", "amount": 39694 },
+        { "date": "2024-12-22", "amount": 41558 },
+        { "date": "2025-03-10", "amount": 42248.63 }
+      ]
+    },
+    {
+      "id": "1747953000000",
+      "name": "Hishtalmut Altshuler",
+      "is_active": true,
+      "start_date": "2017-07-01",
+      "end_date": null,
+      "initial_amount": 37823,
+      "currency": "ILS",
+      "current_amount": 57153,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": true,
+      "investment_type": "gov_funds",
+      "liquidity_date": null,
+      "updates": [
+        { "date": "2017-07-01", "amount": 37823 },
+        { "date": "2019-05-16", "amount": 39400 },
+        { "date": "2019-08-27", "amount": 39940 },
+        { "date": "2020-03-12", "amount": 40234 },
+        { "date": "2020-11-03", "amount": 40909 },
+        { "date": "2022-01-08", "amount": 52719 },
+        { "date": "2023-04-15", "amount": 42398 },
+        { "date": "2024-04-28", "amount": 51914 },
+        { "date": "2024-07-13", "amount": 53611 },
+        { "date": "2024-12-22", "amount": 57634 },
+        { "date": "2025-03-10", "amount": 57153 }
+      ]
+    },
+    {
+      "id": "1747954000000",
+      "name": "Hishtalmut Menora Mivtachim",
+      "is_active": false,
+      "start_date": "2019-05-01",
+      "end_date": null,
+      "initial_amount": 2928,
+      "currency": "ILS",
+      "current_amount": 0,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": true,
+      "investment_type": "gov_funds",
+      "liquidity_date": null,
+      "updates": [
+        { "date": "2019-05-01", "amount": 2928 },
+        { "date": "2020-03-12", "amount": 4384 },
+        { "date": "2020-11-03", "amount": 4279 },
+        { "date": "2022-01-08", "amount": 5096 },
+        { "date": "2023-04-15", "amount": 0 }
+      ]
+    },
+    {
+      "id": "1747955000000",
+      "name": "Pension Clal Stocks",
+      "is_active": false,
+      "start_date": "2012-08-15",
+      "end_date": null,
+      "initial_amount": 53305,
+      "currency": "ILS",
+      "current_amount": 0,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": true,
+      "investment_type": "pension",
+      "liquidity_date": null,
+      "updates": [
+        { "date": "2012-08-15", "amount": 53305 },
+        { "date": "2019-08-27", "amount": 61197 },
+        { "date": "2020-03-12", "amount": 70816 },
+        { "date": "2020-11-03", "amount": 67674 },
+        { "date": "2022-01-08", "amount": 91483 },
+        { "date": "2023-04-15", "amount": 0 }
+      ]
+    },
+    {
+      "id": "1747956000000",
+      "name": "Clal Hishtalmut 1",
+      "is_active": true,
+      "start_date": "2023-04-15",
+      "end_date": null,
+      "initial_amount": 5876.95,
+      "currency": "ILS",
+      "current_amount": 7157,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": false,
+      "investment_type": "gov_funds",
+      "liquidity_date": null,
+      "updates": [
+        { "date": "2023-04-15", "amount": 5876.95 },
+        { "date": "2024-04-28", "amount": 6780 },
+        { "date": "2024-07-13", "amount": 7157 }
+      ]
+    },
+    {
+      "id": "1747957000000",
+      "name": "Clal Hishtalmut 2",
+      "is_active": true,
+      "start_date": "2023-04-15",
+      "end_date": null,
+      "initial_amount": 21538.46,
+      "currency": "ILS",
+      "current_amount": 52769,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": false,
+      "investment_type": "gov_funds",
+      "liquidity_date": null,
+      "updates": [
+        { "date": "2023-04-15", "amount": 21538.46 },
+        { "date": "2024-04-28", "amount": 46904 },
+        { "date": "2024-07-13", "amount": 52769 }
+      ]
+    },
+    {
+      "id": "1747958000000",
+      "name": "Pension Harel",
+      "is_active": true,
+      "start_date": "2023-04-15",
+      "end_date": null,
+      "initial_amount": 135836.00,
+      "currency": "ILS",
+      "current_amount": 216538,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": false,
+      "investment_type": "pension",
+      "liquidity_date": null,
+      "updates": [
+        { "date": "2023-04-15", "amount": 135836.00 },
+        { "date": "2024-04-28", "amount": 202235 },
+        { "date": "2024-07-13", "amount": 216538 }
+      ]
+    },
+    {
+      "id": "1747959000000",
+      "name": "Gemel Altshuler",
+      "is_active": true,
+      "start_date": "2023-09-04",
+      "end_date": null,
+      "initial_amount": 20000.00,
+      "currency": "ILS",
+      "current_amount": 24504.00,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": true,
+      "investment_type": "gov_funds",
+      "liquidity_date": null,
+      "updates": [
+        { "date": "2023-09-04", "amount": 20000.00 },
+        { "date": "2024-04-28", "amount": 22198 },
+        { "date": "2024-07-13", "amount": 22922 },
+        { "date": "2024-12-22", "amount": 24695 },
+        { "date": "2025-03-10", "amount": 24504.00 }
+      ]
+    },
+    {
+      "id": "1747960000000",
+      "name": "Crypto",
+      "is_active": true,
+      "start_date": "2024-04-28",
+      "end_date": null,
+      "initial_amount": 1358.43,
+      "currency": "USD",
+      "current_amount": 13587.08,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": true,
+      "investment_type": "crypto",
+      "liquidity_date": null,
+      "updates": [
+        { "date": "2024-04-28", "amount": 1358.43 },
+        { "date": "2024-07-13", "amount": 1432.58 },
+        { "date": "2024-12-22", "amount": 9952.25 },
+        { "date": "2025-03-10", "amount": 13587.08 }
+      ]
+    },
+    {
+      "id": "1747961000000",
+      "name": "Noga",
+      "is_active": true,
+      "start_date": "2024-04-28",
+      "end_date": null,
+      "initial_amount": 20061,
+      "currency": "ILS",
+      "current_amount": 20061,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": true,
+      "investment_type": "company_shares",
+      "liquidity_date": null,
+      "updates": [
+        { "date": "2024-04-28", "amount": 20061 }
+      ]
+    },
+    {
+      "id": "1747963000000",
+      "name": "Getsmine",
+      "is_active": true,
+      "start_date": "2024-07-13",
+      "end_date": null,
+      "initial_amount": 12000,
+      "currency": "USD",
+      "current_amount": 28000,
+      "profit_type": "price",
+      "notes": "7 miners",
+      "is_liquid": false,
+      "investment_type": "crypto_miners",
+      "liquidity_date": null,
+      "updates": [
+        { "date": "2024-07-13", "amount": 12000 },
+        { "date": "2024-12-22", "amount": 28000 }
+      ]
+    },
+    {
+      "id": "1747964000000",
+      "name": "Leumi Stocks",
+      "is_active": true,
+      "start_date": "2024-07-13",
+      "end_date": null,
+      "initial_amount": 50544.37,
+      "currency": "ILS",
+      "current_amount": 49775.00,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": true,
+      "investment_type": "stocks",
+      "liquidity_date": null,
+      "updates": [
+        { "date": "2024-07-13", "amount": 50544.37 },
+        { "date": "2024-12-22", "amount": 51085.69 },
+        { "date": "2025-03-10", "amount": 49775.00 }
+      ]
+    },
+    {
+      "id": "1747965000000",
+      "name": "Naama stocks",
+      "is_active": true,
+      "start_date": "2024-07-13",
+      "end_date": null,
+      "initial_amount": 163353.92,
+      "currency": "ILS",
+      "current_amount": 153303.00,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": true,
+      "investment_type": "stocks",
+      "liquidity_date": null,
+      "updates": [
+        { "date": "2024-07-13", "amount": 163353.92 },
+        { "date": "2024-12-22", "amount": 135000.00 },
+        { "date": "2025-03-10", "amount": 153303.00 }
+      ]
+    },
+    {
+      "id": "1747966000000",
+      "name": "Altshuler Hishtalmut 2",
+      "is_active": true,
+      "start_date": "2024-12-22",
+      "end_date": null,
+      "initial_amount": 57702.91,
+      "currency": "ILS",
+      "current_amount": 57249.87,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": false,
+      "investment_type": "gov_funds",
+      "liquidity_date": null,
+      "updates": [
+        { "date": "2024-12-22", "amount": 57702.91 },
+        { "date": "2025-03-10", "amount": 57249.87 }
+      ]
+    },
+    {
+      "id": "1747967000000",
+      "name": "Altshuler Hishtalmut 3",
+      "is_active": true,
+      "start_date": "2024-12-22",
+      "end_date": null,
+      "initial_amount": 14119.09,
+      "currency": "ILS",
+      "current_amount": 18593.04,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": true,
+      "investment_type": "gov_funds",
+      "liquidity_date": null,
+      "updates": [
+        { "date": "2024-12-22", "amount": 14119.09 },
+        { "date": "2025-03-10", "amount": 18593.04 }
+      ]
+    },
+    {
+      "id": "1747968000000",
+      "name": "Menora Pension",
+      "is_active": true,
+      "start_date": "2024-12-22",
+      "end_date": null,
+      "initial_amount": 258889.53,
+      "currency": "ILS",
+      "current_amount": 265461.40,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": false,
+      "investment_type": "pension",
+      "liquidity_date": null,
+      "updates": [
+        { "date": "2024-12-22", "amount": 258889.53 },
+        { "date": "2025-03-10", "amount": 265461.40 }
+      ]
+    },
+    {
+      "id": "1747969000000",
+      "name": "MyWhiskey",
+      "is_active": true,
+      "start_date": "2025-03-10",
+      "end_date": null,
+      "initial_amount": 31467.71,
+      "currency": "ILS",
+      "current_amount": 31467.71,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": false,
+      "investment_type": "whiskey",
+      "liquidity_date": null,
+      "updates": [
+        { "date": "2025-03-10", "amount": 31467.71 }
+      ]
     }
   ],
   "metadata": {
@@ -115,7 +522,8 @@
       "company_shares",
       "gov_funds",
       "crypto",
-      "bank"
+      "bank",
+      "b2b_loan"
     ]
   }
 }
