@@ -3,27 +3,6 @@
   "lastUpdated": "2024-03-20T12:00:00Z",
   "investments": [
     {
-      "id": "unique_id",
-      "name": "ארהב",
-      "is_active": true,
-      "start_date": "2017-12-04",
-      "end_date": null,
-      "initial_amount": 35000,
-      "currency": "USD",
-      "current_amount": 35000,
-      "profit_type": "price",
-      "notes": "",
-      "is_liquid": true,
-      "investment_type": "stocks",
-      "liquidity_date": null,
-      "updates": [
-        {
-          "date": "2017-12-04",
-          "amount": 35000
-        }
-      ]
-    },
-    {
       "id": "1747933421569",
       "name": "bank",
       "is_active": true,
