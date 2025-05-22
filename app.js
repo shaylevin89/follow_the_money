@@ -32,6 +32,11 @@ let investmentData = {
     }
 };
 
+// Helper to check if type is a loan
+function isLoanType(type) {
+    return typeof type === 'string' && type.toLowerCase().includes('loan');
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     const token = getTokenFromUrl();
@@ -40,6 +45,31 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         loadData(token);
         setupForm();
+    }
+
+    // Add form: Show/hide and require profit rate
+    const investmentType = document.getElementById('investmentType');
+    const profitRateGroup = document.getElementById('profitRateGroup');
+    const profitRateInput = document.getElementById('profitRate');
+    if (investmentType) {
+        investmentType.addEventListener('change', function() {
+            if (isLoanType(this.value)) {
+                profitRateGroup.style.display = '';
+                profitRateInput.required = true;
+            } else {
+                profitRateGroup.style.display = 'none';
+                profitRateInput.required = false;
+                profitRateInput.value = '';
+            }
+        });
+    }
+
+    // Edit form: Show/hide and require profit rate
+    const editInvestmentType = document.getElementById('editInvestmentType'); // not present, so use investment object
+    const editProfitRateGroup = document.getElementById('editProfitRateGroup');
+    const editProfitRateInput = document.getElementById('editProfitRate');
+    if (editProfitRateInput) {
+        // Handled in openEditInvestmentModal
     }
 });
 
@@ -88,6 +118,16 @@ function setupForm() {
             return;
         }
 
+        const type = document.getElementById('investmentType').value;
+        let profitRate = null;
+        if (isLoanType(type)) {
+            profitRate = parseFloat(document.getElementById('profitRate').value);
+            if (isNaN(profitRate)) {
+                document.getElementById('profitRate').focus();
+                return;
+            }
+        }
+
         const newInvestment = {
             id: Date.now().toString(),
             name: document.getElementById('investmentName').value,
@@ -100,7 +140,7 @@ function setupForm() {
             profit_type: document.getElementById('profitType').value,
             notes: document.getElementById('notes').value,
             is_liquid: document.getElementById('isLiquid').checked,
-            investment_type: document.getElementById('investmentType').value,
+            investment_type: type,
             liquidity_date: document.getElementById('liquidityDate').value || 
                 (document.getElementById('isLiquid').checked ? document.getElementById('startDate').value : null),
             updates: [
@@ -108,7 +148,8 @@ function setupForm() {
                     date: document.getElementById('startDate').value,
                     amount: parseFloat(document.getElementById('initialAmount').value)
                 }
-            ]
+            ],
+            profit_rate: profitRate
         };
 
         investmentData.investments.push(newInvestment);
@@ -118,6 +159,7 @@ function setupForm() {
         // Reset form
         form.reset();
         form.classList.remove('was-validated');
+        document.getElementById('profitRateGroup').style.display = 'none';
     });
 }
 
@@ -215,8 +257,92 @@ function renderInvestments() {
                 <div class="text-end">
                     <div class="amount">${investment.currency === 'USD' ? '$' : '₪'}${investment.current_amount.toLocaleString()}</div>
                     <div class="text-muted small">Initial: ${investment.currency === 'USD' ? '$' : '₪'}${investment.initial_amount.toLocaleString()}</div>
+                    <div class="mt-2">
+                        <button class="btn btn-sm btn-outline-primary me-2 edit-investment-btn" data-id="${investment.id}"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger delete-investment-btn" data-id="${investment.id}"><i class="bi bi-trash"></i></button>
+                    </div>
                 </div>
             </div>
         </div>
     `).join('');
+
+    // Add event listeners for edit and delete buttons
+    document.querySelectorAll('.edit-investment-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = btn.getAttribute('data-id');
+            openEditInvestmentModal(id);
+        });
+    });
+    document.querySelectorAll('.delete-investment-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = btn.getAttribute('data-id');
+            if (confirm('Are you sure you want to delete this investment?')) {
+                deleteInvestment(id);
+            }
+        });
+    });
+}
+
+function openEditInvestmentModal(id) {
+    const investment = investmentData.investments.find(inv => inv.id === id);
+    if (!investment) return;
+    document.getElementById('editInvestmentId').value = investment.id;
+    document.getElementById('editCurrentAmount').value = investment.current_amount;
+    document.getElementById('editIsActive').checked = investment.is_active;
+    document.getElementById('editIsLiquid').checked = investment.is_liquid;
+    document.getElementById('editLiquidityDate').value = investment.liquidity_date || '';
+    // Profit rate logic
+    const editProfitRateGroup = document.getElementById('editProfitRateGroup');
+    const editProfitRateInput = document.getElementById('editProfitRate');
+    if (isLoanType(investment.investment_type)) {
+        editProfitRateGroup.style.display = '';
+        editProfitRateInput.required = true;
+        editProfitRateInput.value = investment.profit_rate != null ? investment.profit_rate : '';
+    } else {
+        editProfitRateGroup.style.display = 'none';
+        editProfitRateInput.required = false;
+        editProfitRateInput.value = '';
+    }
+    const modal = new bootstrap.Modal(document.getElementById('editInvestmentModal'));
+    modal.show();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // ... existing code ...
+    // Edit investment form submit
+    const editForm = document.getElementById('editInvestmentForm');
+    if (editForm) {
+        editForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editInvestmentId').value;
+            const investment = investmentData.investments.find(inv => inv.id === id);
+            if (!investment) return;
+            investment.current_amount = parseFloat(document.getElementById('editCurrentAmount').value);
+            investment.is_active = document.getElementById('editIsActive').checked;
+            investment.is_liquid = document.getElementById('editIsLiquid').checked;
+            investment.liquidity_date = document.getElementById('editLiquidityDate').value || (investment.is_liquid ? investment.start_date : null);
+            // Profit rate logic
+            if (isLoanType(investment.investment_type)) {
+                const rate = parseFloat(document.getElementById('editProfitRate').value);
+                if (isNaN(rate)) {
+                    document.getElementById('editProfitRate').focus();
+                    return;
+                }
+                investment.profit_rate = rate;
+            } else {
+                delete investment.profit_rate;
+            }
+            await saveData(getTokenFromUrl());
+            renderInvestments();
+            bootstrap.Modal.getInstance(document.getElementById('editInvestmentModal')).hide();
+        });
+    }
+});
+
+function deleteInvestment(id) {
+    investmentData.investments = investmentData.investments.filter(inv => inv.id !== id);
+    (async () => {
+        await saveData(getTokenFromUrl());
+        renderInvestments();
+    })();
 } 
