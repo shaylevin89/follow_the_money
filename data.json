@@ -387,7 +387,7 @@
     {
       "id": "1747956000000",
       "name": "Clal Hishtalmut 1",
-      "is_active": true,
+      "is_active": false,
       "start_date": "2023-04-15",
       "end_date": null,
       "initial_amount": 5876.95,
