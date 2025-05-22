@@ -65,11 +65,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Edit form: Show/hide and require profit rate
-    const editInvestmentType = document.getElementById('editInvestmentType'); // not present, so use investment object
+    const editInvestmentType = document.getElementById('editInvestmentType');
     const editProfitRateGroup = document.getElementById('editProfitRateGroup');
     const editProfitRateInput = document.getElementById('editProfitRate');
     if (editProfitRateInput) {
         // Handled in openEditInvestmentModal
+    }
+
+    // Add Investment form collapse behavior
+    const addInvestmentForm = document.getElementById('addInvestmentForm');
+    const addInvestmentBtn = document.querySelector('[data-bs-target="#addInvestmentForm"]');
+    if (addInvestmentForm && addInvestmentBtn) {
+        addInvestmentForm.addEventListener('show.bs.collapse', () => {
+            // Scroll to the form when it's opened
+            addInvestmentForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
     }
 });
 
@@ -171,6 +181,7 @@ async function loadData(token) {
             investmentData = await response.json();
         }
         renderInvestments();
+        await updateDashboard();
     } catch (error) {
         console.error('Error loading data:', error);
         renderInvestments();
@@ -223,6 +234,9 @@ async function saveData(token) {
         );
 
         if (!response.ok) throw new Error('Failed to save data');
+        
+        // Update dashboard after successful save
+        await updateDashboard();
     } catch (error) {
         console.error('Error saving data:', error);
         alert('Error saving data. Please check console for details.');
@@ -234,6 +248,7 @@ function renderInvestments() {
     const container = document.getElementById('investmentList');
     if (!investmentData.investments || investmentData.investments.length === 0) {
         container.innerHTML = '<div class="text-center text-muted">No investments added yet</div>';
+        updateDashboard();
         return;
     }
 
@@ -304,7 +319,7 @@ function renderInvestments() {
                         ${investment.investment_type} • Started ${new Date(investment.start_date).toLocaleDateString()}
                         ${investment.liquidity_date ? `• Liquid on ${new Date(investment.liquidity_date).toLocaleDateString()}` : ''}
                     </div>
-                    ${investment.notes ? `<div class="text-muted small mt-1">${investment.notes}</div>` : ''}
+                    ${investment.notes ? `<div class="text-muted small mt-1"><i class='bi bi-sticky'></i> ${investment.notes}</div>` : ''}
                     <div class="mt-2">
                         <strong>Profit:</strong> ${profitAmount === 'N/A' ? 'N/A' : (investment.currency === 'USD' ? '$' : '₪') + profitAmount.toLocaleString(undefined, {maximumFractionDigits: 2})}
                         <span class="text-muted small ms-2">Rate: ${profitRate === 'N/A' ? 'N/A' : profitRate.toFixed(2) + '%'}</span>
@@ -315,9 +330,9 @@ function renderInvestments() {
                 <div class="text-end">
                     <div class="amount">${investment.currency === 'USD' ? '$' : '₪'}${investment.current_amount.toLocaleString()}</div>
                     <div class="text-muted small">Initial: ${investment.currency === 'USD' ? '$' : '₪'}${investment.initial_amount.toLocaleString()}</div>
-                    <div class="mt-2">
-                        <button class="btn btn-sm btn-outline-primary me-2 edit-investment-btn" data-id="${investment.id}"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger delete-investment-btn" data-id="${investment.id}"><i class="bi bi-trash"></i></button>
+                    <div class="mt-2 d-flex gap-2 justify-content-end">
+                        <button class="btn btn-sm btn-outline-primary edit-investment-btn" data-id="${investment.id}" title="Edit"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger delete-investment-btn" data-id="${investment.id}" title="Delete"><i class="bi bi-trash"></i></button>
                     </div>
                 </div>
             </div>
@@ -342,6 +357,14 @@ function renderInvestments() {
     });
 }
 
+function showNotesModal(id) {
+    const investment = investmentData.investments.find(inv => inv.id === id);
+    const notesContent = document.getElementById('notesModalContent');
+    notesContent.textContent = investment && investment.notes ? investment.notes : 'No notes for this investment.';
+    const modal = new bootstrap.Modal(document.getElementById('notesModal'));
+    modal.show();
+}
+
 function openEditInvestmentModal(id) {
     const investment = investmentData.investments.find(inv => inv.id === id);
     if (!investment) return;
@@ -362,6 +385,7 @@ function openEditInvestmentModal(id) {
         editProfitRateInput.required = false;
         editProfitRateInput.value = '';
     }
+    document.getElementById('editNotes').value = investment.notes || '';
     const modal = new bootstrap.Modal(document.getElementById('editInvestmentModal'));
     modal.show();
 }
@@ -400,6 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 delete investment.profit_rate;
             }
+            investment.notes = document.getElementById('editNotes').value;
             await saveData(getTokenFromUrl());
             renderInvestments();
             bootstrap.Modal.getInstance(document.getElementById('editInvestmentModal')).hide();
@@ -413,4 +438,56 @@ function deleteInvestment(id) {
         await saveData(getTokenFromUrl());
         renderInvestments();
     })();
+}
+
+// Add these functions after the existing functions but before the event listeners
+
+async function updateDashboard() {
+    await updateTotalValue();
+    // We'll add more dashboard updates here later
+}
+
+async function updateTotalValue() {
+    try {
+        const activeInvestments = investmentData.investments.filter(inv => inv.is_active);
+        
+        // Get current USD to ILS exchange rate
+        const usdToIlsRate = await getUsdToIlsRate();
+        
+        // Calculate total value in ILS
+        const totalValue = activeInvestments.reduce((sum, inv) => {
+            const currentAmount = inv.current_amount || inv.initial_amount;
+            if (inv.currency === 'ILS') {
+                return sum + currentAmount;
+            } else if (inv.currency === 'USD') {
+                return sum + (currentAmount * usdToIlsRate);
+            }
+            return sum;
+        }, 0);
+
+        // Update the dashboard widget
+        const totalValueElement = document.getElementById('totalValueILS');
+        totalValueElement.textContent = `₪${formatNumber(totalValue)}`;
+    } catch (error) {
+        console.error('Error updating total value:', error);
+    }
+}
+
+async function getUsdToIlsRate() {
+    try {
+        const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+        const data = await response.json();
+        return data.rates.ILS;
+    } catch (error) {
+        console.error('Error fetching exchange rate:', error);
+        // Fallback to a default rate if API fails
+        return 3.65;
+    }
+}
+
+function formatNumber(number) {
+    return new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(number);
 } 
