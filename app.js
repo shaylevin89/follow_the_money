@@ -237,7 +237,39 @@ function renderInvestments() {
         return;
     }
 
-    container.innerHTML = investmentData.investments.map(investment => `
+    container.innerHTML = investmentData.investments.map(investment => {
+        // --- PROFIT CALCULATIONS ---
+        const initial = investment.initial_amount || 0;
+        const current = investment.current_amount || 0;
+        const profitAmount = current - initial;
+        const profitRate = initial !== 0 ? (profitAmount / initial) * 100 : 0;
+        // Find last update date
+        let lastUpdateDate = investment.start_date;
+        if (Array.isArray(investment.updates) && investment.updates.length > 0) {
+            lastUpdateDate = investment.updates[investment.updates.length - 1].date || investment.start_date;
+        }
+        const start = new Date(investment.start_date);
+        const end = new Date(lastUpdateDate);
+        // Calculate years and months difference
+        const msInYear = 1000 * 60 * 60 * 24 * 365.25;
+        const msInMonth = 1000 * 60 * 60 * 24 * 30.44;
+        const years = Math.max((end - start) / msInYear, 0);
+        const months = Math.max((end - start) / msInMonth, 0);
+        // CAGR for yearly and monthly
+        let profitRateYearly = 'N/A';
+        let profitRateMonthly = 'N/A';
+        if (initial > 0 && years > 0) {
+            profitRateYearly = ((Math.pow(current / initial, 1 / years) - 1) * 100).toFixed(2);
+        } else if (initial > 0) {
+            profitRateYearly = '0.00';
+        }
+        if (initial > 0 && months > 0) {
+            profitRateMonthly = ((Math.pow(current / initial, 1 / months) - 1) * 100).toFixed(2);
+        } else if (initial > 0) {
+            profitRateMonthly = '0.00';
+        }
+        // --- END PROFIT CALCULATIONS ---
+        return `
         <div class="investment-item">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
@@ -253,6 +285,12 @@ function renderInvestments() {
                         ${investment.liquidity_date ? `• Liquid on ${new Date(investment.liquidity_date).toLocaleDateString()}` : ''}
                     </div>
                     ${investment.notes ? `<div class="text-muted small mt-1">${investment.notes}</div>` : ''}
+                    <div class="mt-2">
+                        <strong>Profit:</strong> ${investment.currency === 'USD' ? '$' : '₪'}${profitAmount.toLocaleString(undefined, {maximumFractionDigits: 2})}
+                        <span class="text-muted small ms-2">Rate: ${profitRate.toFixed(2)}%</span>
+                        <span class="text-muted small ms-2">Yearly: ${profitRateYearly === 'N/A' ? 'N/A' : profitRateYearly + '%'}</span>
+                        <span class="text-muted small ms-2">Monthly: ${profitRateMonthly === 'N/A' ? 'N/A' : profitRateMonthly + '%'}</span>
+                    </div>
                 </div>
                 <div class="text-end">
                     <div class="amount">${investment.currency === 'USD' ? '$' : '₪'}${investment.current_amount.toLocaleString()}</div>
@@ -264,7 +302,8 @@ function renderInvestments() {
                 </div>
             </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
 
     // Add event listeners for edit and delete buttons
     document.querySelectorAll('.edit-investment-btn').forEach(btn => {
