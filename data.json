@@ -520,12 +520,12 @@
       "end_date": null,
       "initial_amount": 1358.43,
       "currency": "USD",
-      "current_amount": 13587.08,
+      "current_amount": 16794.14,
       "profit_type": "price",
       "notes": "",
       "is_liquid": true,
       "investment_type": "crypto",
-      "liquidity_date": null,
+      "liquidity_date": "2024-04-28",
       "updates": [
         {
           "date": "2024-04-28",
@@ -542,6 +542,10 @@
         {
           "date": "2025-03-10",
           "amount": 13587.08
+        },
+        {
+          "date": "2025-05-22",
+          "amount": 16794.14
         }
       ]
     },
