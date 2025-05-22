@@ -176,7 +176,7 @@ function setupForm() {
 // Load data from GitHub
 async function loadData(token) {
     try {
-        const response = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${DATA_FILE}`);
+        const response = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${DATA_FILE}?t=${Date.now()}`);
         if (response.ok) {
             investmentData = await response.json();
         }
@@ -443,18 +443,15 @@ function deleteInvestment(id) {
 // Add these functions after the existing functions but before the event listeners
 
 async function updateDashboard() {
-    await updateTotalValue();
-    updateLiquidityChart();
-    updateTypeChart();
+    const usdToIlsRate = await getUsdToIlsRate();
+    await updateTotalValue(usdToIlsRate);
+    updateLiquidityChart(usdToIlsRate);
+    updateTypeChart(usdToIlsRate);
 }
 
-async function updateTotalValue() {
+async function updateTotalValue(usdToIlsRate) {
     try {
         const activeInvestments = investmentData.investments.filter(inv => inv.is_active);
-        
-        // Get current USD to ILS exchange rate
-        const usdToIlsRate = await getUsdToIlsRate();
-        
         // Calculate total value in ILS
         const totalValue = activeInvestments.reduce((sum, inv) => {
             const currentAmount = inv.current_amount || inv.initial_amount;
@@ -465,26 +462,37 @@ async function updateTotalValue() {
             }
             return sum;
         }, 0);
-
         // Update the dashboard widget
         const totalValueElement = document.getElementById('totalValueILS');
         totalValueElement.textContent = `₪${formatNumber(totalValue)}`;
-
         // --- Monthly Profit Calculation ---
         let monthlyProfit = 0;
         activeInvestments.forEach(inv => {
             if (!Array.isArray(inv.updates) || inv.updates.length < 2) return;
-            // Get the last two updates
+            // Sort updates by date
             const updatesSorted = inv.updates.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
             const last = updatesSorted[updatesSorted.length - 1];
             const prev = updatesSorted[updatesSorted.length - 2];
             const lastDate = new Date(last.date);
             const prevDate = new Date(prev.date);
             const days = (lastDate - prevDate) / (1000 * 60 * 60 * 24);
-            if (days <= 0) return;
-            let profit = last.amount - prev.amount;
+            let profit = 0;
             if (days > 30) {
-                profit = profit / (days / 30);
+                profit = (last.amount - prev.amount) / (days / 30);
+            } else {
+                // Try to get the update before prev
+                const beforePrev = updatesSorted.length >= 3 ? updatesSorted[updatesSorted.length - 3] : null;
+                if (!beforePrev) {
+                    profit = last.amount - prev.amount;
+                } else {
+                    const beforePrevDate = new Date(beforePrev.date);
+                    const days2 = (lastDate - beforePrevDate) / (1000 * 60 * 60 * 24);
+                    if (days2 > 30) {
+                        profit = (last.amount - beforePrev.amount) / (days2 / 30);
+                    } else {
+                        profit = last.amount - beforePrev.amount;
+                    }
+                }
             }
             // Convert to ILS if needed
             if (inv.currency === 'USD') {
@@ -495,6 +503,41 @@ async function updateTotalValue() {
         const monthlyProfitElement = document.getElementById('monthlyProfit');
         monthlyProfitElement.textContent = `₪${formatNumber(monthlyProfit)}`;
         // --- End Monthly Profit Calculation ---
+        // --- Yearly Profit Calculation ---
+        let yearlyProfit = 0;
+        activeInvestments.forEach(inv => {
+            if (!Array.isArray(inv.updates) || inv.updates.length < 2) return;
+            const updatesSorted = inv.updates.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+            const last = updatesSorted[updatesSorted.length - 1];
+            const prev = updatesSorted[updatesSorted.length - 2];
+            const lastDate = new Date(last.date);
+            const prevDate = new Date(prev.date);
+            const days = (lastDate - prevDate) / (1000 * 60 * 60 * 24);
+            let profit = 0;
+            if (days > 365) {
+                profit = (last.amount - prev.amount) / (days / 365);
+            } else {
+                const beforePrev = updatesSorted.length >= 3 ? updatesSorted[updatesSorted.length - 3] : null;
+                if (!beforePrev) {
+                    profit = last.amount - prev.amount;
+                } else {
+                    const beforePrevDate = new Date(beforePrev.date);
+                    const days2 = (lastDate - beforePrevDate) / (1000 * 60 * 60 * 24);
+                    if (days2 > 365) {
+                        profit = (last.amount - beforePrev.amount) / (days2 / 365);
+                    } else {
+                        profit = last.amount - beforePrev.amount;
+                    }
+                }
+            }
+            if (inv.currency === 'USD') {
+                profit = profit * usdToIlsRate;
+            }
+            yearlyProfit += profit;
+        });
+        const yearlyProfitElement = document.getElementById('yearlyProfit');
+        yearlyProfitElement.textContent = `₪${formatNumber(yearlyProfit)}`;
+        // --- End Yearly Profit Calculation ---
     } catch (error) {
         console.error('Error updating total value:', error);
     }
@@ -519,7 +562,7 @@ function formatNumber(number) {
     }).format(number);
 }
 
-function updateLiquidityChart() {
+function updateLiquidityChart(usdToIlsRate) {
     const ctx = document.getElementById('liquidityChart').getContext('2d');
     // Remove previous chart instance if exists
     if (window.liquidityChartInstance) {
@@ -529,137 +572,124 @@ function updateLiquidityChart() {
     const activeInvestments = investmentData.investments.filter(inv => inv.is_active);
     let liquidCount = 0, illiquidCount = 0;
     let liquidTotal = 0, illiquidTotal = 0;
-    // We'll need the current USD to ILS rate
-    const updateChart = (usdToIlsRate) => {
-        activeInvestments.forEach(inv => {
-            const currentAmount = inv.current_amount || inv.initial_amount;
-            const amountIls = inv.currency === 'USD' ? currentAmount * usdToIlsRate : currentAmount;
-            if (inv.is_liquid) {
-                liquidCount++;
-                liquidTotal += amountIls;
-            } else {
-                illiquidCount++;
-                illiquidTotal += amountIls;
-            }
-        });
-        window.liquidityChartInstance = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: [
-                    `Liquid (${liquidCount} investments, ₪${formatNumber(liquidTotal)})`,
-                    `Illiquid (${illiquidCount} investments, ₪${formatNumber(illiquidTotal)})`
-                ],
-                datasets: [{
-                    data: [liquidTotal, illiquidTotal],
-                    backgroundColor: ['#198754', '#ffc107'],
-                    borderColor: ['#fff', '#fff'],
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'bottom',
-                        labels: {
-                            font: {
-                                size: 12
-                            }
+    activeInvestments.forEach(inv => {
+        const currentAmount = inv.current_amount || inv.initial_amount;
+        const amountIls = inv.currency === 'USD' ? currentAmount * usdToIlsRate : currentAmount;
+        if (inv.is_liquid) {
+            liquidCount++;
+            liquidTotal += amountIls;
+        } else {
+            illiquidCount++;
+            illiquidTotal += amountIls;
+        }
+    });
+    window.liquidityChartInstance = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: [
+                `Liquid (${liquidCount} investments, ₪${formatNumber(liquidTotal)})`,
+                `Illiquid (${illiquidCount} investments, ₪${formatNumber(illiquidTotal)})`
+            ],
+            datasets: [{
+                data: [liquidTotal, illiquidTotal],
+                backgroundColor: ['#198754', '#ffc107'],
+                borderColor: ['#fff', '#fff'],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        font: {
+                            size: 12
                         }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const label = context.label || '';
-                                const value = context.raw || 0;
-                                const total = liquidTotal + illiquidTotal;
-                                const percentage = ((value / total) * 100).toFixed(1);
-                                return `${label}: ${percentage}% of total value`;
-                            }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.raw || 0;
+                            const total = liquidTotal + illiquidTotal;
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return `${label}: ${percentage}% of total value`;
                         }
                     }
                 }
             }
-        });
-    };
-    // Get USD to ILS rate and then update chart
-    getUsdToIlsRate().then(updateChart);
+        }
+    });
 }
 
-function updateTypeChart() {
+function updateTypeChart(usdToIlsRate) {
     const ctx = document.getElementById('typeChart').getContext('2d');
     // Remove previous chart instance if exists
     if (window.typeChartInstance) {
         window.typeChartInstance.destroy();
     }
-    // We'll need the current USD to ILS rate
-    const updateChart = (usdToIlsRate) => {
-        // Group active investments by type and sum their ILS values
-        const typeTotals = {};
-        const activeInvestments = investmentData.investments.filter(inv => inv.is_active);
-        
-        activeInvestments.forEach(inv => {
-            const currentAmount = inv.current_amount || inv.initial_amount;
-            const amountIls = inv.currency === 'USD' ? currentAmount * usdToIlsRate : currentAmount;
-            if (!typeTotals[inv.investment_type]) {
-                typeTotals[inv.investment_type] = 0;
-            }
-            typeTotals[inv.investment_type] += amountIls;
-        });
-
-        // Sort types by total value (descending)
-        const sortedTypes = Object.entries(typeTotals)
-            .sort(([,a], [,b]) => b - a);
-
-        window.typeChartInstance = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: sortedTypes.map(([type, total]) => `${type} (₪${formatNumber(total)})`),
-                datasets: [{
-                    data: sortedTypes.map(([,total]) => total),
-                    backgroundColor: [
-                        '#198754', // green
-                        '#0d6efd', // blue
-                        '#ffc107', // yellow
-                        '#dc3545', // red
-                        '#6f42c1', // purple
-                        '#fd7e14', // orange
-                        '#20c997', // teal
-                        '#0dcaf0', // cyan
-                        '#6610f2'  // indigo
-                    ],
-                    borderColor: '#fff',
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'bottom',
-                        labels: {
-                            font: {
-                                size: 12
-                            }
+    // Group active investments by type and sum their ILS values
+    const typeTotals = {};
+    const activeInvestments = investmentData.investments.filter(inv => inv.is_active);
+    activeInvestments.forEach(inv => {
+        const currentAmount = inv.current_amount || inv.initial_amount;
+        const amountIls = inv.currency === 'USD' ? currentAmount * usdToIlsRate : currentAmount;
+        if (!typeTotals[inv.investment_type]) {
+            typeTotals[inv.investment_type] = 0;
+        }
+        typeTotals[inv.investment_type] += amountIls;
+    });
+    // Sort types by total value (descending)
+    const sortedTypes = Object.entries(typeTotals)
+        .sort(([,a], [,b]) => b - a);
+    window.typeChartInstance = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: sortedTypes.map(([type, total]) => `${type} (₪${formatNumber(total)})`),
+            datasets: [{
+                data: sortedTypes.map(([,total]) => total),
+                backgroundColor: [
+                    '#198754', // green
+                    '#0d6efd', // blue
+                    '#ffc107', // yellow
+                    '#dc3545', // red
+                    '#6f42c1', // purple
+                    '#fd7e14', // orange
+                    '#20c997', // teal
+                    '#0dcaf0', // cyan
+                    '#6610f2'  // indigo
+                ],
+                borderColor: '#fff',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        font: {
+                            size: 12
                         }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const label = context.label || '';
-                                const value = context.raw || 0;
-                                const total = sortedTypes.reduce((sum, [,val]) => sum + val, 0);
-                                const percentage = ((value / total) * 100).toFixed(1);
-                                return `${label}: ${percentage}% of total value`;
-                            }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.raw || 0;
+                            const total = sortedTypes.reduce((sum, [,val]) => sum + val, 0);
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return `${label}: ${percentage}% of total value`;
                         }
                     }
                 }
             }
-        });
-    };
-    // Get USD to ILS rate and then update chart
-    getUsdToIlsRate().then(updateChart);
+        }
+    });
 } 
