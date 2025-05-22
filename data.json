@@ -3,27 +3,6 @@
   "lastUpdated": "2024-03-20T12:00:00Z",
   "investments": [
     {
-      "id": "1747933421569",
-      "name": "bank",
-      "is_active": true,
-      "start_date": "2025-05-22",
-      "end_date": null,
-      "initial_amount": 37000,
-      "currency": "ILS",
-      "current_amount": 37000,
-      "profit_type": "price",
-      "notes": "",
-      "is_liquid": true,
-      "investment_type": "bank",
-      "liquidity_date": null,
-      "updates": [
-        {
-          "date": "2025-05-22",
-          "amount": 37000
-        }
-      ]
-    },
-    {
       "id": "1747934019487",
       "name": "mmds",
       "is_active": true,
