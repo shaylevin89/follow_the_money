@@ -101,7 +101,8 @@ function setupForm() {
             notes: document.getElementById('notes').value,
             is_liquid: document.getElementById('isLiquid').checked,
             investment_type: document.getElementById('investmentType').value,
-            liquidity_date: document.getElementById('liquidityDate').value || null,
+            liquidity_date: document.getElementById('liquidityDate').value || 
+                (document.getElementById('isLiquid').checked ? document.getElementById('startDate').value : null),
             updates: [
                 {
                     date: document.getElementById('startDate').value,
