@@ -560,7 +560,7 @@
       "current_amount": 20061,
       "profit_type": "price",
       "notes": "",
-      "is_liquid": true,
+      "is_liquid": false,
       "investment_type": "company_shares",
       "liquidity_date": null,
       "updates": [
