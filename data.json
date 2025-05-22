@@ -10,7 +10,7 @@
       "end_date": null,
       "initial_amount": 234134,
       "currency": "ILS",
-      "current_amount": 235134,
+      "current_amount": 235000,
       "profit_type": "price",
       "notes": "sdgfs sfgs",
       "is_liquid": true,
@@ -24,6 +24,10 @@
         {
           "date": "2026-05-22",
           "amount": 235134
+        },
+        {
+          "date": "2025-05-22",
+          "amount": 235000
         }
       ]
     },
