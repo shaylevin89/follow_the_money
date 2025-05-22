@@ -241,32 +241,52 @@ function renderInvestments() {
         // --- PROFIT CALCULATIONS ---
         const initial = investment.initial_amount || 0;
         const current = investment.current_amount || 0;
-        const profitAmount = current - initial;
-        const profitRate = initial !== 0 ? (profitAmount / initial) * 100 : 0;
-        // Find last update date
-        let lastUpdateDate = investment.start_date;
-        if (Array.isArray(investment.updates) && investment.updates.length > 0) {
-            lastUpdateDate = investment.updates[investment.updates.length - 1].date || investment.start_date;
-        }
-        const start = new Date(investment.start_date);
-        const end = new Date(lastUpdateDate);
-        // Calculate years and months difference
-        const msInYear = 1000 * 60 * 60 * 24 * 365.25;
-        const msInMonth = 1000 * 60 * 60 * 24 * 30.44;
-        const years = Math.max((end - start) / msInYear, 0);
-        const months = Math.max((end - start) / msInMonth, 0);
-        // CAGR for yearly and monthly
-        let profitRateYearly = 'N/A';
-        let profitRateMonthly = 'N/A';
-        if (initial > 0 && years > 0) {
-            profitRateYearly = ((Math.pow(current / initial, 1 / years) - 1) * 100).toFixed(2);
-        } else if (initial > 0) {
-            profitRateYearly = '0.00';
-        }
-        if (initial > 0 && months > 0) {
-            profitRateMonthly = ((Math.pow(current / initial, 1 / months) - 1) * 100).toFixed(2);
-        } else if (initial > 0) {
-            profitRateMonthly = '0.00';
+        let profitAmount, profitRate, profitRateYearly, profitRateMonthly;
+        if (isLoanType(investment.investment_type)) {
+            // Use profit_rate field, calculate based on years from start to today
+            if (typeof investment.profit_rate === 'number' && !isNaN(investment.profit_rate)) {
+                const start = new Date(investment.start_date);
+                const end = new Date(); // today
+                const msInYear = 1000 * 60 * 60 * 24 * 365.25;
+                const years = Math.max((end - start) / msInYear, 0);
+                profitAmount = initial * (investment.profit_rate / 100) * years;
+                profitRate = investment.profit_rate * years;
+                profitRateYearly = investment.profit_rate;
+                profitRateMonthly = investment.profit_rate / 12;
+            } else {
+                profitAmount = profitRate = profitRateYearly = profitRateMonthly = 'N/A';
+            }
+        } else {
+            // Use current/initial amount
+            profitAmount = current - initial;
+            profitRate = initial !== 0 ? (profitAmount / initial) * 100 : 0;
+            // Find last update date
+            let lastUpdateDate = investment.start_date;
+            if (Array.isArray(investment.updates) && investment.updates.length > 0) {
+                lastUpdateDate = investment.updates[investment.updates.length - 1].date || investment.start_date;
+            }
+            const start = new Date(investment.start_date);
+            const end = new Date(lastUpdateDate);
+            // Calculate years and months difference
+            const msInYear = 1000 * 60 * 60 * 24 * 365.25;
+            const msInMonth = 1000 * 60 * 60 * 24 * 30.44;
+            const years = Math.max((end - start) / msInYear, 0);
+            const months = Math.max((end - start) / msInMonth, 0);
+            // CAGR for yearly and monthly
+            if (initial > 0 && years > 0) {
+                profitRateYearly = ((Math.pow(current / initial, 1 / years) - 1) * 100).toFixed(2);
+            } else if (initial > 0) {
+                profitRateYearly = '0.00';
+            } else {
+                profitRateYearly = 'N/A';
+            }
+            if (initial > 0 && months > 0) {
+                profitRateMonthly = ((Math.pow(current / initial, 1 / months) - 1) * 100).toFixed(2);
+            } else if (initial > 0) {
+                profitRateMonthly = '0.00';
+            } else {
+                profitRateMonthly = 'N/A';
+            }
         }
         // --- END PROFIT CALCULATIONS ---
         return `
@@ -286,10 +306,10 @@ function renderInvestments() {
                     </div>
                     ${investment.notes ? `<div class="text-muted small mt-1">${investment.notes}</div>` : ''}
                     <div class="mt-2">
-                        <strong>Profit:</strong> ${investment.currency === 'USD' ? '$' : '₪'}${profitAmount.toLocaleString(undefined, {maximumFractionDigits: 2})}
-                        <span class="text-muted small ms-2">Rate: ${profitRate.toFixed(2)}%</span>
+                        <strong>Profit:</strong> ${profitAmount === 'N/A' ? 'N/A' : (investment.currency === 'USD' ? '$' : '₪') + profitAmount.toLocaleString(undefined, {maximumFractionDigits: 2})}
+                        <span class="text-muted small ms-2">Rate: ${profitRate === 'N/A' ? 'N/A' : profitRate.toFixed(2) + '%'}</span>
                         <span class="text-muted small ms-2">Yearly: ${profitRateYearly === 'N/A' ? 'N/A' : profitRateYearly + '%'}</span>
-                        <span class="text-muted small ms-2">Monthly: ${profitRateMonthly === 'N/A' ? 'N/A' : profitRateMonthly + '%'}</span>
+                        <span class="text-muted small ms-2">Monthly: ${profitRateMonthly === 'N/A' ? 'N/A' : (typeof profitRateMonthly === 'number' ? profitRateMonthly.toFixed(2) : profitRateMonthly) + '%'}</span>
                     </div>
                 </div>
                 <div class="text-end">
