@@ -760,6 +760,28 @@
           "amount": 31467.71
         }
       ]
+    },
+    {
+      "id": "1747955338901",
+      "name": "pepper bank account",
+      "is_active": true,
+      "start_date": "2025-05-23",
+      "end_date": null,
+      "initial_amount": 37043,
+      "currency": "ILS",
+      "current_amount": 37043,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": true,
+      "investment_type": "bank",
+      "liquidity_date": "2025-05-23",
+      "updates": [
+        {
+          "date": "2025-05-23",
+          "amount": 37043
+        }
+      ],
+      "profit_rate": null
     }
   ],
   "metadata": {
