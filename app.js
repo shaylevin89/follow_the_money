@@ -160,7 +160,8 @@ async function saveData(token) {
         }
 
         // Update file
-        const content = btoa(JSON.stringify(investmentData, null, 2));
+        const jsonString = JSON.stringify(investmentData, null, 2);
+        const content = btoa(unescape(encodeURIComponent(jsonString)));
         const response = await fetch(
             `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DATA_FILE}`,
             {
