@@ -356,8 +356,8 @@ function renderInvestments() {
                         ${!investment.is_liquid ? '<span class="badge bg-warning ms-2">Illiquid</span>' : ''}
                     </div>
                     <div class="text-muted small">
-                        ${investment.investment_type} • Started ${new Date(investment.start_date).toLocaleDateString()}
-                        ${investment.liquidity_date ? `• Liquid on ${new Date(investment.liquidity_date).toLocaleDateString()}` : ''}
+                        ${investment.investment_type} • Started ${new Date(investment.start_date).toLocaleDateString('en-GB', {day: '2-digit', month: '2-digit', year: '2-digit'})}
+                        ${investment.liquidity_date ? `• Liquid on ${new Date(investment.liquidity_date).toLocaleDateString('en-GB', {day: '2-digit', month: '2-digit', year: '2-digit'})}` : ''}
                     </div>
                     ${investment.notes ? `<div class="text-muted small mt-1"><i class='bi bi-sticky'></i> ${investment.notes}</div>` : ''}
                     <div class="mt-2">
@@ -365,6 +365,16 @@ function renderInvestments() {
                         <span class="text-muted small ms-2">Rate: ${profitRate === 'N/A' ? 'N/A' : profitRate.toFixed(2) + '%'}</span>
                         <span class="text-muted small ms-2">Yearly: ${profitRateYearly === 'N/A' ? 'N/A' : profitRateYearly + '%'}</span>
                         <span class="text-muted small ms-2">Monthly: ${profitRateMonthly === 'N/A' ? 'N/A' : (typeof profitRateMonthly === 'number' ? profitRateMonthly.toFixed(2) : profitRateMonthly) + '%'}</span>
+                    </div>
+                    <div class="text-muted small mt-1">
+                        <i class="bi bi-clock-history"></i> Last Update: ${(() => {
+                            let lastUpdateDate = investment.start_date;
+                            if (Array.isArray(investment.updates) && investment.updates.length > 0) {
+                                lastUpdateDate = investment.updates[investment.updates.length - 1].date || investment.start_date;
+                            }
+                            const d = new Date(lastUpdateDate);
+                            return isNaN(d) ? '-' : d.toLocaleDateString('en-GB', {day: '2-digit', month: '2-digit', year: '2-digit'});
+                        })()}
                     </div>
                 </div>
                 <div class="text-end">
