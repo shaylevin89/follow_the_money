@@ -317,7 +317,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const id = document.getElementById('editInvestmentId').value;
             const investment = investmentData.investments.find(inv => inv.id === id);
             if (!investment) return;
-            investment.current_amount = parseFloat(document.getElementById('editCurrentAmount').value);
+            const newAmount = parseFloat(document.getElementById('editCurrentAmount').value);
+            if (investment.current_amount !== newAmount) {
+                // Add update record
+                if (!Array.isArray(investment.updates)) investment.updates = [];
+                investment.updates.push({
+                    date: new Date().toISOString().slice(0, 10),
+                    amount: newAmount
+                });
+            }
+            investment.current_amount = newAmount;
             investment.is_active = document.getElementById('editIsActive').checked;
             investment.is_liquid = document.getElementById('editIsLiquid').checked;
             investment.liquidity_date = document.getElementById('editLiquidityDate').value || (investment.is_liquid ? investment.start_date : null);
