@@ -243,18 +243,18 @@
     },
     {
       "id": "1747953000000",
-      "name": "Hishtalmut Altshuler",
+      "name": "Altshuler Hishtalmut independent",
       "is_active": true,
       "start_date": "2017-07-01",
       "end_date": null,
       "initial_amount": 37823,
       "currency": "ILS",
-      "current_amount": 57153,
+      "current_amount": 55878,
       "profit_type": "price",
       "notes": "",
       "is_liquid": true,
       "investment_type": "gov_funds",
-      "liquidity_date": null,
+      "liquidity_date": "2017-07-01",
       "updates": [
         {
           "date": "2017-07-01",
@@ -299,6 +299,10 @@
         {
           "date": "2025-03-10",
           "amount": 57153
+        },
+        {
+          "date": "2025-05-22",
+          "amount": 55878
         }
       ]
     },
