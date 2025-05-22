@@ -475,12 +475,12 @@
       "end_date": null,
       "initial_amount": 20000,
       "currency": "ILS",
-      "current_amount": 24504,
+      "current_amount": 23946,
       "profit_type": "price",
       "notes": "",
       "is_liquid": true,
       "investment_type": "gov_funds",
-      "liquidity_date": null,
+      "liquidity_date": "2023-09-04",
       "updates": [
         {
           "date": "2023-09-04",
@@ -501,6 +501,10 @@
         {
           "date": "2025-03-10",
           "amount": 24504
+        },
+        {
+          "date": "2025-05-22",
+          "amount": 23946
         }
       ]
     },
