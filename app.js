@@ -468,31 +468,42 @@ async function updateTotalValue(usdToIlsRate) {
         // --- Monthly Profit Calculation ---
         let monthlyProfit = 0;
         activeInvestments.forEach(inv => {
-            if (!Array.isArray(inv.updates) || inv.updates.length < 2) return;
-            // Sort updates by date
-            const updatesSorted = inv.updates.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
-            const last = updatesSorted[updatesSorted.length - 1];
-            const prev = updatesSorted[updatesSorted.length - 2];
-            const lastDate = new Date(last.date);
-            const prevDate = new Date(prev.date);
-            const days = (lastDate - prevDate) / (1000 * 60 * 60 * 24);
             let profit = 0;
-            if (days > 30) {
-                profit = (last.amount - prev.amount) / (days / 30);
-            } else {
-                // Try to get the update before prev
-                const beforePrev = updatesSorted.length >= 3 ? updatesSorted[updatesSorted.length - 3] : null;
-                if (!beforePrev) {
-                    profit = last.amount - prev.amount;
+            if (isLoanType(inv.investment_type) && typeof inv.profit_rate === 'number' && !isNaN(inv.profit_rate)) {
+                const startDate = new Date(inv.start_date);
+                const now = new Date();
+                const daysSinceStart = (now - startDate) / (1000 * 60 * 60 * 24);
+                if (daysSinceStart < 30) {
+                    profit = ((inv.current_amount || inv.initial_amount) * (inv.profit_rate / 100) / 12) * (daysSinceStart / 30);
                 } else {
-                    const beforePrevDate = new Date(beforePrev.date);
-                    const days2 = (lastDate - beforePrevDate) / (1000 * 60 * 60 * 24);
-                    if (days2 > 30) {
-                        profit = (last.amount - beforePrev.amount) / (days2 / 30);
+                    profit = (inv.current_amount || inv.initial_amount) * (inv.profit_rate / 100) / 12;
+                }
+            } else if (Array.isArray(inv.updates) && inv.updates.length >= 2) {
+                // Sort updates by date
+                const updatesSorted = inv.updates.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+                const last = updatesSorted[updatesSorted.length - 1];
+                const prev = updatesSorted[updatesSorted.length - 2];
+                const lastDate = new Date(last.date);
+                const prevDate = new Date(prev.date);
+                const days = (lastDate - prevDate) / (1000 * 60 * 60 * 24);
+                if (days > 30) {
+                    profit = (last.amount - prev.amount) / (days / 30);
+                } else {
+                    const beforePrev = updatesSorted.length >= 3 ? updatesSorted[updatesSorted.length - 3] : null;
+                    if (!beforePrev) {
+                        profit = last.amount - prev.amount;
                     } else {
-                        profit = last.amount - beforePrev.amount;
+                        const beforePrevDate = new Date(beforePrev.date);
+                        const days2 = (lastDate - beforePrevDate) / (1000 * 60 * 60 * 24);
+                        if (days2 > 30) {
+                            profit = (last.amount - beforePrev.amount) / (days2 / 30);
+                        } else {
+                            profit = last.amount - beforePrev.amount;
+                        }
                     }
                 }
+            } else {
+                return;
             }
             // Convert to ILS if needed
             if (inv.currency === 'USD') {
@@ -506,29 +517,41 @@ async function updateTotalValue(usdToIlsRate) {
         // --- Yearly Profit Calculation ---
         let yearlyProfit = 0;
         activeInvestments.forEach(inv => {
-            if (!Array.isArray(inv.updates) || inv.updates.length < 2) return;
-            const updatesSorted = inv.updates.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
-            const last = updatesSorted[updatesSorted.length - 1];
-            const prev = updatesSorted[updatesSorted.length - 2];
-            const lastDate = new Date(last.date);
-            const prevDate = new Date(prev.date);
-            const days = (lastDate - prevDate) / (1000 * 60 * 60 * 24);
             let profit = 0;
-            if (days > 365) {
-                profit = (last.amount - prev.amount) / (days / 365);
-            } else {
-                const beforePrev = updatesSorted.length >= 3 ? updatesSorted[updatesSorted.length - 3] : null;
-                if (!beforePrev) {
-                    profit = last.amount - prev.amount;
+            if (isLoanType(inv.investment_type) && typeof inv.profit_rate === 'number' && !isNaN(inv.profit_rate)) {
+                const startDate = new Date(inv.start_date);
+                const now = new Date();
+                const daysSinceStart = (now - startDate) / (1000 * 60 * 60 * 24);
+                if (daysSinceStart < 365) {
+                    profit = ((inv.current_amount || inv.initial_amount) * (inv.profit_rate / 100)) * (daysSinceStart / 365);
                 } else {
-                    const beforePrevDate = new Date(beforePrev.date);
-                    const days2 = (lastDate - beforePrevDate) / (1000 * 60 * 60 * 24);
-                    if (days2 > 365) {
-                        profit = (last.amount - beforePrev.amount) / (days2 / 365);
+                    profit = (inv.current_amount || inv.initial_amount) * (inv.profit_rate / 100);
+                }
+            } else if (Array.isArray(inv.updates) && inv.updates.length >= 2) {
+                const updatesSorted = inv.updates.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+                const last = updatesSorted[updatesSorted.length - 1];
+                const prev = updatesSorted[updatesSorted.length - 2];
+                const lastDate = new Date(last.date);
+                const prevDate = new Date(prev.date);
+                const days = (lastDate - prevDate) / (1000 * 60 * 60 * 24);
+                if (days > 365) {
+                    profit = (last.amount - prev.amount) / (days / 365);
+                } else {
+                    const beforePrev = updatesSorted.length >= 3 ? updatesSorted[updatesSorted.length - 3] : null;
+                    if (!beforePrev) {
+                        profit = last.amount - prev.amount;
                     } else {
-                        profit = last.amount - beforePrev.amount;
+                        const beforePrevDate = new Date(beforePrev.date);
+                        const days2 = (lastDate - beforePrevDate) / (1000 * 60 * 60 * 24);
+                        if (days2 > 365) {
+                            profit = (last.amount - beforePrev.amount) / (days2 / 365);
+                        } else {
+                            profit = last.amount - beforePrev.amount;
+                        }
                     }
                 }
+            } else {
+                return;
             }
             if (inv.currency === 'USD') {
                 profit = profit * usdToIlsRate;
