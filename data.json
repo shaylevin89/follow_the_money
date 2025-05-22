@@ -13,9 +13,9 @@
       "current_amount": 235000,
       "profit_type": "price",
       "notes": "sdgfs sfgs",
-      "is_liquid": true,
+      "is_liquid": false,
       "investment_type": "stocks",
-      "liquidity_date": "2025-05-22",
+      "liquidity_date": "2025-05-30",
       "updates": [
         {
           "date": "2025-05-22",
