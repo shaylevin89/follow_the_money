@@ -72,6 +72,28 @@
           "amount": 30100
         }
       ]
+    },
+    {
+      "id": "1747946713653",
+      "name": "usa",
+      "is_active": true,
+      "start_date": "2025-03-22",
+      "end_date": null,
+      "initial_amount": 10000,
+      "currency": "USD",
+      "current_amount": 10000,
+      "profit_type": "commission",
+      "notes": "",
+      "is_liquid": false,
+      "investment_type": "real_estate_loan",
+      "liquidity_date": null,
+      "updates": [
+        {
+          "date": "2025-03-22",
+          "amount": 10000
+        }
+      ],
+      "profit_rate": 10
     }
   ],
   "portfolio_snapshots": [
