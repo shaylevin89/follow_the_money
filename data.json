@@ -13,9 +13,9 @@
       "current_amount": 235000,
       "profit_type": "price",
       "notes": "sdgfs sfgs",
-      "is_liquid": false,
+      "is_liquid": true,
       "investment_type": "stocks",
-      "liquidity_date": "2025-05-30",
+      "liquidity_date": "2025-05-22",
       "updates": [
         {
           "date": "2025-05-22",
@@ -51,6 +51,28 @@
           "amount": 100
         }
       ]
+    },
+    {
+      "id": "1747943406877",
+      "name": "bank",
+      "is_active": true,
+      "start_date": "2025-03-06",
+      "end_date": null,
+      "initial_amount": 30000,
+      "currency": "ILS",
+      "current_amount": 30000,
+      "profit_type": "price",
+      "notes": "ghugg",
+      "is_liquid": false,
+      "investment_type": "whiskey",
+      "liquidity_date": null,
+      "updates": [
+        {
+          "date": "2025-03-06",
+          "amount": 30000
+        }
+      ],
+      "profit_rate": null
     }
   ],
   "portfolio_snapshots": [
