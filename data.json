@@ -445,7 +445,7 @@
     {
       "id": "1747958000000",
       "name": "Pension Harel",
-      "is_active": true,
+      "is_active": false,
       "start_date": "2023-04-15",
       "end_date": null,
       "initial_amount": 135836,
