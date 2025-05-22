@@ -284,6 +284,18 @@
         <!-- Investment List -->
         <div class="row">
             <div class="col">
+                <div class="d-flex justify-content-end align-items-center gap-2 mb-3" style="min-height: 48px;">
+                    <span class="me-1" style="font-size:1.2em;color:#6c757d;"><i class="bi bi-funnel"></i></span>
+                    <label for="sortInvestmentsBy" class="form-label fw-semibold mb-0" style="font-size:1.1em;">Sort by:</label>
+                    <select id="sortInvestmentsBy" class="form-select w-auto shadow-sm" style="min-width:180px;">
+                        <option value="default">Default</option>
+                        <option value="name">Name</option>
+                        <option value="type">Type</option>
+                        <option value="amount">Current Amount</option>
+                        <option value="init_date">Initial Date</option>
+                        <option value="last_update">Last Update Date</option>
+                    </select>
+                </div>
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Investments</h5>
@@ -311,6 +323,10 @@
           </div>
           <div class="modal-body">
             <form id="editInvestmentForm" class="needs-validation" novalidate>
+              <div class="mb-3">
+                <label for="editInvestmentName" class="form-label">Investment Name</label>
+                <input type="text" class="form-control" id="editInvestmentName" required>
+              </div>
               <input type="hidden" id="editInvestmentId">
               <div class="mb-3">
                 <label for="editCurrentAmount" class="form-label">Current Amount</label>

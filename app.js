@@ -37,6 +37,20 @@ function isLoanType(type) {
     return typeof type === 'string' && type.toLowerCase().includes('loan');
 }
 
+// Global sort field
+let sortInvestmentsBy = 'default';
+
+// Listen for sort changes
+window.addEventListener('DOMContentLoaded', () => {
+    const sortSelect = document.getElementById('sortInvestmentsBy');
+    if (sortSelect) {
+        sortSelect.addEventListener('change', (e) => {
+            sortInvestmentsBy = e.target.value;
+            renderInvestments();
+        });
+    }
+});
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     const token = getTokenFromUrl();
@@ -252,7 +266,33 @@ function renderInvestments() {
         return;
     }
 
-    container.innerHTML = investmentData.investments.map(investment => {
+    // Separate active and inactive investments
+    const activeInvestmentsList = investmentData.investments.filter(inv => inv.is_active);
+    const inactiveInvestmentsList = investmentData.investments.filter(inv => !inv.is_active);
+
+    // Sort only active investments
+    let sortedActive = activeInvestmentsList.slice().sort((a, b) => {
+        if (sortInvestmentsBy === 'name') {
+            return a.name.localeCompare(b.name);
+        } else if (sortInvestmentsBy === 'type') {
+            return a.investment_type.localeCompare(b.investment_type);
+        } else if (sortInvestmentsBy === 'amount') {
+            return (b.current_amount || 0) - (a.current_amount || 0);
+        } else if (sortInvestmentsBy === 'init_date') {
+            return new Date(a.start_date) - new Date(b.start_date);
+        } else if (sortInvestmentsBy === 'last_update') {
+            const aLast = Array.isArray(a.updates) && a.updates.length > 0 ? a.updates[a.updates.length - 1].date : a.start_date;
+            const bLast = Array.isArray(b.updates) && b.updates.length > 0 ? b.updates[b.updates.length - 1].date : b.start_date;
+            return new Date(bLast) - new Date(aLast);
+        }
+        // Default: keep order
+        return 0;
+    });
+
+    // Concatenate active (sorted) and inactive (original order)
+    let sortedInvestments = [...sortedActive, ...inactiveInvestmentsList];
+
+    container.innerHTML = sortedInvestments.map(investment => {
         // --- PROFIT CALCULATIONS ---
         const initial = investment.initial_amount || 0;
         const current = investment.current_amount || 0;
@@ -368,6 +408,7 @@ function showNotesModal(id) {
 function openEditInvestmentModal(id) {
     const investment = investmentData.investments.find(inv => inv.id === id);
     if (!investment) return;
+    document.getElementById('editInvestmentName').value = investment.name;
     document.getElementById('editInvestmentId').value = investment.id;
     document.getElementById('editCurrentAmount').value = investment.current_amount;
     document.getElementById('editIsActive').checked = investment.is_active;
@@ -400,6 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const id = document.getElementById('editInvestmentId').value;
             const investment = investmentData.investments.find(inv => inv.id === id);
             if (!investment) return;
+            investment.name = document.getElementById('editInvestmentName').value;
             const newAmount = parseFloat(document.getElementById('editCurrentAmount').value);
             if (investment.current_amount !== newAmount) {
                 // Add update record
@@ -467,7 +509,7 @@ async function updateTotalValue(usdToIlsRate) {
         totalValueElement.textContent = `₪${formatNumber(totalValue)}`;
         // --- Monthly Profit Calculation ---
         let monthlyProfit = 0;
-        activeInvestments.forEach(inv => {
+        activeInvestments.filter(inv => !['pension', 'company_shares', 'whiskey', 'crypto_miners', 'bank'].includes(inv.investment_type)).forEach(inv => {
             let profit = 0;
             if (isLoanType(inv.investment_type) && typeof inv.profit_rate === 'number' && !isNaN(inv.profit_rate)) {
                 const startDate = new Date(inv.start_date);
@@ -479,28 +521,19 @@ async function updateTotalValue(usdToIlsRate) {
                     profit = (inv.current_amount || inv.initial_amount) * (inv.profit_rate / 100) / 12;
                 }
             } else if (Array.isArray(inv.updates) && inv.updates.length >= 2) {
-                // Sort updates by date
+                // Use first and last update
                 const updatesSorted = inv.updates.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+                const first = updatesSorted[0];
                 const last = updatesSorted[updatesSorted.length - 1];
-                const prev = updatesSorted[updatesSorted.length - 2];
+                const firstDate = new Date(first.date);
                 const lastDate = new Date(last.date);
-                const prevDate = new Date(prev.date);
-                const days = (lastDate - prevDate) / (1000 * 60 * 60 * 24);
-                if (days > 30) {
-                    profit = (last.amount - prev.amount) / (days / 30);
+                const days = (lastDate - firstDate) / (1000 * 60 * 60 * 24);
+                if (days < 30) {
+                    profit = last.amount - first.amount;
+                } else if (days > 0) {
+                    profit = ((last.amount - first.amount) / days) * 30;
                 } else {
-                    const beforePrev = updatesSorted.length >= 3 ? updatesSorted[updatesSorted.length - 3] : null;
-                    if (!beforePrev) {
-                        profit = last.amount - prev.amount;
-                    } else {
-                        const beforePrevDate = new Date(beforePrev.date);
-                        const days2 = (lastDate - beforePrevDate) / (1000 * 60 * 60 * 24);
-                        if (days2 > 30) {
-                            profit = (last.amount - beforePrev.amount) / (days2 / 30);
-                        } else {
-                            profit = last.amount - beforePrev.amount;
-                        }
-                    }
+                    profit = 0;
                 }
             } else {
                 return;
@@ -516,7 +549,7 @@ async function updateTotalValue(usdToIlsRate) {
         // --- End Monthly Profit Calculation ---
         // --- Yearly Profit Calculation ---
         let yearlyProfit = 0;
-        activeInvestments.forEach(inv => {
+        activeInvestments.filter(inv => !['pension', 'company_shares', 'whiskey', 'crypto_miners', 'bank'].includes(inv.investment_type)).forEach(inv => {
             let profit = 0;
             if (isLoanType(inv.investment_type) && typeof inv.profit_rate === 'number' && !isNaN(inv.profit_rate)) {
                 const startDate = new Date(inv.start_date);
@@ -528,27 +561,19 @@ async function updateTotalValue(usdToIlsRate) {
                     profit = (inv.current_amount || inv.initial_amount) * (inv.profit_rate / 100);
                 }
             } else if (Array.isArray(inv.updates) && inv.updates.length >= 2) {
+                // Use first and last update
                 const updatesSorted = inv.updates.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+                const first = updatesSorted[0];
                 const last = updatesSorted[updatesSorted.length - 1];
-                const prev = updatesSorted[updatesSorted.length - 2];
+                const firstDate = new Date(first.date);
                 const lastDate = new Date(last.date);
-                const prevDate = new Date(prev.date);
-                const days = (lastDate - prevDate) / (1000 * 60 * 60 * 24);
-                if (days > 365) {
-                    profit = (last.amount - prev.amount) / (days / 365);
+                const days = (lastDate - firstDate) / (1000 * 60 * 60 * 24);
+                if (days < 365) {
+                    profit = last.amount - first.amount;
+                } else if (days > 0) {
+                    profit = ((last.amount - first.amount) / days) * 365;
                 } else {
-                    const beforePrev = updatesSorted.length >= 3 ? updatesSorted[updatesSorted.length - 3] : null;
-                    if (!beforePrev) {
-                        profit = last.amount - prev.amount;
-                    } else {
-                        const beforePrevDate = new Date(beforePrev.date);
-                        const days2 = (lastDate - beforePrevDate) / (1000 * 60 * 60 * 24);
-                        if (days2 > 365) {
-                            profit = (last.amount - beforePrev.amount) / (days2 / 365);
-                        } else {
-                            profit = last.amount - beforePrev.amount;
-                        }
-                    }
+                    profit = 0;
                 }
             } else {
                 return;
@@ -615,7 +640,7 @@ function updateLiquidityChart(usdToIlsRate) {
             ],
             datasets: [{
                 data: [liquidTotal, illiquidTotal],
-                backgroundColor: ['#198754', '#ffc107'],
+                backgroundColor: ['#A3C9A8', '#C7CEEA'], // soft green, lavender
                 borderColor: ['#fff', '#fff'],
                 borderWidth: 2
             }]
@@ -675,15 +700,16 @@ function updateTypeChart(usdToIlsRate) {
             datasets: [{
                 data: sortedTypes.map(([,total]) => total),
                 backgroundColor: [
-                    '#198754', // green
-                    '#0d6efd', // blue
-                    '#ffc107', // yellow
-                    '#dc3545', // red
-                    '#6f42c1', // purple
-                    '#fd7e14', // orange
-                    '#20c997', // teal
-                    '#0dcaf0', // cyan
-                    '#6610f2'  // indigo
+                    '#A3C9A8', // soft green
+                    '#7FB3D5', // soft blue
+                    '#F7CAC9', // soft pink
+                    '#B5EAD7', // mint
+                    '#FFDAC1', // peach
+                    '#C7CEEA', // lavender
+                    '#E2F0CB', // light green
+                    '#B5B9FF', // periwinkle
+                    '#B2DFDB', // teal
+                    '#F6EAC2'  // cream
                 ],
                 borderColor: '#fff',
                 borderWidth: 2
