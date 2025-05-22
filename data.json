@@ -83,13 +83,34 @@
       "investment_type": "b2b_loan",
       "liquidity_date": null,
       "updates": [
-        { "date": "2018-10-23", "amount": 30000 },
-        { "date": "2019-03-28", "amount": 30741 },
-        { "date": "2019-08-27", "amount": 31613 },
-        { "date": "2020-03-12", "amount": 28805 },
-        { "date": "2020-11-03", "amount": 1015 },
-        { "date": "2022-01-08", "amount": 0 },
-        { "date": "2023-04-15", "amount": 0 }
+        {
+          "date": "2018-10-23",
+          "amount": 30000
+        },
+        {
+          "date": "2019-03-28",
+          "amount": 30741
+        },
+        {
+          "date": "2019-08-27",
+          "amount": 31613
+        },
+        {
+          "date": "2020-03-12",
+          "amount": 28805
+        },
+        {
+          "date": "2020-11-03",
+          "amount": 1015
+        },
+        {
+          "date": "2022-01-08",
+          "amount": 0
+        },
+        {
+          "date": "2023-04-15",
+          "amount": 0
+        }
       ]
     },
     {
@@ -107,7 +128,10 @@
       "investment_type": "company_shares",
       "liquidity_date": null,
       "updates": [
-        { "date": "2019-01-01", "amount": 5157 }
+        {
+          "date": "2019-01-01",
+          "amount": 5157
+        }
       ]
     },
     {
@@ -125,7 +149,10 @@
       "investment_type": "company_shares",
       "liquidity_date": null,
       "updates": [
-        { "date": "2019-03-13", "amount": 5416 }
+        {
+          "date": "2019-03-13",
+          "amount": 5416
+        }
       ]
     },
     {
@@ -143,12 +170,15 @@
       "investment_type": "company_shares",
       "liquidity_date": null,
       "updates": [
-        { "date": "2019-03-15", "amount": 20625 }
+        {
+          "date": "2019-03-15",
+          "amount": 20625
+        }
       ]
     },
     {
       "id": "1747952000000",
-      "name": "Hishtalmut Menahal",
+      "name": "Hishtalmut Minhal",
       "is_active": true,
       "start_date": "2012-08-31",
       "end_date": null,
@@ -159,19 +189,52 @@
       "notes": "",
       "is_liquid": true,
       "investment_type": "gov_funds",
-      "liquidity_date": null,
+      "liquidity_date": "2012-08-31",
       "updates": [
-        { "date": "2012-08-31", "amount": 30133 },
-        { "date": "2019-05-16", "amount": 30859 },
-        { "date": "2019-08-27", "amount": 31118 },
-        { "date": "2020-03-12", "amount": 31953 },
-        { "date": "2020-11-03", "amount": 32979 },
-        { "date": "2022-01-08", "amount": 38085 },
-        { "date": "2023-04-15", "amount": 34880.95 },
-        { "date": "2024-04-28", "amount": 38900 },
-        { "date": "2024-07-13", "amount": 39694 },
-        { "date": "2024-12-22", "amount": 41558 },
-        { "date": "2025-03-10", "amount": 42248.63 }
+        {
+          "date": "2012-08-31",
+          "amount": 30133
+        },
+        {
+          "date": "2019-05-16",
+          "amount": 30859
+        },
+        {
+          "date": "2019-08-27",
+          "amount": 31118
+        },
+        {
+          "date": "2020-03-12",
+          "amount": 31953
+        },
+        {
+          "date": "2020-11-03",
+          "amount": 32979
+        },
+        {
+          "date": "2022-01-08",
+          "amount": 38085
+        },
+        {
+          "date": "2023-04-15",
+          "amount": 34880.95
+        },
+        {
+          "date": "2024-04-28",
+          "amount": 38900
+        },
+        {
+          "date": "2024-07-13",
+          "amount": 39694
+        },
+        {
+          "date": "2024-12-22",
+          "amount": 41558
+        },
+        {
+          "date": "2025-03-10",
+          "amount": 42248.63
+        }
       ]
     },
     {
@@ -189,17 +252,50 @@
       "investment_type": "gov_funds",
       "liquidity_date": null,
       "updates": [
-        { "date": "2017-07-01", "amount": 37823 },
-        { "date": "2019-05-16", "amount": 39400 },
-        { "date": "2019-08-27", "amount": 39940 },
-        { "date": "2020-03-12", "amount": 40234 },
-        { "date": "2020-11-03", "amount": 40909 },
-        { "date": "2022-01-08", "amount": 52719 },
-        { "date": "2023-04-15", "amount": 42398 },
-        { "date": "2024-04-28", "amount": 51914 },
-        { "date": "2024-07-13", "amount": 53611 },
-        { "date": "2024-12-22", "amount": 57634 },
-        { "date": "2025-03-10", "amount": 57153 }
+        {
+          "date": "2017-07-01",
+          "amount": 37823
+        },
+        {
+          "date": "2019-05-16",
+          "amount": 39400
+        },
+        {
+          "date": "2019-08-27",
+          "amount": 39940
+        },
+        {
+          "date": "2020-03-12",
+          "amount": 40234
+        },
+        {
+          "date": "2020-11-03",
+          "amount": 40909
+        },
+        {
+          "date": "2022-01-08",
+          "amount": 52719
+        },
+        {
+          "date": "2023-04-15",
+          "amount": 42398
+        },
+        {
+          "date": "2024-04-28",
+          "amount": 51914
+        },
+        {
+          "date": "2024-07-13",
+          "amount": 53611
+        },
+        {
+          "date": "2024-12-22",
+          "amount": 57634
+        },
+        {
+          "date": "2025-03-10",
+          "amount": 57153
+        }
       ]
     },
     {
@@ -217,11 +313,26 @@
       "investment_type": "gov_funds",
       "liquidity_date": null,
       "updates": [
-        { "date": "2019-05-01", "amount": 2928 },
-        { "date": "2020-03-12", "amount": 4384 },
-        { "date": "2020-11-03", "amount": 4279 },
-        { "date": "2022-01-08", "amount": 5096 },
-        { "date": "2023-04-15", "amount": 0 }
+        {
+          "date": "2019-05-01",
+          "amount": 2928
+        },
+        {
+          "date": "2020-03-12",
+          "amount": 4384
+        },
+        {
+          "date": "2020-11-03",
+          "amount": 4279
+        },
+        {
+          "date": "2022-01-08",
+          "amount": 5096
+        },
+        {
+          "date": "2023-04-15",
+          "amount": 0
+        }
       ]
     },
     {
@@ -239,12 +350,30 @@
       "investment_type": "pension",
       "liquidity_date": null,
       "updates": [
-        { "date": "2012-08-15", "amount": 53305 },
-        { "date": "2019-08-27", "amount": 61197 },
-        { "date": "2020-03-12", "amount": 70816 },
-        { "date": "2020-11-03", "amount": 67674 },
-        { "date": "2022-01-08", "amount": 91483 },
-        { "date": "2023-04-15", "amount": 0 }
+        {
+          "date": "2012-08-15",
+          "amount": 53305
+        },
+        {
+          "date": "2019-08-27",
+          "amount": 61197
+        },
+        {
+          "date": "2020-03-12",
+          "amount": 70816
+        },
+        {
+          "date": "2020-11-03",
+          "amount": 67674
+        },
+        {
+          "date": "2022-01-08",
+          "amount": 91483
+        },
+        {
+          "date": "2023-04-15",
+          "amount": 0
+        }
       ]
     },
     {
@@ -262,9 +391,18 @@
       "investment_type": "gov_funds",
       "liquidity_date": null,
       "updates": [
-        { "date": "2023-04-15", "amount": 5876.95 },
-        { "date": "2024-04-28", "amount": 6780 },
-        { "date": "2024-07-13", "amount": 7157 }
+        {
+          "date": "2023-04-15",
+          "amount": 5876.95
+        },
+        {
+          "date": "2024-04-28",
+          "amount": 6780
+        },
+        {
+          "date": "2024-07-13",
+          "amount": 7157
+        }
       ]
     },
     {
@@ -282,9 +420,18 @@
       "investment_type": "gov_funds",
       "liquidity_date": null,
       "updates": [
-        { "date": "2023-04-15", "amount": 21538.46 },
-        { "date": "2024-04-28", "amount": 46904 },
-        { "date": "2024-07-13", "amount": 52769 }
+        {
+          "date": "2023-04-15",
+          "amount": 21538.46
+        },
+        {
+          "date": "2024-04-28",
+          "amount": 46904
+        },
+        {
+          "date": "2024-07-13",
+          "amount": 52769
+        }
       ]
     },
     {
@@ -293,7 +440,7 @@
       "is_active": true,
       "start_date": "2023-04-15",
       "end_date": null,
-      "initial_amount": 135836.00,
+      "initial_amount": 135836,
       "currency": "ILS",
       "current_amount": 216538,
       "profit_type": "price",
@@ -302,9 +449,18 @@
       "investment_type": "pension",
       "liquidity_date": null,
       "updates": [
-        { "date": "2023-04-15", "amount": 135836.00 },
-        { "date": "2024-04-28", "amount": 202235 },
-        { "date": "2024-07-13", "amount": 216538 }
+        {
+          "date": "2023-04-15",
+          "amount": 135836
+        },
+        {
+          "date": "2024-04-28",
+          "amount": 202235
+        },
+        {
+          "date": "2024-07-13",
+          "amount": 216538
+        }
       ]
     },
     {
@@ -313,20 +469,35 @@
       "is_active": true,
       "start_date": "2023-09-04",
       "end_date": null,
-      "initial_amount": 20000.00,
+      "initial_amount": 20000,
       "currency": "ILS",
-      "current_amount": 24504.00,
+      "current_amount": 24504,
       "profit_type": "price",
       "notes": "",
       "is_liquid": true,
       "investment_type": "gov_funds",
       "liquidity_date": null,
       "updates": [
-        { "date": "2023-09-04", "amount": 20000.00 },
-        { "date": "2024-04-28", "amount": 22198 },
-        { "date": "2024-07-13", "amount": 22922 },
-        { "date": "2024-12-22", "amount": 24695 },
-        { "date": "2025-03-10", "amount": 24504.00 }
+        {
+          "date": "2023-09-04",
+          "amount": 20000
+        },
+        {
+          "date": "2024-04-28",
+          "amount": 22198
+        },
+        {
+          "date": "2024-07-13",
+          "amount": 22922
+        },
+        {
+          "date": "2024-12-22",
+          "amount": 24695
+        },
+        {
+          "date": "2025-03-10",
+          "amount": 24504
+        }
       ]
     },
     {
@@ -344,10 +515,22 @@
       "investment_type": "crypto",
       "liquidity_date": null,
       "updates": [
-        { "date": "2024-04-28", "amount": 1358.43 },
-        { "date": "2024-07-13", "amount": 1432.58 },
-        { "date": "2024-12-22", "amount": 9952.25 },
-        { "date": "2025-03-10", "amount": 13587.08 }
+        {
+          "date": "2024-04-28",
+          "amount": 1358.43
+        },
+        {
+          "date": "2024-07-13",
+          "amount": 1432.58
+        },
+        {
+          "date": "2024-12-22",
+          "amount": 9952.25
+        },
+        {
+          "date": "2025-03-10",
+          "amount": 13587.08
+        }
       ]
     },
     {
@@ -365,7 +548,10 @@
       "investment_type": "company_shares",
       "liquidity_date": null,
       "updates": [
-        { "date": "2024-04-28", "amount": 20061 }
+        {
+          "date": "2024-04-28",
+          "amount": 20061
+        }
       ]
     },
     {
@@ -383,8 +569,14 @@
       "investment_type": "crypto_miners",
       "liquidity_date": null,
       "updates": [
-        { "date": "2024-07-13", "amount": 12000 },
-        { "date": "2024-12-22", "amount": 28000 }
+        {
+          "date": "2024-07-13",
+          "amount": 12000
+        },
+        {
+          "date": "2024-12-22",
+          "amount": 28000
+        }
       ]
     },
     {
@@ -395,16 +587,25 @@
       "end_date": null,
       "initial_amount": 50544.37,
       "currency": "ILS",
-      "current_amount": 49775.00,
+      "current_amount": 49775,
       "profit_type": "price",
       "notes": "",
       "is_liquid": true,
       "investment_type": "stocks",
       "liquidity_date": null,
       "updates": [
-        { "date": "2024-07-13", "amount": 50544.37 },
-        { "date": "2024-12-22", "amount": 51085.69 },
-        { "date": "2025-03-10", "amount": 49775.00 }
+        {
+          "date": "2024-07-13",
+          "amount": 50544.37
+        },
+        {
+          "date": "2024-12-22",
+          "amount": 51085.69
+        },
+        {
+          "date": "2025-03-10",
+          "amount": 49775
+        }
       ]
     },
     {
@@ -415,16 +616,25 @@
       "end_date": null,
       "initial_amount": 163353.92,
       "currency": "ILS",
-      "current_amount": 153303.00,
+      "current_amount": 153303,
       "profit_type": "price",
       "notes": "",
       "is_liquid": true,
       "investment_type": "stocks",
       "liquidity_date": null,
       "updates": [
-        { "date": "2024-07-13", "amount": 163353.92 },
-        { "date": "2024-12-22", "amount": 135000.00 },
-        { "date": "2025-03-10", "amount": 153303.00 }
+        {
+          "date": "2024-07-13",
+          "amount": 163353.92
+        },
+        {
+          "date": "2024-12-22",
+          "amount": 135000
+        },
+        {
+          "date": "2025-03-10",
+          "amount": 153303
+        }
       ]
     },
     {
@@ -442,8 +652,14 @@
       "investment_type": "gov_funds",
       "liquidity_date": null,
       "updates": [
-        { "date": "2024-12-22", "amount": 57702.91 },
-        { "date": "2025-03-10", "amount": 57249.87 }
+        {
+          "date": "2024-12-22",
+          "amount": 57702.91
+        },
+        {
+          "date": "2025-03-10",
+          "amount": 57249.87
+        }
       ]
     },
     {
@@ -461,8 +677,14 @@
       "investment_type": "gov_funds",
       "liquidity_date": null,
       "updates": [
-        { "date": "2024-12-22", "amount": 14119.09 },
-        { "date": "2025-03-10", "amount": 18593.04 }
+        {
+          "date": "2024-12-22",
+          "amount": 14119.09
+        },
+        {
+          "date": "2025-03-10",
+          "amount": 18593.04
+        }
       ]
     },
     {
@@ -473,15 +695,21 @@
       "end_date": null,
       "initial_amount": 258889.53,
       "currency": "ILS",
-      "current_amount": 265461.40,
+      "current_amount": 265461.4,
       "profit_type": "price",
       "notes": "",
       "is_liquid": false,
       "investment_type": "pension",
       "liquidity_date": null,
       "updates": [
-        { "date": "2024-12-22", "amount": 258889.53 },
-        { "date": "2025-03-10", "amount": 265461.40 }
+        {
+          "date": "2024-12-22",
+          "amount": 258889.53
+        },
+        {
+          "date": "2025-03-10",
+          "amount": 265461.4
+        }
       ]
     },
     {
@@ -499,7 +727,10 @@
       "investment_type": "whiskey",
       "liquidity_date": null,
       "updates": [
-        { "date": "2025-03-10", "amount": 31467.71 }
+        {
+          "date": "2025-03-10",
+          "amount": 31467.71
+        }
       ]
     }
   ],
