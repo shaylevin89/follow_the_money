@@ -96,20 +96,6 @@
       "profit_rate": 10
     }
   ],
-  "portfolio_snapshots": [
-    {
-      "date": "2025-03-10",
-      "exchange_rate": 3.64,
-      "totals": {
-        "liquid": 383809.45,
-        "illiquid": 663972.02,
-        "stocks": 77310.71,
-        "total": 1125092.18,
-        "total_without_pension": 782320
-      },
-      "currency": "ILS"
-    }
-  ],
   "metadata": {
     "currencies": [
       "ILS",
