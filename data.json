@@ -26,6 +26,28 @@
           "amount": 235134
         }
       ]
+    },
+    {
+      "id": "1747940697833",
+      "name": "bank",
+      "is_active": true,
+      "start_date": "2025-03-05",
+      "end_date": null,
+      "initial_amount": 800900,
+      "currency": "ILS",
+      "current_amount": 800900,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": false,
+      "investment_type": "stocks",
+      "liquidity_date": "2025-12-17",
+      "updates": [
+        {
+          "date": "2025-03-05",
+          "amount": 800900
+        }
+      ],
+      "profit_rate": null
     }
   ],
   "portfolio_snapshots": [
