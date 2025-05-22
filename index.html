@@ -3,44 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Money Tracker</title>
+    <title>Investment Portfolio Tracker</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        .income-item { padding: 10px; border-bottom: 1px solid #eee; }
-        .income-amount { color: #28a745; font-weight: bold; }
+        .investment-item { 
+            padding: 15px; 
+            border-bottom: 1px solid #eee; 
+            transition: background-color 0.2s;
+        }
+        .investment-item:hover {
+            background-color: #f8f9fa;
+        }
+        .amount { 
+            color: #28a745; 
+            font-weight: bold; 
+        }
+        .form-section {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .form-label {
+            font-weight: 500;
+            color: #495057;
+        }
+        .required-field::after {
+            content: " *";
+            color: #dc3545;
+        }
+        .currency-select {
+            max-width: 120px;
+        }
+        .date-input {
+            max-width: 200px;
+        }
+        .form-check-input:checked {
+            background-color: #198754;
+            border-color: #198754;
+        }
+        .help-text {
+            font-size: 0.875rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
     </style>
 </head>
 <body>
     <div class="container mt-4">
-        <h1 class="text-center mb-4">Simple Money Tracker</h1>
+        <h1 class="text-center mb-4">Investment Portfolio Tracker</h1>
         
-        <!-- Add Income Form -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title">Add Income</h5>
-                <form id="incomeForm" class="row g-3">
+        <!-- Add Investment Form -->
+        <div class="form-section">
+            <h5 class="mb-4">Add New Investment</h5>
+            <form id="investmentForm" class="needs-validation" novalidate>
+                <div class="row g-3">
+                    <!-- Basic Information -->
                     <div class="col-md-6">
-                        <input type="text" class="form-control" id="incomeName" placeholder="Income Name" required>
+                        <label for="investmentName" class="form-label required-field">Investment Name</label>
+                        <input type="text" class="form-control" id="investmentName" required>
+                        <div class="help-text">Enter a descriptive name for your investment</div>
                     </div>
-                    <div class="col-md-4">
-                        <input type="number" class="form-control" id="incomeAmount" placeholder="Amount" required>
+
+                    <div class="col-md-6">
+                        <label for="investmentType" class="form-label required-field">Investment Type</label>
+                        <select class="form-select" id="investmentType" required>
+                            <option value="">Select type...</option>
+                            <option value="stocks">Stocks</option>
+                            <option value="real_estate_loan">Real Estate Loan</option>
+                            <option value="crypto_miners">Crypto Miners</option>
+                            <option value="whiskey">Whiskey</option>
+                            <option value="pension">Pension</option>
+                            <option value="company_shares">Company Shares</option>
+                            <option value="gov_funds">Government Funds</option>
+                            <option value="crypto">Crypto</option>
+                            <option value="bank">Bank</option>
+                        </select>
                     </div>
-                    <div class="col-md-2">
-                        <button type="submit" class="btn btn-primary w-100">Add</button>
+
+                    <!-- Amount and Currency -->
+                    <div class="col-md-6">
+                        <label for="initialAmount" class="form-label required-field">Initial Amount</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="initialAmount" step="0.01" required>
+                            <select class="form-select currency-select" id="currency" required>
+                                <option value="ILS">₪</option>
+                                <option value="USD">$</option>
+                            </select>
+                        </div>
                     </div>
-                </form>
-            </div>
+
+                    <div class="col-md-6">
+                        <label for="profitType" class="form-label required-field">Profit Type</label>
+                        <select class="form-select" id="profitType" required>
+                            <option value="">Select type...</option>
+                            <option value="price">Price</option>
+                            <option value="commission">Commission</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <!-- Dates -->
+                    <div class="col-md-6">
+                        <label for="startDate" class="form-label required-field">Start Date</label>
+                        <input type="date" class="form-control date-input" id="startDate" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="liquidityDate" class="form-label">Liquidity Date</label>
+                        <input type="date" class="form-control date-input" id="liquidityDate">
+                        <div class="help-text">Optional: When the investment becomes liquid</div>
+                    </div>
+
+                    <!-- Additional Information -->
+                    <div class="col-12">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="notes" rows="2"></textarea>
+                    </div>
+
+                    <!-- Toggle Switches -->
+                    <div class="col-md-6">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="isActive" checked>
+                            <label class="form-check-label" for="isActive">Active Investment</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="isLiquid">
+                            <label class="form-check-label" for="isLiquid">Liquid Investment</label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="col-12 text-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                            <i class="bi bi-plus-circle me-2"></i>Add Investment
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
 
-        <!-- Income List -->
+        <!-- Investment List -->
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Income List</h5>
-                <div id="incomeList"></div>
+                <h5 class="card-title">Investment Portfolio</h5>
+                <div id="investmentList"></div>
             </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html> 

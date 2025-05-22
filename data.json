@@ -1,4 +1,56 @@
 {
-    "incomes": [],
-    "lastUpdated": "2024-03-20T12:00:00Z"
+    "version": "1.0",
+    "lastUpdated": "2024-03-20T12:00:00Z",
+    "investments": [
+        {
+            "id": "unique_id",
+            "name": "ארהב",
+            "is_active": true,
+            "start_date": "2017-12-04",
+            "end_date": null,
+            "initial_amount": 35000,
+            "currency": "USD",
+            "current_amount": 35000,
+            "profit_type": "price",
+            "notes": "",
+            "is_liquid": true,
+            "investment_type": "stocks",
+            "liquidity_date": null,
+            "updates": [
+                {
+                    "date": "2017-12-04",
+                    "amount": 35000
+                }
+            ]
+        }
+    ],
+    "portfolio_snapshots": [
+        {
+            "date": "2025-03-10",
+            "exchange_rate": 3.64,
+            "totals": {
+                "liquid": 383809.45,
+                "illiquid": 663972.02,
+                "stocks": 77310.71,
+                "total": 1125092.18,
+                "total_without_pension": 782320
+            },
+            "currency": "ILS"
+        }
+    ],
+    "metadata": {
+        "currencies": ["ILS", "USD"],
+        "profit_types": ["price", "commission", "other"],
+        "investment_types": [
+            "stocks",
+            "real_estate_loan",
+            "crypto_miners",
+            "whiskey",
+            "pension",
+            "company_shares",
+            "gov_funds",
+            "crypto",
+            "bank"
+        ]
+    }
 } 

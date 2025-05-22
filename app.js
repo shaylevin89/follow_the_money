@@ -10,9 +10,26 @@ function getTokenFromUrl() {
 }
 
 // State
-let incomeData = {
-    incomes: [],
-    lastUpdated: new Date().toISOString()
+let investmentData = {
+    version: "1.0",
+    lastUpdated: new Date().toISOString(),
+    investments: [],
+    portfolio_snapshots: [],
+    metadata: {
+        currencies: ["ILS", "USD"],
+        profit_types: ["price", "commission", "other"],
+        investment_types: [
+            "stocks",
+            "real_estate_loan",
+            "crypto_miners",
+            "whiskey",
+            "pension",
+            "company_shares",
+            "gov_funds",
+            "crypto",
+            "bank"
+        ]
+    }
 };
 
 // Initialize
@@ -53,33 +70,53 @@ function showTokenInput() {
     document.getElementById('tokenForm').addEventListener('submit', (e) => {
         e.preventDefault();
         const token = document.getElementById('tokenInput').value;
-        // Add token to URL and reload
         window.location.href = `${window.location.pathname}?token=${token}`;
     });
 }
 
 // Setup form submission
 function setupForm() {
-    document.getElementById('incomeForm').addEventListener('submit', async (e) => {
+    const form = document.getElementById('investmentForm');
+    
+    // Form validation
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const name = document.getElementById('incomeName').value;
-        const amount = parseFloat(document.getElementById('incomeAmount').value);
         
-        if (!name || isNaN(amount)) {
-            alert('Please fill in all fields correctly');
+        if (!form.checkValidity()) {
+            e.stopPropagation();
+            form.classList.add('was-validated');
             return;
         }
 
-        incomeData.incomes.push({
-            id: Date.now(),
-            name,
-            amount,
-            date: new Date().toISOString()
-        });
+        const newInvestment = {
+            id: Date.now().toString(),
+            name: document.getElementById('investmentName').value,
+            is_active: document.getElementById('isActive').checked,
+            start_date: document.getElementById('startDate').value,
+            end_date: null,
+            initial_amount: parseFloat(document.getElementById('initialAmount').value),
+            currency: document.getElementById('currency').value,
+            current_amount: parseFloat(document.getElementById('initialAmount').value),
+            profit_type: document.getElementById('profitType').value,
+            notes: document.getElementById('notes').value,
+            is_liquid: document.getElementById('isLiquid').checked,
+            investment_type: document.getElementById('investmentType').value,
+            liquidity_date: document.getElementById('liquidityDate').value || null,
+            updates: [
+                {
+                    date: document.getElementById('startDate').value,
+                    amount: parseFloat(document.getElementById('initialAmount').value)
+                }
+            ]
+        };
 
+        investmentData.investments.push(newInvestment);
         await saveData(getTokenFromUrl());
-        renderIncomes();
-        e.target.reset();
+        renderInvestments();
+        
+        // Reset form
+        form.reset();
+        form.classList.remove('was-validated');
     });
 }
 
@@ -88,12 +125,12 @@ async function loadData(token) {
     try {
         const response = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${DATA_FILE}`);
         if (response.ok) {
-            incomeData = await response.json();
+            investmentData = await response.json();
         }
-        renderIncomes();
+        renderInvestments();
     } catch (error) {
         console.error('Error loading data:', error);
-        renderIncomes();
+        renderInvestments();
     }
 }
 
@@ -123,7 +160,7 @@ async function saveData(token) {
         }
 
         // Update file
-        const content = btoa(JSON.stringify(incomeData, null, 2));
+        const content = btoa(JSON.stringify(investmentData, null, 2));
         const response = await fetch(
             `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DATA_FILE}`,
             {
@@ -134,7 +171,7 @@ async function saveData(token) {
                     'Accept': 'application/vnd.github.v3+json'
                 },
                 body: JSON.stringify({
-                    message: 'Update income data',
+                    message: 'Update investment data',
                     content: content,
                     sha: sha
                 })
@@ -148,22 +185,35 @@ async function saveData(token) {
     }
 }
 
-// Render income list
-function renderIncomes() {
-    const container = document.getElementById('incomeList');
-    if (!incomeData.incomes || incomeData.incomes.length === 0) {
-        container.innerHTML = '<div class="text-center text-muted">No incomes added yet</div>';
+// Render investment list
+function renderInvestments() {
+    const container = document.getElementById('investmentList');
+    if (!investmentData.investments || investmentData.investments.length === 0) {
+        container.innerHTML = '<div class="text-center text-muted">No investments added yet</div>';
         return;
     }
 
-    container.innerHTML = incomeData.incomes.map(income => `
-        <div class="income-item">
+    container.innerHTML = investmentData.investments.map(investment => `
+        <div class="investment-item">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <strong>${income.name}</strong>
-                    <div class="text-muted small">${new Date(income.date).toLocaleDateString()}</div>
+                    <div class="d-flex align-items-center">
+                        <strong>${investment.name}</strong>
+                        <span class="badge bg-${investment.is_active ? 'success' : 'secondary'} ms-2">
+                            ${investment.is_active ? 'Active' : 'Inactive'}
+                        </span>
+                        ${!investment.is_liquid ? '<span class="badge bg-warning ms-2">Illiquid</span>' : ''}
+                    </div>
+                    <div class="text-muted small">
+                        ${investment.investment_type} • Started ${new Date(investment.start_date).toLocaleDateString()}
+                        ${investment.liquidity_date ? `• Liquid on ${new Date(investment.liquidity_date).toLocaleDateString()}` : ''}
+                    </div>
+                    ${investment.notes ? `<div class="text-muted small mt-1">${investment.notes}</div>` : ''}
                 </div>
-                <div class="income-amount">$${income.amount.toFixed(2)}</div>
+                <div class="text-end">
+                    <div class="amount">${investment.currency === 'USD' ? '$' : '₪'}${investment.current_amount.toLocaleString()}</div>
+                    <div class="text-muted small">Initial: ${investment.currency === 'USD' ? '$' : '₪'}${investment.initial_amount.toLocaleString()}</div>
+                </div>
             </div>
         </div>
     `).join('');
