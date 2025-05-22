@@ -1,0 +1,69 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.card {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.income-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.income-item:last-child {
+    border-bottom: none;
+}
+
+.income-amount {
+    font-weight: bold;
+    color: #28a745;
+}
+
+.income-type {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.summary-item {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.summary-item h4 {
+    margin: 0;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.summary-item p {
+    margin: 5px 0 0;
+    color: #6c757d;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+} 
