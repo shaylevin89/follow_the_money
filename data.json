@@ -43,6 +43,27 @@
           "amount": 37000
         }
       ]
+    },
+    {
+      "id": "1747934019487",
+      "name": "mmds",
+      "is_active": true,
+      "start_date": "2025-05-22",
+      "end_date": null,
+      "initial_amount": 234134,
+      "currency": "ILS",
+      "current_amount": 234134,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": true,
+      "investment_type": "stocks",
+      "liquidity_date": "2025-05-22",
+      "updates": [
+        {
+          "date": "2025-05-22",
+          "amount": 234134
+        }
+      ]
     }
   ],
   "portfolio_snapshots": [
