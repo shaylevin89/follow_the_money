@@ -308,7 +308,7 @@
     },
     {
       "id": "1747954000000",
-      "name": "Hishtalmut Menora Mivtachim",
+      "name": "Hishtalmut Menora",
       "is_active": false,
       "start_date": "2019-05-01",
       "end_date": null,
@@ -319,7 +319,7 @@
       "notes": "",
       "is_liquid": true,
       "investment_type": "gov_funds",
-      "liquidity_date": null,
+      "liquidity_date": "2019-05-01",
       "updates": [
         {
           "date": "2019-05-01",
