@@ -68,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return { name: type, exclude_periodical_profit: true };
             } else if (typeof type === 'object' && type !== null) {
                 if (!type.name || typeof type.name !== 'string') {
-                    console.warn('Investment type missing name, fixing:', type);
                     return { ...type, name: `unknown_type_${i}` };
                 }
                 return type;
@@ -78,8 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         // Force re-render after migration
         renderInvestmentTypesConfig();
-        // Debug: log the full array
-        console.log('investment_types after migration:', investmentData.metadata.investment_types);
     }
 
     // Add form: Show/hide and require profit rate
@@ -116,6 +113,22 @@ document.addEventListener('DOMContentLoaded', () => {
             addInvestmentForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
     }
+
+    // Make card headers clickable to toggle their sections
+    document.querySelectorAll('.card-header[data-target]').forEach(header => {
+        header.addEventListener('click', function(e) {
+            // Prevent toggle if the collapse button was clicked
+            if (e.target.closest('button')) return;
+            const target = header.getAttribute('data-target');
+            if (target) {
+                const collapse = document.querySelector(target);
+                if (collapse) {
+                    const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapse);
+                    bsCollapse.toggle();
+                }
+            }
+        });
+    });
 
     renderInvestmentTypesConfig();
 });
@@ -804,7 +817,7 @@ function renderInvestmentTypesConfig() {
                 </span>
             </div>
             <div class="d-flex align-items-center gap-2">
-                <button class="btn btn-sm btn-outline-primary edit-type-btn" data-idx="${idx}" title="Edit"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-sm btn-outline-primary edit-type-btn" data-name="${typeName}" title="Edit"><i class="bi bi-pencil"></i></button>
                 <button class="btn btn-sm btn-outline-danger remove-type-btn" data-idx="${idx}" title="Remove"><i class="bi bi-trash"></i></button>
             </div>
         </div>
@@ -814,7 +827,8 @@ function renderInvestmentTypesConfig() {
     // Edit type
     container.querySelectorAll('.edit-type-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const idx = parseInt(btn.getAttribute('data-idx'));
+            const name = btn.getAttribute('data-name');
+            const idx = investmentData.metadata.investment_types.findIndex(t => t.name === name);
             openEditTypeModal(idx);
         });
     });
@@ -832,7 +846,7 @@ function renderInvestmentTypesConfig() {
 
 // Edit type modal form submit
 if (document.getElementById('editTypeForm')) {
-    document.getElementById('editTypeForm').addEventListener('submit', function(e) {
+    document.getElementById('editTypeForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const idx = parseInt(document.getElementById('editTypeIdx').value);
         const name = document.getElementById('editTypeName').value.trim();
@@ -840,6 +854,7 @@ if (document.getElementById('editTypeForm')) {
         if (!name) return;
         investmentData.metadata.investment_types[idx].name = name;
         investmentData.metadata.investment_types[idx].exclude_periodical_profit = exclude;
+        await saveData(getTokenFromUrl());
         renderInvestmentTypesConfig();
         bootstrap.Modal.getInstance(document.getElementById('editTypeModal')).hide();
     });
@@ -848,7 +863,6 @@ if (document.getElementById('editTypeForm')) {
 function openEditTypeModal(idx) {
     const type = investmentData.metadata.investment_types[idx];
     if (!type) return;
-    console.log('Setting editTypeName to:', type.name);
     document.getElementById('editTypeName').value = type.name || '';
     document.getElementById('editTypeExclude').checked = !!type.exclude_periodical_profit;
     document.getElementById('editTypeIdx').value = idx;

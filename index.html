@@ -112,6 +112,7 @@
             margin-left: 2.5em !important;
             text-indent: -2.5em !important;
         }
+        .card-header { cursor: pointer; }
     </style>
 </head>
 <body>
@@ -126,7 +127,7 @@
         <div class="row mb-4">
             <div class="col">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header d-flex justify-content-between align-items-center" data-target="#addInvestmentForm">
                         <h5 class="mb-0">Add Investment</h5>
                         <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#addInvestmentForm" aria-expanded="false" aria-controls="addInvestmentForm">
                             <i class="bi bi-plus-lg"></i>
@@ -227,7 +228,7 @@
         <div class="row mb-4">
             <div class="col">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header d-flex justify-content-between align-items-center" data-target="#dashboardContent">
                         <h5 class="mb-0">Dashboard</h5>
                         <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#dashboardContent" aria-expanded="true" aria-controls="dashboardContent">
                             <i class="bi bi-chevron-down"></i>
@@ -301,7 +302,7 @@
                     </select>
                 </div>
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header d-flex justify-content-between align-items-center" data-target="#investmentList">
                         <h5 class="mb-0">Investments</h5>
                         <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#investmentList" aria-expanded="true" aria-controls="investmentList">
                             <i class="bi bi-chevron-down"></i>
@@ -320,7 +321,7 @@
         <div class="row mt-4">
             <div class="col">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header d-flex justify-content-between align-items-center" data-target="#configSection">
                         <h5 class="mb-0">Config</h5>
                         <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#configSection" aria-expanded="false" aria-controls="configSection">
                             <i class="bi bi-gear"></i>
