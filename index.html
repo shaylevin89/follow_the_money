@@ -145,15 +145,6 @@
                                         <label for="investmentType" class="form-label">Investment Type</label>
                                         <select class="form-select" id="investmentType" required>
                                             <option value="">Select type...</option>
-                                            <option value="stocks">Stocks</option>
-                                            <option value="real_estate_loan">Real Estate Loan</option>
-                                            <option value="crypto_miners">Crypto Miners</option>
-                                            <option value="whiskey">Whiskey</option>
-                                            <option value="pension">Pension</option>
-                                            <option value="company_shares">Company Shares</option>
-                                            <option value="gov_funds">Government Funds</option>
-                                            <option value="crypto">Crypto</option>
-                                            <option value="bank">Bank</option>
                                         </select>
                                     </div>
                                 </div>
@@ -289,24 +280,26 @@
         <!-- Investment List -->
         <div class="row">
             <div class="col">
-                <div class="d-flex justify-content-end align-items-center gap-2 mb-3" style="min-height: 48px;">
-                    <span class="me-1" style="font-size:1.2em;color:#6c757d;"><i class="bi bi-funnel"></i></span>
-                    <label for="sortInvestmentsBy" class="form-label fw-semibold mb-0" style="font-size:1.1em;">Sort by:</label>
-                    <select id="sortInvestmentsBy" class="form-select w-auto shadow-sm" style="min-width:180px;">
-                        <option value="default">Default</option>
-                        <option value="name">Name</option>
-                        <option value="type">Type</option>
-                        <option value="amount">Current Amount</option>
-                        <option value="init_date">Initial Date</option>
-                        <option value="last_update">Last Update Date</option>
-                    </select>
-                </div>
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center" data-target="#investmentList">
-                        <h5 class="mb-0">Investments</h5>
-                        <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#investmentList" aria-expanded="true" aria-controls="investmentList">
-                            <i class="bi bi-chevron-down"></i>
-                        </button>
+                        <div class="d-flex align-items-center gap-3">
+                            <h5 class="mb-0">Investments</h5>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="me-1" style="font-size:1.2em;color:#6c757d;"><i class="bi bi-funnel"></i></span>
+                            <label for="sortInvestmentsBy" class="form-label fw-semibold mb-0" style="font-size:1.1em;">Sort by:</label>
+                            <select id="sortInvestmentsBy" class="form-select w-auto shadow-sm" style="min-width:180px;">
+                                <option value="default">Default</option>
+                                <option value="name">Name</option>
+                                <option value="type">Type</option>
+                                <option value="amount">Current Amount</option>
+                                <option value="init_date">Initial Date</option>
+                                <option value="last_update">Last Update Date</option>
+                            </select>
+                            <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#investmentList" aria-expanded="true" aria-controls="investmentList">
+                                <i class="bi bi-chevron-down"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="collapse show" id="investmentList">
                         <div class="card-body">
@@ -323,9 +316,12 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center" data-target="#configSection">
                         <h5 class="mb-0">Config</h5>
-                        <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#configSection" aria-expanded="false" aria-controls="configSection">
-                            <i class="bi bi-gear"></i>
-                        </button>
+                        <div class="d-flex align-items-center gap-2">
+                            <button class="btn btn-primary btn-sm d-flex align-items-center gap-1" id="addTypeBtn" title="Add Type" type="button"><i class="bi bi-plus-lg"></i><span>Add Type</span></button>
+                            <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#configSection" aria-expanded="false" aria-controls="configSection">
+                                <i class="bi bi-gear"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="collapse" id="configSection">
                         <div class="card-body">

@@ -18,17 +18,7 @@ let investmentData = {
     metadata: {
         currencies: ["ILS", "USD"],
         profit_types: ["price", "commission", "other"],
-        investment_types: [
-            "stocks",
-            "real_estate_loan",
-            "crypto_miners",
-            "whiskey",
-            "pension",
-            "company_shares",
-            "gov_funds",
-            "crypto",
-            "bank"
-        ]
+        investment_types: []
     }
 };
 
@@ -60,6 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
         loadData(token);
         setupForm();
     }
+    migrateInvestmentTypes();
+    renderInvestmentTypesConfig();
 
     // MIGRATION: Ensure all investment_types are objects with a name property
     if (investmentData.metadata && Array.isArray(investmentData.metadata.investment_types)) {
@@ -68,9 +60,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 return { name: type, exclude_periodical_profit: true };
             } else if (typeof type === 'object' && type !== null) {
                 if (!type.name || typeof type.name !== 'string') {
-                    return { ...type, name: `unknown_type_${i}` };
+                    return { ...type, name: `unknown_type_${i}`, exclude_periodical_profit: true };
                 }
-                return type;
+                // Robustly coerce exclude_periodical_profit to boolean (true or 'true' only)
+                return { ...type, exclude_periodical_profit: (type.exclude_periodical_profit === true || type.exclude_periodical_profit === 'true') };
             } else {
                 return { name: `unknown_type_${i}`, exclude_periodical_profit: true };
             }
@@ -119,6 +112,8 @@ document.addEventListener('DOMContentLoaded', () => {
         header.addEventListener('click', function(e) {
             // Prevent toggle if the collapse button was clicked
             if (e.target.closest('button')) return;
+            // Prevent toggle if clicking inside the sort dropdown, its label, or the funnel icon
+            if (e.target.closest('#sortInvestmentsBy, label[for=sortInvestmentsBy], .bi-funnel')) return;
             const target = header.getAttribute('data-target');
             if (target) {
                 const collapse = document.querySelector(target);
@@ -130,7 +125,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    renderInvestmentTypesConfig();
+    const addTypeBtn = document.getElementById('addTypeBtn');
+    if (addTypeBtn) {
+        addTypeBtn.addEventListener('click', () => {
+            document.getElementById('editTypeName').value = '';
+            document.getElementById('editTypeExclude').checked = true;
+            document.getElementById('editTypeIdx').value = -1;
+            const modal = new bootstrap.Modal(document.getElementById('editTypeModal'));
+            modal.show();
+        });
+    }
 });
 
 // Show token input form
@@ -167,6 +171,18 @@ function showTokenInput() {
 // Setup form submission
 function setupForm() {
     const form = document.getElementById('investmentForm');
+    
+    // Dynamically populate investment type dropdown from metadata
+    const investmentTypeSelect = document.getElementById('investmentType');
+    if (investmentTypeSelect && investmentData.metadata && Array.isArray(investmentData.metadata.investment_types)) {
+        investmentTypeSelect.innerHTML = '<option value="">Select type...</option>';
+        investmentData.metadata.investment_types.forEach(type => {
+            const option = document.createElement('option');
+            option.value = type.name;
+            option.textContent = type.name;
+            investmentTypeSelect.appendChild(option);
+        });
+    }
     
     // Form validation
     form.addEventListener('submit', async (e) => {
@@ -230,6 +246,8 @@ async function loadData(token) {
         const response = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${DATA_FILE}?t=${Date.now()}`);
         if (response.ok) {
             investmentData = await response.json();
+            migrateInvestmentTypes();
+            renderInvestmentTypesConfig();
         }
         renderInvestments();
         await updateDashboard();
@@ -544,6 +562,12 @@ async function updateDashboard() {
 async function updateTotalValue(usdToIlsRate) {
     try {
         const activeInvestments = investmentData.investments.filter(inv => inv.is_active);
+        // Dynamically get excluded types from metadata
+        const excludedTypes = (investmentData.metadata && Array.isArray(investmentData.metadata.investment_types))
+          ? investmentData.metadata.investment_types
+              .filter(t => t.exclude_periodical_profit === true)
+              .map(t => t.name)
+          : [];
         // Calculate total value in ILS
         const totalValue = activeInvestments.reduce((sum, inv) => {
             const currentAmount = inv.current_amount || inv.initial_amount;
@@ -561,7 +585,7 @@ async function updateTotalValue(usdToIlsRate) {
         let monthlyProfit = 0;
         activeInvestments.filter(inv => 
             inv.is_static && 
-            !['pension', 'company_shares', 'whiskey', 'crypto_miners', 'bank'].includes(inv.investment_type)
+            !excludedTypes.includes(inv.investment_type)
         ).forEach(inv => {
             let profit = 0;
             if (isLoanType(inv.investment_type) && typeof inv.profit_rate === 'number' && !isNaN(inv.profit_rate)) {
@@ -604,7 +628,7 @@ async function updateTotalValue(usdToIlsRate) {
         let yearlyProfit = 0;
         activeInvestments.filter(inv => 
             inv.is_static && 
-            !['pension', 'company_shares', 'whiskey', 'crypto_miners', 'bank'].includes(inv.investment_type)
+            !excludedTypes.includes(inv.investment_type)
         ).forEach(inv => {
             let profit = 0;
             if (isLoanType(inv.investment_type) && typeof inv.profit_rate === 'number' && !isNaN(inv.profit_rate)) {
@@ -808,12 +832,13 @@ function renderInvestmentTypesConfig() {
     }
     container.innerHTML = investmentData.metadata.investment_types.map((type, idx) => {
         const typeName = type && typeof type === 'object' && type.name ? type.name : String(type);
+        const isExcluded = type.exclude_periodical_profit === true;
         return `
         <div class="investment-item d-flex justify-content-between align-items-center mb-2">
             <div>
                 <strong>${typeName}</strong>
-                <span class="badge bg-${type.exclude_periodical_profit ? 'secondary' : 'success'} ms-2">
-                    ${type.exclude_periodical_profit ? 'Excluded from Periodical Profit' : 'Included in Periodical Profit'}
+                <span class="badge bg-${isExcluded ? 'secondary' : 'success'} ms-2">
+                    ${isExcluded ? 'Excluded from Periodical Profit' : 'Included in Periodical Profit'}
                 </span>
             </div>
             <div class="d-flex align-items-center gap-2">
@@ -852,8 +877,23 @@ if (document.getElementById('editTypeForm')) {
         const name = document.getElementById('editTypeName').value.trim();
         const exclude = document.getElementById('editTypeExclude').checked;
         if (!name) return;
-        investmentData.metadata.investment_types[idx].name = name;
-        investmentData.metadata.investment_types[idx].exclude_periodical_profit = exclude;
+        if (idx === -1) {
+            // Add new type
+            investmentData.metadata.investment_types.push({ name, exclude_periodical_profit: exclude });
+        } else {
+            // Edit existing type
+            const oldName = investmentData.metadata.investment_types[idx].name;
+            if (oldName !== name) {
+                // Update all investments with the old type name
+                investmentData.investments.forEach(inv => {
+                    if (inv.investment_type === oldName) {
+                        inv.investment_type = name;
+                    }
+                });
+            }
+            investmentData.metadata.investment_types[idx].name = name;
+            investmentData.metadata.investment_types[idx].exclude_periodical_profit = exclude;
+        }
         await saveData(getTokenFromUrl());
         renderInvestmentTypesConfig();
         bootstrap.Modal.getInstance(document.getElementById('editTypeModal')).hide();
@@ -870,4 +910,22 @@ function openEditTypeModal(idx) {
         const modal = new bootstrap.Modal(document.getElementById('editTypeModal'));
         modal.show();
     }, 50);
+}
+
+function migrateInvestmentTypes() {
+    if (investmentData.metadata && Array.isArray(investmentData.metadata.investment_types)) {
+        investmentData.metadata.investment_types = investmentData.metadata.investment_types.map((type, i) => {
+            if (typeof type === 'string') {
+                return { name: type, exclude_periodical_profit: true };
+            } else if (typeof type === 'object' && type !== null) {
+                if (!type.name || typeof type.name !== 'string') {
+                    return { ...type, name: `unknown_type_${i}`, exclude_periodical_profit: true };
+                }
+                // Robustly coerce exclude_periodical_profit to boolean (true or 'true' only)
+                return { ...type, exclude_periodical_profit: (type.exclude_periodical_profit === true || type.exclude_periodical_profit === 'true') };
+            } else {
+                return { name: `unknown_type_${i}`, exclude_periodical_profit: true };
+            }
+        });
+    }
 } 
