@@ -821,7 +821,7 @@
     "investment_types": [
       {
         "name": "stocks",
-        "exclude_periodical_profit": true
+        "exclude_periodical_profit": false
       },
       {
         "name": "real_estate_loan",
