@@ -248,6 +248,7 @@ async function loadData(token) {
             investmentData = await response.json();
             migrateInvestmentTypes();
             renderInvestmentTypesConfig();
+            setupForm();
         }
         renderInvestments();
         await updateDashboard();
