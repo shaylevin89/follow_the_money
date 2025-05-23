@@ -677,7 +677,7 @@
       "id": "1747966000000",
       "name": "Altshuler Hishtalmut 2",
       "is_active": true,
-      "is_static": true,
+      "is_static": false,
       "start_date": "2021-11-01",
       "end_date": null,
       "initial_amount": 57702.91,
