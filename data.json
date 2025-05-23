@@ -819,16 +819,46 @@
       "other"
     ],
     "investment_types": [
-      { "name": "stocks", "exclude_periodical_profit": true },
-      { "name": "real_estate_loan", "exclude_periodical_profit": true },
-      { "name": "crypto_miners", "exclude_periodical_profit": true },
-      { "name": "whiskey", "exclude_periodical_profit": true },
-      { "name": "pension", "exclude_periodical_profit": true },
-      { "name": "company_shares", "exclude_periodical_profit": true },
-      { "name": "gov_funds", "exclude_periodical_profit": true },
-      { "name": "crypto", "exclude_periodical_profit": true },
-      { "name": "bank", "exclude_periodical_profit": true },
-      { "name": "b2b_loan", "exclude_periodical_profit": true }
+      {
+        "name": "stocks",
+        "exclude_periodical_profit": true
+      },
+      {
+        "name": "real_estate_loan",
+        "exclude_periodical_profit": false
+      },
+      {
+        "name": "crypto_miners",
+        "exclude_periodical_profit": true
+      },
+      {
+        "name": "whiskey",
+        "exclude_periodical_profit": true
+      },
+      {
+        "name": "pension",
+        "exclude_periodical_profit": true
+      },
+      {
+        "name": "company_shares",
+        "exclude_periodical_profit": true
+      },
+      {
+        "name": "gov_funds",
+        "exclude_periodical_profit": true
+      },
+      {
+        "name": "crypto",
+        "exclude_periodical_profit": true
+      },
+      {
+        "name": "bank",
+        "exclude_periodical_profit": true
+      },
+      {
+        "name": "b2b_loan",
+        "exclude_periodical_profit": true
+      }
     ]
   }
 }
