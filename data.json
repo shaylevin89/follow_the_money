@@ -862,6 +862,10 @@
       {
         "name": "real_estate",
         "exclude_periodical_profit": true
+      },
+      {
+        "name": "Investment_provident_fund",
+        "exclude_periodical_profit": false
       }
     ]
   }
