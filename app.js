@@ -61,6 +61,27 @@ document.addEventListener('DOMContentLoaded', () => {
         setupForm();
     }
 
+    // MIGRATION: Ensure all investment_types are objects with a name property
+    if (investmentData.metadata && Array.isArray(investmentData.metadata.investment_types)) {
+        investmentData.metadata.investment_types = investmentData.metadata.investment_types.map((type, i) => {
+            if (typeof type === 'string') {
+                return { name: type, exclude_periodical_profit: true };
+            } else if (typeof type === 'object' && type !== null) {
+                if (!type.name || typeof type.name !== 'string') {
+                    console.warn('Investment type missing name, fixing:', type);
+                    return { ...type, name: `unknown_type_${i}` };
+                }
+                return type;
+            } else {
+                return { name: `unknown_type_${i}`, exclude_periodical_profit: true };
+            }
+        });
+        // Force re-render after migration
+        renderInvestmentTypesConfig();
+        // Debug: log the full array
+        console.log('investment_types after migration:', investmentData.metadata.investment_types);
+    }
+
     // Add form: Show/hide and require profit rate
     const investmentType = document.getElementById('investmentType');
     const profitRateGroup = document.getElementById('profitRateGroup');
@@ -95,6 +116,8 @@ document.addEventListener('DOMContentLoaded', () => {
             addInvestmentForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
     }
+
+    renderInvestmentTypesConfig();
 });
 
 // Show token input form
@@ -761,4 +784,76 @@ function updateTypeChart(usdToIlsRate) {
             }
         }
     });
+}
+
+// Render investment types config section
+function renderInvestmentTypesConfig() {
+    const container = document.getElementById('investmentTypesConfigList');
+    if (!investmentData.metadata || !Array.isArray(investmentData.metadata.investment_types)) {
+        container.innerHTML = '<div class="text-center text-muted">No investment types found</div>';
+        return;
+    }
+    container.innerHTML = investmentData.metadata.investment_types.map((type, idx) => {
+        const typeName = type && typeof type === 'object' && type.name ? type.name : String(type);
+        return `
+        <div class="investment-item d-flex justify-content-between align-items-center mb-2">
+            <div>
+                <strong>${typeName}</strong>
+                <span class="badge bg-${type.exclude_periodical_profit ? 'secondary' : 'success'} ms-2">
+                    ${type.exclude_periodical_profit ? 'Excluded from Periodical Profit' : 'Included in Periodical Profit'}
+                </span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-sm btn-outline-primary edit-type-btn" data-idx="${idx}" title="Edit"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-sm btn-outline-danger remove-type-btn" data-idx="${idx}" title="Remove"><i class="bi bi-trash"></i></button>
+            </div>
+        </div>
+        `;
+    }).join('');
+
+    // Edit type
+    container.querySelectorAll('.edit-type-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const idx = parseInt(btn.getAttribute('data-idx'));
+            openEditTypeModal(idx);
+        });
+    });
+    // Remove type
+    container.querySelectorAll('.remove-type-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const idx = parseInt(btn.getAttribute('data-idx'));
+            if (confirm('Are you sure you want to remove this investment type?')) {
+                investmentData.metadata.investment_types.splice(idx, 1);
+                renderInvestmentTypesConfig();
+            }
+        });
+    });
+}
+
+// Edit type modal form submit
+if (document.getElementById('editTypeForm')) {
+    document.getElementById('editTypeForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const idx = parseInt(document.getElementById('editTypeIdx').value);
+        const name = document.getElementById('editTypeName').value.trim();
+        const exclude = document.getElementById('editTypeExclude').checked;
+        if (!name) return;
+        investmentData.metadata.investment_types[idx].name = name;
+        investmentData.metadata.investment_types[idx].exclude_periodical_profit = exclude;
+        renderInvestmentTypesConfig();
+        bootstrap.Modal.getInstance(document.getElementById('editTypeModal')).hide();
+    });
+}
+
+function openEditTypeModal(idx) {
+    const type = investmentData.metadata.investment_types[idx];
+    if (!type) return;
+    console.log('Setting editTypeName to:', type.name);
+    document.getElementById('editTypeName').value = type.name || '';
+    document.getElementById('editTypeExclude').checked = !!type.exclude_periodical_profit;
+    document.getElementById('editTypeIdx').value = idx;
+    setTimeout(() => {
+        const modal = new bootstrap.Modal(document.getElementById('editTypeModal'));
+        modal.show();
+    }, 50);
 } 
