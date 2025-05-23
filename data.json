@@ -845,7 +845,7 @@
       },
       {
         "name": "gov_funds",
-        "exclude_periodical_profit": true
+        "exclude_periodical_profit": false
       },
       {
         "name": "crypto",
