@@ -29,13 +29,24 @@ function isLoanType(type) {
 
 // Global sort field
 let sortInvestmentsBy = 'default';
+let sortDirection = 'desc'; // 'asc' or 'desc'
 
-// Listen for sort changes
+// Listen for sort changes and sort direction toggle
 window.addEventListener('DOMContentLoaded', () => {
     const sortSelect = document.getElementById('sortInvestmentsBy');
     if (sortSelect) {
         sortSelect.addEventListener('change', (e) => {
             sortInvestmentsBy = e.target.value;
+            renderInvestments();
+        });
+    }
+    // Sort direction button
+    const sortDirBtn = document.getElementById('sortDirectionBtn');
+    const sortDirIcon = document.getElementById('sortDirectionIcon');
+    if (sortDirBtn && sortDirIcon) {
+        sortDirBtn.addEventListener('click', () => {
+            sortDirection = (sortDirection === 'asc') ? 'desc' : 'asc';
+            sortDirIcon.className = sortDirection === 'asc' ? 'bi bi-arrow-up' : 'bi bi-arrow-down';
             renderInvestments();
         });
     }
@@ -328,21 +339,22 @@ function renderInvestments() {
 
     // Sort only active investments
     let sortedActive = activeInvestmentsList.slice().sort((a, b) => {
+        let cmp = 0;
         if (sortInvestmentsBy === 'name') {
-            return a.name.localeCompare(b.name);
+            cmp = a.name.localeCompare(b.name);
         } else if (sortInvestmentsBy === 'type') {
-            return a.investment_type.localeCompare(b.investment_type);
+            cmp = a.investment_type.localeCompare(b.investment_type);
         } else if (sortInvestmentsBy === 'amount') {
-            return (b.current_amount || 0) - (a.current_amount || 0);
+            cmp = (b.current_amount || 0) - (a.current_amount || 0);
         } else if (sortInvestmentsBy === 'init_date') {
-            return new Date(a.start_date) - new Date(b.start_date);
+            cmp = new Date(a.start_date) - new Date(b.start_date);
         } else if (sortInvestmentsBy === 'last_update') {
             const aLast = Array.isArray(a.updates) && a.updates.length > 0 ? a.updates[a.updates.length - 1].date : a.start_date;
             const bLast = Array.isArray(b.updates) && b.updates.length > 0 ? b.updates[b.updates.length - 1].date : b.start_date;
-            return new Date(bLast) - new Date(aLast);
+            cmp = new Date(bLast) - new Date(aLast);
         }
-        // Default: keep order
-        return 0;
+        if (sortDirection === 'asc') cmp = -cmp;
+        return cmp;
     });
 
     // Concatenate active (sorted) and inactive (original order)
