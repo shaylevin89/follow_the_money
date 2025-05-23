@@ -849,7 +849,7 @@
       },
       {
         "name": "crypto",
-        "exclude_periodical_profit": true
+        "exclude_periodical_profit": false
       },
       {
         "name": "bank",
