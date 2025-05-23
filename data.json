@@ -858,6 +858,10 @@
       {
         "name": "b2b_loan",
         "exclude_periodical_profit": true
+      },
+      {
+        "name": "real_estate",
+        "exclude_periodical_profit": true
       }
     ]
   }
