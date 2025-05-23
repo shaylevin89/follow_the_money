@@ -315,6 +315,27 @@
                 </div>
             </div>
         </div>
+
+        <!-- Config Section -->
+        <div class="row mt-4">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Config</h5>
+                        <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#configSection" aria-expanded="false" aria-controls="configSection">
+                            <i class="bi bi-gear"></i>
+                        </button>
+                    </div>
+                    <div class="collapse" id="configSection">
+                        <div class="card-body">
+                            <div id="investmentTypesConfigList">
+                                <!-- Investment types config will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Edit Investment Modal -->
@@ -360,6 +381,35 @@
                 <label for="editNotes" class="form-label">Notes</label>
                 <textarea class="form-control" id="editNotes" rows="2"></textarea>
               </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Investment Type Modal -->
+    <div class="modal fade" id="editTypeModal" tabindex="-1" aria-labelledby="editTypeModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editTypeModalLabel">Edit Investment Type</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="editTypeForm" class="needs-validation" novalidate>
+              <div class="mb-3">
+                <label for="editTypeName" class="form-label">Type Name</label>
+                <input type="text" class="form-control" id="editTypeName" required>
+              </div>
+              <div class="mb-3 form-check">
+                <input class="form-check-input" type="checkbox" id="editTypeExclude">
+                <label class="form-check-label" for="editTypeExclude">Exclude from Periodical Profit</label>
+              </div>
+              <input type="hidden" id="editTypeIdx">
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="submit" class="btn btn-primary">Save Changes</button>
