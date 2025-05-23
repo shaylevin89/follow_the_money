@@ -196,7 +196,7 @@
       "profit_type": "price",
       "notes": "",
       "is_liquid": true,
-      "investment_type": "gov_funds",
+      "investment_type": "Training_fund",
       "liquidity_date": "2018-08-31",
       "updates": [
         {
@@ -262,7 +262,7 @@
       "profit_type": "price",
       "notes": "",
       "is_liquid": true,
-      "investment_type": "gov_funds",
+      "investment_type": "Training_fund",
       "liquidity_date": "2023-07-01",
       "updates": [
         {
@@ -328,7 +328,7 @@
       "profit_type": "price",
       "notes": "",
       "is_liquid": true,
-      "investment_type": "gov_funds",
+      "investment_type": "Training_fund",
       "liquidity_date": "2019-05-01",
       "updates": [
         {
@@ -408,7 +408,7 @@
       "profit_type": "price",
       "notes": "",
       "is_liquid": false,
-      "investment_type": "gov_funds",
+      "investment_type": "Training_fund",
       "liquidity_date": null,
       "updates": [
         {
@@ -438,7 +438,7 @@
       "profit_type": "price",
       "notes": "",
       "is_liquid": false,
-      "investment_type": "gov_funds",
+      "investment_type": "Training_fund",
       "liquidity_date": null,
       "updates": [
         {
@@ -498,7 +498,7 @@
       "profit_type": "price",
       "notes": "",
       "is_liquid": true,
-      "investment_type": "gov_funds",
+      "investment_type": "Training_fund",
       "liquidity_date": "2023-09-04",
       "updates": [
         {
@@ -686,7 +686,7 @@
       "profit_type": "price",
       "notes": "",
       "is_liquid": false,
-      "investment_type": "gov_funds",
+      "investment_type": "Training_fund",
       "liquidity_date": "2027-10-31",
       "updates": [
         {
@@ -716,7 +716,7 @@
       "profit_type": "price",
       "notes": "",
       "is_liquid": true,
-      "investment_type": "gov_funds",
+      "investment_type": "Training_fund",
       "liquidity_date": "2024-12-22",
       "updates": [
         {
@@ -844,7 +844,7 @@
         "exclude_periodical_profit": true
       },
       {
-        "name": "gov_funds",
+        "name": "Training_fund",
         "exclude_periodical_profit": false
       },
       {
