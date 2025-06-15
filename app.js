@@ -767,11 +767,7 @@ function updateLiquidityChart(usdToIlsRate) {
 }
 
 function updateTypeChart(usdToIlsRate) {
-    const ctx = document.getElementById('typeChart').getContext('2d');
-    // Remove previous chart instance if exists
-    if (window.typeChartInstance) {
-        window.typeChartInstance.destroy();
-    }
+    const container = document.getElementById('typeLabels');
     // Group active investments by type and sum their ILS values
     const typeTotals = {};
     const activeInvestments = investmentData.investments.filter(inv => inv.is_active);
@@ -786,54 +782,20 @@ function updateTypeChart(usdToIlsRate) {
     // Sort types by total value (descending)
     const sortedTypes = Object.entries(typeTotals)
         .sort(([,a], [,b]) => b - a);
-    window.typeChartInstance = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: sortedTypes.map(([type, total]) => `${type} (₪${formatNumber(total)})`),
-            datasets: [{
-                data: sortedTypes.map(([,total]) => total),
-                backgroundColor: [
-                    '#A3C9A8', // soft green
-                    '#7FB3D5', // soft blue
-                    '#F7CAC9', // soft pink
-                    '#B5EAD7', // mint
-                    '#FFDAC1', // peach
-                    '#C7CEEA', // lavender
-                    '#E2F0CB', // light green
-                    '#B5B9FF', // periwinkle
-                    '#B2DFDB', // teal
-                    '#F6EAC2'  // cream
-                ],
-                borderColor: '#fff',
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'bottom',
-                    labels: {
-                        font: {
-                            size: 12
-                        }
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const label = context.label || '';
-                            const value = context.raw || 0;
-                            const total = sortedTypes.reduce((sum, [,val]) => sum + val, 0);
-                            const percentage = ((value / total) * 100).toFixed(1);
-                            return `${label}: ${percentage}% of total value`;
-                        }
-                    }
-                }
-            }
-        }
-    });
+    
+    // Calculate total for percentage
+    const total = sortedTypes.reduce((sum, [,val]) => sum + val, 0);
+    
+    // Create HTML for type labels
+    container.innerHTML = sortedTypes.map(([type, amount]) => {
+        const percentage = ((amount / total) * 100).toFixed(1);
+        return `
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span>${type}</span>
+                <span>₪${formatNumber(amount)} (${percentage}%)</span>
+            </div>
+        `;
+    }).join('');
 }
 
 // Render investment types config section
