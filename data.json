@@ -498,7 +498,7 @@
       "end_date": null,
       "initial_amount": 20000,
       "currency": "ILS",
-      "current_amount": 23946,
+      "current_amount": 25485,
       "profit_type": "price",
       "notes": "",
       "is_liquid": true,
@@ -528,6 +528,10 @@
         {
           "date": "2025-05-22",
           "amount": 23946
+        },
+        {
+          "date": "2025-07-03",
+          "amount": 25485
         }
       ]
     },
