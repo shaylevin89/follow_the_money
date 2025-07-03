@@ -668,12 +668,12 @@
       "end_date": null,
       "initial_amount": 163353.92,
       "currency": "ILS",
-      "current_amount": 153303,
+      "current_amount": 129000,
       "profit_type": "price",
       "notes": "",
       "is_liquid": true,
       "investment_type": "stocks",
-      "liquidity_date": null,
+      "liquidity_date": "2024-07-13",
       "updates": [
         {
           "date": "2024-07-13",
@@ -686,6 +686,10 @@
         {
           "date": "2025-03-10",
           "amount": 153303
+        },
+        {
+          "date": "2025-07-03",
+          "amount": 129000
         }
       ]
     },
