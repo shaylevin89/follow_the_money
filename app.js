@@ -1178,61 +1178,100 @@ document.addEventListener('DOMContentLoaded', () => {
     if (editForm) {
         editForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            // Mark form as validated to show all validation feedback
+            editForm.classList.add('was-validated');
+            
+            // Validate required fields
+            const editInvestmentName = document.getElementById('editInvestmentName');
+            const editCurrentAmount = document.getElementById('editCurrentAmount');
+            
+            if (!editInvestmentName.value.trim()) {
+                editInvestmentName.classList.add('is-invalid');
+                editInvestmentName.focus();
+                e.stopPropagation();
+                return;
+            }
+            
+            if (!editCurrentAmount.value || isNaN(parseFloat(editCurrentAmount.value))) {
+                editCurrentAmount.classList.add('is-invalid');
+                editCurrentAmount.focus();
+                e.stopPropagation();
+                return;
+            }
+            
             const id = document.getElementById('editInvestmentId').value;
             const investment = investmentData.investments.find(inv => inv.id === id);
-            if (!investment) return;
+            if (!investment) {
+                showErrorToast('Investment not found. Please refresh the page.');
+                return;
+            }
             
             // Check for duplicate investments (excluding current investment)
-            const editInvestmentName = document.getElementById('editInvestmentName').value.trim();
             const editStartDate = normalizeDate(document.getElementById('editStartDate')?.value || investment.start_date);
-            const duplicate = checkForDuplicateInvestment(editInvestmentName, editStartDate, id);
+            const duplicate = checkForDuplicateInvestment(editInvestmentName.value.trim(), editStartDate, id);
             
             if (duplicate) {
-                const nameField = document.getElementById('editInvestmentName');
-                nameField.classList.add('is-invalid');
-                const existingFeedback = nameField.parentElement.querySelector('.invalid-feedback');
+                editInvestmentName.classList.add('is-invalid');
+                const existingFeedback = editInvestmentName.parentElement.querySelector('.invalid-feedback');
                 if (existingFeedback) {
                     existingFeedback.remove();
                 }
                 const feedback = document.createElement('div');
                 feedback.className = 'invalid-feedback';
                 feedback.textContent = `An investment with the name "${duplicate.name}" and start date ${duplicate.start_date} already exists.`;
-                nameField.parentElement.appendChild(feedback);
-                nameField.focus();
+                editInvestmentName.parentElement.appendChild(feedback);
+                editInvestmentName.focus();
                 e.stopPropagation();
                 return;
             }
             
-            investment.name = editInvestmentName;
-            const newAmount = parseFloat(document.getElementById('editCurrentAmount').value);
-            if (investment.current_amount !== newAmount) {
-                // Add update record
-                if (!Array.isArray(investment.updates)) investment.updates = [];
-                investment.updates.push({
-                    date: new Date().toISOString().slice(0, 10),
-                    amount: newAmount
-                });
-            }
-            investment.current_amount = newAmount;
-            investment.is_active = document.getElementById('editIsActive').checked;
-            investment.is_liquid = document.getElementById('editIsLiquid').checked;
-            investment.is_static = document.getElementById('editIsStatic').checked;
-            investment.liquidity_date = document.getElementById('editLiquidityDate').value || (investment.is_liquid ? investment.start_date : null);
-            // Profit rate logic
-            if (isLoanType(investment.investment_type)) {
-                const rate = parseFloat(document.getElementById('editProfitRate').value);
-                if (isNaN(rate)) {
-                    document.getElementById('editProfitRate').focus();
+            try {
+                investment.name = editInvestmentName.value.trim();
+                const newAmount = parseFloat(editCurrentAmount.value);
+                if (investment.current_amount !== newAmount) {
+                    // Add update record
+                    if (!Array.isArray(investment.updates)) investment.updates = [];
+                    investment.updates.push({
+                        date: new Date().toISOString().slice(0, 10),
+                        amount: newAmount
+                    });
+                }
+                investment.current_amount = newAmount;
+                investment.is_active = document.getElementById('editIsActive').checked;
+                investment.is_liquid = document.getElementById('editIsLiquid').checked;
+                investment.is_static = document.getElementById('editIsStatic').checked;
+                investment.liquidity_date = document.getElementById('editLiquidityDate').value || (investment.is_liquid ? investment.start_date : null);
+                
+                // Profit rate logic
+                if (isLoanType(investment.investment_type)) {
+                    const rate = parseFloat(document.getElementById('editProfitRate').value);
+                    if (isNaN(rate) || rate <= 0) {
+                        const profitRateField = document.getElementById('editProfitRate');
+                        profitRateField.classList.add('is-invalid');
+                        profitRateField.focus();
+                        e.stopPropagation();
+                        return;
+                    }
+                    investment.profit_rate = rate;
+                } else {
+                    delete investment.profit_rate;
+                }
+                investment.notes = document.getElementById('editNotes').value;
+                
+                const token = getToken();
+                if (!token) {
+                    showErrorToast('Please provide a valid GitHub token.');
                     return;
                 }
-                investment.profit_rate = rate;
-            } else {
-                delete investment.profit_rate;
+                
+                await saveData(token);
+                renderInvestments();
+                bootstrap.Modal.getInstance(document.getElementById('editInvestmentModal')).hide();
+            } catch (error) {
+                console.error('Error updating investment:', error);
+                showErrorToast('Failed to update investment. Please try again.');
             }
-            investment.notes = document.getElementById('editNotes').value;
-            await saveData(getToken());
-            renderInvestments();
-            bootstrap.Modal.getInstance(document.getElementById('editInvestmentModal')).hide();
         });
     }
 });

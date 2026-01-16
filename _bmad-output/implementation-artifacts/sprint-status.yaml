@@ -279,6 +279,10 @@ development_status:
     priority: "P1"
     status: "ready"
     stories:
+      - key: "8-0-fix-edit-save"
+        title: "Fix edit investment form save functionality (CRITICAL)"
+        status: "pending"
+        story_file: null
       - key: "8-1-investment-type-filter"
         title: "Implement investment type filtering functionality"
         status: "pending"
@@ -296,6 +300,9 @@ development_status:
         status: "pending"
         story_file: null
 
+  "8-0-fix-edit-save":
+    status: "pending"
+    story_file: null
   "8-1-investment-type-filter":
     status: "pending"
     story_file: null

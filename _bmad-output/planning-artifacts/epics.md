@@ -296,9 +296,12 @@ Application has limited accessibility support. Need WCAG 2.1 Level AA compliance
 **Estimated Effort:** 2-3 days
 
 ### Problem Statement
-Mobile UX needs refinement for better usability on small screens. Additionally, the filter button (funnel icon) is currently decorative and doesn't function. Users need the ability to filter investments by investment type to better manage large portfolios.
+Mobile UX needs refinement for better usability on small screens. Additionally, the filter button (funnel icon) is currently decorative and doesn't function. Users need the ability to filter investments by investment type to better manage large portfolios. **CRITICAL: Users cannot save changes when updating investments - the form submission does not work properly.**
 
 ### Acceptance Criteria
+- [ ] **CRITICAL: Edit investment form submission works correctly - users can save changes**
+- [ ] Form validation works properly for edit investment form
+- [ ] Error handling provides clear feedback if save fails
 - [ ] Filter button (funnel icon) is functional
 - [ ] Users can filter investments by investment type
 - [ ] Filter UI is mobile-friendly (dropdown, chips, or modal)
