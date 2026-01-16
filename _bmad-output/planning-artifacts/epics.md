@@ -289,11 +289,51 @@ Application has limited accessibility support. Need WCAG 2.1 Level AA compliance
 
 ---
 
+## Epic 8: Mobile UX Improvements and Investment Type Filtering
+
+**Priority:** P1 - High Priority  
+**Status:** Ready for Development  
+**Estimated Effort:** 2-3 days
+
+### Problem Statement
+Mobile UX needs refinement for better usability on small screens. Additionally, the filter button (funnel icon) is currently decorative and doesn't function. Users need the ability to filter investments by investment type to better manage large portfolios.
+
+### Acceptance Criteria
+- [ ] Filter button (funnel icon) is functional
+- [ ] Users can filter investments by investment type
+- [ ] Filter UI is mobile-friendly (dropdown, chips, or modal)
+- [ ] Multiple investment types can be selected for filtering
+- [ ] "Show all" option to clear filters
+- [ ] Filter state persists during session
+- [ ] Mobile UX improvements for investment list header (better spacing, touch targets)
+- [ ] Mobile-friendly filter controls (large touch targets, clear labels)
+- [ ] Filter indicator shows active filter count
+- [ ] Filter works seamlessly with existing sort functionality
+
+### User Story
+As a mobile user with many investments,
+I want to filter investments by type and have a better mobile experience,
+so that I can quickly find and manage specific investments on my phone.
+
+### Related FRs
+- FR45: Users can filter and sort investments by multiple criteria (name, type, amount, date)
+- FR46: Users can filter investments by investment type
+- FR47: Filter controls are mobile-friendly and accessible
+
+### Technical Notes
+- Filter should work with existing sort functionality
+- Filter state should be stored in a global variable
+- Filter UI should be responsive (dropdown on mobile, chips on desktop)
+- Consider using Bootstrap dropdown or modal for mobile filter UI
+- Filter should update renderInvestments() function
+
+---
+
 ## Summary
 
-**Total Epics:** 8  
+**Total Epics:** 9  
 **Critical (P0):** 3 epics (Test Automation, Asset Update Bug, Local Dev Environment)  
-**High Priority (P1):** 2 epics (Progress Feedback, Mobile-First Redesign)  
+**High Priority (P1):** 3 epics (Progress Feedback, Mobile-First Redesign, Mobile UX & Filtering)  
 **Medium Priority (P2):** 3 epics (Error Handling, Validation, Accessibility)
 
 **Recommended Sprint Order:**
@@ -303,5 +343,6 @@ Application has limited accessibility support. Need WCAG 2.1 Level AA compliance
 4. Epic 3: GitHub Action Progress Feedback (improves UX for existing feature)
 5. Epic 4: Mobile-First UI/UX Redesign (major UX improvement)
 6. Epic 5-7: Polish and enhancements (can be done in parallel or after Epic 4)
+7. Epic 8: Mobile UX Improvements and Investment Type Filtering (enhances mobile experience)
 
 **Note:** Epic 0 should be done immediately to establish testing standards. All future epics and stories must include automated tests as part of their definition of done.

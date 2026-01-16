@@ -42,7 +42,7 @@ Users track and manage their investment portfolio with minimal friction:
 - Users can add new investments in under 2 minutes
 - Users can view their complete portfolio overview at a glance
 - Users can update investment values and see real-time profit calculations
-- Users can filter and sort investments by multiple criteria (name, type, amount, date)
+- Users can filter investments by investment type and sort by multiple criteria (name, type, amount, date)
 - Users can visualize portfolio distribution through charts (liquidity, types)
 - Users can track investments in multiple currencies (ILS, USD) with automatic conversion
 - Users feel confident their data is safely persisted and accessible across devices
@@ -662,6 +662,11 @@ The MVP focuses on making the existing application more reliable and user-friend
 - FR45: System can show investment profit information (amount, rate, yearly rate, monthly rate)
 - FR46: System can display last update date for each investment
 - FR47: System can handle large investment lists (50+ investments) with acceptable performance
+- FR78: Users can filter investments by investment type (single or multiple types)
+- FR79: System can provide filter controls that are mobile-friendly (large touch targets, clear labels)
+- FR80: System can show active filter indicators (count of active filters)
+- FR81: System can combine filtering with sorting functionality
+- FR82: Users can clear all filters to show all investments
 
 ### Multi-Currency Support
 
