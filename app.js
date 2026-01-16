@@ -33,6 +33,116 @@ function isLoanType(type) {
     return typeof type === 'string' && type.toLowerCase().includes('loan');
 }
 
+// Real-time field validation function
+function validateField(field) {
+    // Remove previous validation classes
+    field.classList.remove('is-valid', 'is-invalid');
+    
+    // Remove previous feedback messages
+    const existingFeedback = field.parentElement.querySelector('.valid-feedback, .invalid-feedback');
+    if (existingFeedback) {
+        existingFeedback.remove();
+    }
+    
+    // Check if field is valid
+    const isValid = field.checkValidity();
+    
+    // Special validation for profit rate (loan types)
+    if (field.id === 'profitRate' && field.required) {
+        const value = parseFloat(field.value);
+        if (isNaN(value) || value <= 0) {
+            field.classList.add('is-invalid');
+            const feedback = document.createElement('div');
+            feedback.className = 'invalid-feedback';
+            feedback.textContent = 'Please enter a valid profit rate (greater than 0).';
+            field.parentElement.appendChild(feedback);
+            return false;
+        }
+    }
+    
+    // Special validation for number fields
+    if (field.type === 'number' && field.value) {
+        const value = parseFloat(field.value);
+        if (isNaN(value) || value < 0) {
+            field.classList.add('is-invalid');
+            const feedback = document.createElement('div');
+            feedback.className = 'invalid-feedback';
+            feedback.textContent = 'Please enter a valid number (greater than or equal to 0).';
+            field.parentElement.appendChild(feedback);
+            return false;
+        }
+    }
+    
+    // Special validation for date fields
+    if (field.type === 'date' && field.value) {
+        // Normalize date to YYYY-MM-DD format
+        const dateValue = field.value;
+        const date = new Date(dateValue);
+        
+        if (isNaN(date.getTime())) {
+            field.classList.add('is-invalid');
+            const feedback = document.createElement('div');
+            feedback.className = 'invalid-feedback';
+            feedback.textContent = 'Please enter a valid date.';
+            field.parentElement.appendChild(feedback);
+            return false;
+        }
+        
+        // Normalize date to YYYY-MM-DD format
+        const normalizedDate = date.toISOString().split('T')[0];
+        if (dateValue !== normalizedDate) {
+            field.value = normalizedDate;
+        }
+        
+        // Date range validation
+        const fieldId = field.id;
+        if (fieldId === 'liquidityDate' || fieldId === 'editLiquidityDate') {
+            // Liquidity date must be after start date
+            const startDateField = document.getElementById(fieldId === 'liquidityDate' ? 'startDate' : 'editStartDate');
+            if (startDateField && startDateField.value) {
+                const startDate = new Date(startDateField.value);
+                if (date < startDate) {
+                    field.classList.add('is-invalid');
+                    const feedback = document.createElement('div');
+                    feedback.className = 'invalid-feedback';
+                    feedback.textContent = 'Liquidity date must be after or equal to start date.';
+                    field.parentElement.appendChild(feedback);
+                    return false;
+                }
+            }
+        }
+        
+        if (fieldId === 'endDate' || fieldId === 'editEndDate') {
+            // End date must be after start date
+            const startDateField = document.getElementById(fieldId === 'endDate' ? 'startDate' : 'editStartDate');
+            if (startDateField && startDateField.value) {
+                const startDate = new Date(startDateField.value);
+                if (date < startDate) {
+                    field.classList.add('is-invalid');
+                    const feedback = document.createElement('div');
+                    feedback.className = 'invalid-feedback';
+                    feedback.textContent = 'End date must be after or equal to start date.';
+                    field.parentElement.appendChild(feedback);
+                    return false;
+                }
+            }
+        }
+    }
+    
+    if (isValid) {
+        field.classList.add('is-valid');
+    } else {
+        field.classList.add('is-invalid');
+        // Show default browser validation message or custom message
+        const feedback = document.createElement('div');
+        feedback.className = 'invalid-feedback';
+        feedback.textContent = field.validationMessage || 'Please fill in this field correctly.';
+        field.parentElement.appendChild(feedback);
+    }
+    
+    return isValid;
+}
+
 // Global sort field
 let sortInvestmentsBy = 'default';
 let sortDirection = 'desc'; // 'asc' or 'desc'
