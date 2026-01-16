@@ -259,6 +259,9 @@ function setupForm() {
 
 // Load data from GitHub
 async function loadData(token) {
+    // Show loading indicator
+    showLoadingIndicator('Loading data from GitHub...');
+    
     try {
         const response = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${DATA_FILE}?t=${Date.now()}`);
         if (response.ok) {
@@ -272,10 +275,30 @@ async function loadData(token) {
     } catch (error) {
         console.error('Error loading data:', error);
         renderInvestments();
+    } finally {
+        // Hide loading indicator
+        hideLoadingIndicator();
     }
 }
 
-// Progress indicator functions
+// Loading indicator functions (for quick operations)
+function showLoadingIndicator(message = 'Loading...') {
+    const overlay = document.getElementById('loadingOverlay');
+    const text = document.getElementById('loadingText');
+    if (overlay && text) {
+        text.textContent = message;
+        overlay.classList.add('show');
+    }
+}
+
+function hideLoadingIndicator() {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.classList.remove('show');
+    }
+}
+
+// Progress indicator functions (for long operations)
 function showProgress(status = 'Saving...', message = 'Please wait while your changes are being saved...') {
     const progressModal = new bootstrap.Modal(document.getElementById('progressModal'));
     document.getElementById('progressStatus').textContent = status;
