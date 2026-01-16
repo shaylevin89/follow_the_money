@@ -33,6 +33,29 @@ function isLoanType(type) {
     return typeof type === 'string' && type.toLowerCase().includes('loan');
 }
 
+// Check for duplicate investments
+function checkForDuplicateInvestment(name, startDate, excludeId = null) {
+    if (!name || !startDate) {
+        return null;
+    }
+    
+    const nameLower = name.trim().toLowerCase();
+    
+    // Check for duplicate by name (case-insensitive) and start date
+    const duplicate = investmentData.investments.find(inv => {
+        // Exclude current investment if editing
+        if (excludeId && inv.id === excludeId) {
+            return false;
+        }
+        
+        // Check if name matches (case-insensitive) and start date matches
+        const invNameLower = (inv.name || '').trim().toLowerCase();
+        return invNameLower === nameLower && inv.start_date === startDate;
+    });
+    
+    return duplicate || null;
+}
+
 // Real-time field validation function
 function validateField(field) {
     // Remove previous validation classes
@@ -1122,7 +1145,29 @@ document.addEventListener('DOMContentLoaded', () => {
             const id = document.getElementById('editInvestmentId').value;
             const investment = investmentData.investments.find(inv => inv.id === id);
             if (!investment) return;
-            investment.name = document.getElementById('editInvestmentName').value;
+            
+            // Check for duplicate investments (excluding current investment)
+            const editInvestmentName = document.getElementById('editInvestmentName').value.trim();
+            const editStartDate = normalizeDate(document.getElementById('editStartDate')?.value || investment.start_date);
+            const duplicate = checkForDuplicateInvestment(editInvestmentName, editStartDate, id);
+            
+            if (duplicate) {
+                const nameField = document.getElementById('editInvestmentName');
+                nameField.classList.add('is-invalid');
+                const existingFeedback = nameField.parentElement.querySelector('.invalid-feedback');
+                if (existingFeedback) {
+                    existingFeedback.remove();
+                }
+                const feedback = document.createElement('div');
+                feedback.className = 'invalid-feedback';
+                feedback.textContent = `An investment with the name "${duplicate.name}" and start date ${duplicate.start_date} already exists.`;
+                nameField.parentElement.appendChild(feedback);
+                nameField.focus();
+                e.stopPropagation();
+                return;
+            }
+            
+            investment.name = editInvestmentName;
             const newAmount = parseFloat(document.getElementById('editCurrentAmount').value);
             if (investment.current_amount !== newAmount) {
                 // Add update record
