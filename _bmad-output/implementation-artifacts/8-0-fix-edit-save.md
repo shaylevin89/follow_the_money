@@ -1,6 +1,6 @@
 # Story 8.0: Fix Edit Investment Form Save Functionality (CRITICAL)
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
