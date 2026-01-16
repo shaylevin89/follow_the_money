@@ -1161,11 +1161,38 @@ function applyInvestmentTypeFilter(types) {
     }
     renderInvestments();
     updateFilterUI();
+    updateFilterIndicator();
+}
+
+// Update filter indicator badge
+function updateFilterIndicator() {
+    const count = selectedInvestmentTypes.length;
+    const badgeDesktop = document.getElementById('filterBadgeDesktop');
+    const badgeMobile = document.getElementById('filterBadgeMobile');
+    
+    if (badgeDesktop) {
+        if (count > 0) {
+            badgeDesktop.textContent = count;
+            badgeDesktop.style.display = 'block';
+        } else {
+            badgeDesktop.style.display = 'none';
+        }
+    }
+    
+    if (badgeMobile) {
+        if (count > 0) {
+            badgeMobile.textContent = count;
+            badgeMobile.style.display = 'block';
+        } else {
+            badgeMobile.style.display = 'none';
+        }
+    }
 }
 
 // Setup filter UI with checkboxes
 function setupFilterUI() {
     updateFilterUI();
+    updateFilterIndicator();
     
     // Mobile filter modal button
     const filterModalBtn = document.getElementById('filterModalBtn');

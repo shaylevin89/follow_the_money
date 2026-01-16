@@ -407,8 +407,9 @@
                         <div class="d-flex align-items-center gap-2">
                             <!-- Filter Button (Funnel Icon) -->
                             <div class="dropdown d-none d-md-block">
-                                <button class="btn btn-outline-secondary btn-sm" type="button" id="filterDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Filter investments by type">
+                                <button class="btn btn-outline-secondary btn-sm position-relative" type="button" id="filterDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Filter investments by type" style="min-width: 44px; min-height: 44px;">
                                     <i class="bi bi-funnel-fill" aria-hidden="true"></i>
+                                    <span id="filterBadgeDesktop" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary" style="display: none; font-size: 0.65em;">0</span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end" id="filterDropdownMenu" aria-labelledby="filterDropdownBtn" style="min-width: 200px; max-height: 400px; overflow-y: auto;">
                                     <li><h6 class="dropdown-header">Filter by Type</h6></li>
@@ -419,12 +420,13 @@
                                 </ul>
                             </div>
                             <!-- Mobile Filter Button (opens modal) -->
-                            <button class="btn btn-outline-secondary btn-sm d-md-none" type="button" id="filterModalBtn" aria-label="Filter investments by type">
+                            <button class="btn btn-outline-secondary btn-sm d-md-none position-relative" type="button" id="filterModalBtn" aria-label="Filter investments by type" style="min-width: 44px; min-height: 44px;">
                                 <i class="bi bi-funnel-fill" aria-hidden="true"></i>
+                                <span id="filterBadgeMobile" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary" style="display: none; font-size: 0.65em;">0</span>
                             </button>
                             <span class="me-1 d-none d-md-inline" style="font-size:1.2em;color:#6c757d;"><i class="bi bi-funnel" aria-hidden="true"></i></span>
-                            <label for="sortInvestmentsBy" class="form-label fw-semibold mb-0" style="font-size:1.1em;">Sort by:</label>
-                            <select id="sortInvestmentsBy" class="form-select w-auto shadow-sm" style="min-width:180px;">
+                            <label for="sortInvestmentsBy" class="form-label fw-semibold mb-0 d-none d-sm-inline" style="font-size:1.1em;">Sort by:</label>
+                            <select id="sortInvestmentsBy" class="form-select shadow-sm" style="min-width:140px; min-height: 44px;">
                                 <option value="default">Default</option>
                                 <option value="name">Name</option>
                                 <option value="type">Type</option>
@@ -432,12 +434,13 @@
                                 <option value="init_date">Initial Date</option>
                                 <option value="last_update">Last Update Date</option>
                             </select>
-                            <button id="sortDirectionBtn" class="btn btn-outline-secondary btn-sm me-1" type="button" title="Toggle sort direction" aria-label="Toggle sort direction">
+                            <button id="sortDirectionBtn" class="btn btn-outline-secondary btn-sm me-1" type="button" title="Toggle sort direction" aria-label="Toggle sort direction" style="min-width: 44px; min-height: 44px;">
                                 <i id="sortDirectionIcon" class="bi bi-arrow-down" aria-hidden="true"></i>
                             </button>
-                            <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#investmentList" aria-expanded="true" aria-controls="investmentList" aria-label="Toggle investment list">
+                            <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#investmentList" aria-expanded="true" aria-controls="investmentList" aria-label="Toggle investment list" style="min-width: 44px; min-height: 44px; padding: 0.5rem;">
                                 <i class="bi bi-chevron-down" aria-hidden="true"></i>
                             </button>
+                            </div>
                         </div>
                     </div>
                     <div class="collapse show" id="investmentList">
