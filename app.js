@@ -277,6 +277,9 @@ async function loadData(token) {
         await updateDashboard();
     } catch (error) {
         console.error('Error loading data:', error);
+        // Show user-friendly error message
+        const userMessage = getUserFriendlyErrorMessage(error, 'loading data');
+        showErrorToast(userMessage);
         renderInvestments();
     } finally {
         // Hide loading indicator
@@ -316,6 +319,70 @@ function showSuccessToast(message) {
     }
 }
 
+// Error message functions
+function getUserFriendlyErrorMessage(error, context = 'operation') {
+    // Handle network errors
+    if (!navigator.onLine) {
+        return 'You appear to be offline. Please check your internet connection and try again.';
+    }
+    
+    // Handle fetch errors (network failures)
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+        return 'Unable to connect to the server. Please check your internet connection and try again.';
+    }
+    
+    // Handle GitHub API errors
+    if (error.status) {
+        switch (error.status) {
+            case 401:
+                return 'Authentication failed. Please check your GitHub token and try again.';
+            case 403:
+                return 'Access denied. Please check your token permissions and repository access.';
+            case 404:
+                return 'Resource not found. Please check the repository settings.';
+            case 429:
+                return 'Too many requests. Please wait a moment and try again.';
+            case 500:
+            case 502:
+            case 503:
+                return 'Server error. Please try again in a few moments.';
+            default:
+                return `Unable to complete ${context}. Please try again.`;
+        }
+    }
+    
+    // Handle specific error messages
+    if (error.message) {
+        const message = error.message.toLowerCase();
+        if (message.includes('network') || message.includes('fetch')) {
+            return 'Network error. Please check your connection and try again.';
+        }
+        if (message.includes('token') || message.includes('auth')) {
+            return 'Authentication error. Please check your GitHub token.';
+        }
+        if (message.includes('timeout')) {
+            return 'Request timed out. Please try again.';
+        }
+    }
+    
+    // Generic error message
+    return `Something went wrong with ${context}. Please try again.`;
+}
+
+function showErrorToast(message) {
+    const toastElement = document.getElementById('errorToast');
+    const toastBody = document.getElementById('errorToastBody');
+    
+    if (toastElement && toastBody) {
+        toastBody.textContent = message;
+        const toast = new bootstrap.Toast(toastElement, {
+            autohide: true,
+            delay: 5000
+        });
+        toast.show();
+    }
+}
+
 // Progress indicator functions (for long operations)
 function showProgress(status = 'Saving...', message = 'Please wait while your changes are being saved...') {
     const progressModal = new bootstrap.Modal(document.getElementById('progressModal'));
@@ -346,12 +413,18 @@ function showProgressError(errorMessage) {
     const progressMessage = document.getElementById('progressMessage');
     const progressBar = document.getElementById('progressBar');
     
+    // Use user-friendly message if provided, otherwise use default
+    const userMessage = errorMessage || 'An error occurred. Please try again.';
+    
     progressStatus.textContent = 'Error';
     progressStatus.className = 'mb-3 text-danger';
-    progressMessage.textContent = errorMessage || 'An error occurred while saving. Please try again.';
+    progressMessage.textContent = userMessage;
     progressMessage.className = 'text-danger small mb-0';
     progressBar.className = 'progress-bar bg-danger';
     progressBar.style.width = '100%';
+    
+    // Also show error toast for additional feedback
+    showErrorToast(userMessage);
     
     // Auto-hide after 3 seconds
     setTimeout(() => {
@@ -443,7 +516,15 @@ async function getWorkflowRunStatus(token, runId) {
         );
         
         if (!response.ok) {
-            throw new Error('Failed to fetch workflow run status');
+            let errorData;
+            try {
+                errorData = await response.json();
+            } catch (e) {
+                errorData = { message: 'Failed to fetch workflow run status', status: response.status };
+            }
+            const error = new Error(errorData.message || 'Failed to fetch workflow run status');
+            error.status = response.status;
+            throw error;
         }
         
         return await response.json();
@@ -532,6 +613,9 @@ async function saveData(token) {
         if (getFileResponse.ok) {
             const fileData = await getFileResponse.json();
             sha = fileData.sha;
+        } else if (getFileResponse.status !== 404) {
+            // If it's not a 404, we already handled it above, but just in case
+            throw new Error('Failed to fetch file');
         }
 
         // Update file
