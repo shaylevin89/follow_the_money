@@ -250,6 +250,9 @@ function setupForm() {
         await saveData(getToken());
         renderInvestments();
         
+        // Show success confirmation (saveData already shows progress success, this is additional feedback)
+        // Note: saveData's showProgressSuccess will handle the main success message
+        
         // Reset form
         form.reset();
         form.classList.remove('was-validated');
@@ -295,6 +298,21 @@ function hideLoadingIndicator() {
     const overlay = document.getElementById('loadingOverlay');
     if (overlay) {
         overlay.classList.remove('show');
+    }
+}
+
+// Success confirmation functions (toast notifications)
+function showSuccessToast(message) {
+    const toastElement = document.getElementById('successToast');
+    const toastBody = document.getElementById('successToastBody');
+    
+    if (toastElement && toastBody) {
+        toastBody.textContent = message;
+        const toast = new bootstrap.Toast(toastElement, {
+            autohide: true,
+            delay: 3000
+        });
+        toast.show();
     }
 }
 
@@ -353,6 +371,9 @@ function showProgressSuccess(message = 'Changes saved successfully!') {
     progressBar.className = 'progress-bar bg-success';
     progressBar.style.width = '100%';
     document.getElementById('progressText').textContent = '100%';
+    
+    // Also show toast notification for additional feedback
+    showSuccessToast(message);
     
     // Auto-hide after 2 seconds
     setTimeout(() => {
