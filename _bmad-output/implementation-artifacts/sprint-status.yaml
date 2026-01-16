@@ -277,7 +277,7 @@ development_status:
   epic-8:
     title: "Mobile UX Improvements and Investment Type Filtering"
     priority: "P1"
-    status: "ready"
+    status: "done"
     stories:
       - key: "8-0-fix-edit-save"
         title: "Fix edit investment form save functionality (CRITICAL)"

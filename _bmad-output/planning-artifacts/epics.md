@@ -299,19 +299,19 @@ Application has limited accessibility support. Need WCAG 2.1 Level AA compliance
 Mobile UX needs refinement for better usability on small screens. Additionally, the filter button (funnel icon) is currently decorative and doesn't function. Users need the ability to filter investments by investment type to better manage large portfolios. **CRITICAL: Users cannot save changes when updating investments - the form submission does not work properly.**
 
 ### Acceptance Criteria
-- [ ] **CRITICAL: Edit investment form submission works correctly - users can save changes**
-- [ ] Form validation works properly for edit investment form
-- [ ] Error handling provides clear feedback if save fails
-- [ ] Filter button (funnel icon) is functional
-- [ ] Users can filter investments by investment type
-- [ ] Filter UI is mobile-friendly (dropdown, chips, or modal)
-- [ ] Multiple investment types can be selected for filtering
-- [ ] "Show all" option to clear filters
-- [ ] Filter state persists during session
-- [ ] Mobile UX improvements for investment list header (better spacing, touch targets)
-- [ ] Mobile-friendly filter controls (large touch targets, clear labels)
-- [ ] Filter indicator shows active filter count
-- [ ] Filter works seamlessly with existing sort functionality
+- [x] **CRITICAL: Edit investment form submission works correctly - users can save changes**
+- [x] Form validation works properly for edit investment form
+- [x] Error handling provides clear feedback if save fails
+- [x] Filter button (funnel icon) is functional
+- [x] Users can filter investments by investment type
+- [x] Filter UI is mobile-friendly (dropdown, chips, or modal)
+- [x] Multiple investment types can be selected for filtering
+- [x] "Show all" option to clear filters
+- [x] Filter state persists during session
+- [x] Mobile UX improvements for investment list header (better spacing, touch targets)
+- [x] Mobile-friendly filter controls (large touch targets, clear labels)
+- [x] Filter indicator shows active filter count
+- [x] Filter works seamlessly with existing sort functionality
 
 ### User Story
 As a mobile user with many investments,
