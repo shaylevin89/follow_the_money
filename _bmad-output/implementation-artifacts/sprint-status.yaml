@@ -134,3 +134,111 @@ development_status:
     status: "done"
     story_file: "3-2-actions-api.md"
     note: "Covered by Story 3-2"
+
+  epic-4:
+    title: "Mobile-First UI/UX Redesign"
+    priority: "P1"
+    status: "done"
+
+  epic-5:
+    title: "Enhanced Error Handling and User Feedback"
+    priority: "P2"
+    status: "in-progress"
+    stories:
+      - key: "5-1-loading-indicators"
+        title: "Add loading indicators for all async operations"
+        status: "done"
+        story_file: "5-1-loading-indicators.md"
+      - key: "5-2-success-confirmations"
+        title: "Implement success confirmations with clear messaging"
+        status: "backlog"
+        story_file: null
+      - key: "5-3-error-messages"
+        title: "Improve error messages to be user-friendly and actionable"
+        status: "backlog"
+        story_file: null
+      - key: "5-4-form-validation"
+        title: "Add real-time form validation feedback"
+        status: "backlog"
+        story_file: null
+      - key: "5-5-network-errors"
+        title: "Handle network errors gracefully"
+        status: "backlog"
+        story_file: null
+      - key: "5-6-retry-functionality"
+        title: "Add retry functionality for failed operations"
+        status: "backlog"
+        story_file: null
+
+  "5-1-loading-indicators":
+    status: "done"
+    story_file: "5-1-loading-indicators.md"
+  "5-2-success-confirmations":
+    status: "backlog"
+    story_file: null
+  "5-3-error-messages":
+    status: "backlog"
+    story_file: null
+  "5-4-form-validation":
+    status: "backlog"
+    story_file: null
+  "5-5-network-errors":
+    status: "backlog"
+    story_file: null
+  "5-6-retry-functionality":
+    status: "backlog"
+    story_file: null
+
+  epic-4:
+    title: "Mobile-First UI/UX Redesign"
+    priority: "P1"
+    status: "done"
+
+  epic-5:
+    title: "Enhanced Error Handling and User Feedback"
+    priority: "P2"
+    status: "in-progress"
+    stories:
+      - key: "5-1-loading-indicators"
+        title: "Add loading indicators for all async operations"
+        status: "done"
+        story_file: "5-1-loading-indicators.md"
+      - key: "5-2-success-confirmations"
+        title: "Implement success confirmations with clear messaging"
+        status: "backlog"
+        story_file: null
+      - key: "5-3-error-messages"
+        title: "Improve error messages to be user-friendly and actionable"
+        status: "backlog"
+        story_file: null
+      - key: "5-4-form-validation"
+        title: "Add real-time form validation feedback"
+        status: "backlog"
+        story_file: null
+      - key: "5-5-network-errors"
+        title: "Handle network errors gracefully"
+        status: "backlog"
+        story_file: null
+      - key: "5-6-retry-functionality"
+        title: "Add retry functionality for failed operations"
+        status: "backlog"
+        story_file: null
+
+  "5-1-loading-indicators":
+    status: "done"
+    story_file: "5-1-loading-indicators.md"
+  "5-2-success-confirmations":
+    status: "backlog"
+    story_file: null
+  "5-3-error-messages":
+    status: "backlog"
+    story_file: null
+  "5-4-form-validation":
+    status: "backlog"
+    story_file: null
+  "5-5-network-errors":
+    status: "backlog"
+    story_file: null
+  "5-6-retry-functionality":
+    status: "backlog"
+    story_file: null
