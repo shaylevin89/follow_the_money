@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { config } from 'dotenv';
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 /**
  * E2E tests for live GitHub Pages site
@@ -9,6 +10,10 @@ import { resolve } from 'path';
  * IMPORTANT: Token must be in .env file (GITHUB_PAT)
  * .env is in .gitignore and should NEVER be committed
  */
+
+// Get __dirname equivalent for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Load environment variables from .env file
 config({ path: resolve(__dirname, '../.env') });

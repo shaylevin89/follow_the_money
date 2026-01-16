@@ -10,20 +10,22 @@ describe('Progress Indicator Functions (Epic 3)', () => {
   let bootstrap;
 
   beforeEach(() => {
-    // Mock DOM
+    // Create persistent element objects that can be modified
+    const elements = {
+      progressModal: { id: 'progressModal' },
+      progressStatus: { textContent: '', className: 'mb-3' },
+      progressMessage: { textContent: '', className: 'text-muted small mb-0' },
+      progressBar: { 
+        style: { width: '0%' },
+        setAttribute: vi.fn(),
+        className: 'progress-bar progress-bar-striped progress-bar-animated'
+      },
+      progressText: { textContent: '0%' },
+    };
+
+    // Mock DOM - return same object references
     document = {
       getElementById: vi.fn((id) => {
-        const elements = {
-          progressModal: { id: 'progressModal' },
-          progressStatus: { textContent: '', className: 'mb-3' },
-          progressMessage: { textContent: '', className: 'text-muted small mb-0' },
-          progressBar: { 
-            style: { width: '0%' },
-            setAttribute: vi.fn(),
-            className: 'progress-bar progress-bar-striped progress-bar-animated'
-          },
-          progressText: { textContent: '0%' },
-        };
         return elements[id] || null;
       }),
     };
@@ -34,11 +36,11 @@ describe('Progress Indicator Functions (Epic 3)', () => {
       hide: vi.fn(),
     };
 
+    const ModalConstructor = vi.fn().mockImplementation(() => mockModalInstance);
+    ModalConstructor.getInstance = vi.fn(() => mockModalInstance);
+
     bootstrap = {
-      Modal: vi.fn().mockImplementation(() => mockModalInstance),
-      Modal: {
-        getInstance: vi.fn(() => mockModalInstance),
-      },
+      Modal: ModalConstructor,
     };
 
     global.document = document;
