@@ -211,6 +211,9 @@ window.addEventListener('DOMContentLoaded', () => {
             renderInvestments();
         });
     }
+    
+    // Filter UI initialization
+    setupFilterUI();
 });
 
 // Initialize
@@ -1157,6 +1160,112 @@ function applyInvestmentTypeFilter(types) {
         selectedInvestmentTypes = [];
     }
     renderInvestments();
+    updateFilterUI();
+}
+
+// Setup filter UI with checkboxes
+function setupFilterUI() {
+    updateFilterUI();
+    
+    // Mobile filter modal button
+    const filterModalBtn = document.getElementById('filterModalBtn');
+    if (filterModalBtn) {
+        filterModalBtn.addEventListener('click', () => {
+            const modal = new bootstrap.Modal(document.getElementById('filterModal'));
+            modal.show();
+        });
+    }
+    
+    // Clear filters buttons
+    const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+    const clearFiltersModalBtn = document.getElementById('clearFiltersModalBtn');
+    
+    if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener('click', () => {
+            applyInvestmentTypeFilter([]);
+        });
+    }
+    
+    if (clearFiltersModalBtn) {
+        clearFiltersModalBtn.addEventListener('click', () => {
+            applyInvestmentTypeFilter([]);
+            const modal = bootstrap.Modal.getInstance(document.getElementById('filterModal'));
+            if (modal) modal.hide();
+        });
+    }
+}
+
+// Update filter UI checkboxes
+function updateFilterUI() {
+    if (!investmentData.metadata || !Array.isArray(investmentData.metadata.investment_types)) {
+        return;
+    }
+    
+    const types = investmentData.metadata.investment_types.map(t => t.name || t);
+    
+    // Desktop dropdown
+    const dropdownContainer = document.getElementById('filterCheckboxesContainer');
+    if (dropdownContainer) {
+        dropdownContainer.innerHTML = types.map(type => `
+            <li>
+                <label class="dropdown-item-text" style="cursor: pointer; padding: 0.5rem 1rem; min-height: 44px; display: flex; align-items: center;">
+                    <input type="checkbox" class="form-check-input me-2 filter-type-checkbox" value="${type}" 
+                           ${selectedInvestmentTypes.includes(type) ? 'checked' : ''}
+                           style="min-width: 18px; min-height: 18px; cursor: pointer;">
+                    <span style="flex: 1;">${type}</span>
+                </label>
+            </li>
+        `).join('');
+        
+        // Add event listeners to checkboxes
+        dropdownContainer.querySelectorAll('.filter-type-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', handleFilterCheckboxChange);
+        });
+    }
+    
+    // Mobile modal
+    const modalContainer = document.getElementById('filterModalCheckboxesContainer');
+    if (modalContainer) {
+        modalContainer.innerHTML = types.map(type => `
+            <div class="form-check mb-3" style="min-height: 44px; display: flex; align-items: center;">
+                <input class="form-check-input filter-type-checkbox-modal" type="checkbox" value="${type}" 
+                       id="filterCheckbox-${type}" 
+                       ${selectedInvestmentTypes.includes(type) ? 'checked' : ''}
+                       style="min-width: 20px; min-height: 20px; cursor: pointer;">
+                <label class="form-check-label" for="filterCheckbox-${type}" style="flex: 1; cursor: pointer; padding-left: 0.5rem;">
+                    ${type}
+                </label>
+            </div>
+        `).join('');
+        
+        // Add event listeners to checkboxes
+        modalContainer.querySelectorAll('.filter-type-checkbox-modal').forEach(checkbox => {
+            checkbox.addEventListener('change', handleFilterCheckboxChange);
+        });
+    }
+}
+
+// Handle filter checkbox change
+function handleFilterCheckboxChange(e) {
+    const type = e.target.value;
+    const isChecked = e.target.checked;
+    
+    if (isChecked) {
+        if (!selectedInvestmentTypes.includes(type)) {
+            selectedInvestmentTypes.push(type);
+        }
+    } else {
+        selectedInvestmentTypes = selectedInvestmentTypes.filter(t => t !== type);
+    }
+    
+    applyInvestmentTypeFilter(selectedInvestmentTypes);
+    
+    // Update other checkboxes (sync desktop and mobile)
+    document.querySelectorAll('.filter-type-checkbox, .filter-type-checkbox-modal').forEach(cb => {
+        if (cb.value === type) {
+            cb.checked = isChecked;
+        }
+    });
 }
 
 function showNotesModal(id) {

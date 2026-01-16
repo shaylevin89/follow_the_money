@@ -405,7 +405,24 @@
                             <h5 class="mb-0">Investments</h5>
                         </div>
                         <div class="d-flex align-items-center gap-2">
-                            <span class="me-1" style="font-size:1.2em;color:#6c757d;"><i class="bi bi-funnel"></i></span>
+                            <!-- Filter Button (Funnel Icon) -->
+                            <div class="dropdown d-none d-md-block">
+                                <button class="btn btn-outline-secondary btn-sm" type="button" id="filterDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Filter investments by type">
+                                    <i class="bi bi-funnel-fill" aria-hidden="true"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" id="filterDropdownMenu" aria-labelledby="filterDropdownBtn" style="min-width: 200px; max-height: 400px; overflow-y: auto;">
+                                    <li><h6 class="dropdown-header">Filter by Type</h6></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li id="filterCheckboxesContainer"></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><button class="dropdown-item" type="button" id="clearFiltersBtn">Show All</button></li>
+                                </ul>
+                            </div>
+                            <!-- Mobile Filter Button (opens modal) -->
+                            <button class="btn btn-outline-secondary btn-sm d-md-none" type="button" id="filterModalBtn" aria-label="Filter investments by type">
+                                <i class="bi bi-funnel-fill" aria-hidden="true"></i>
+                            </button>
+                            <span class="me-1 d-none d-md-inline" style="font-size:1.2em;color:#6c757d;"><i class="bi bi-funnel" aria-hidden="true"></i></span>
                             <label for="sortInvestmentsBy" class="form-label fw-semibold mb-0" style="font-size:1.1em;">Sort by:</label>
                             <select id="sortInvestmentsBy" class="form-select w-auto shadow-sm" style="min-width:180px;">
                                 <option value="default">Default</option>
@@ -505,6 +522,25 @@
                 <button type="submit" class="btn btn-primary">Save Changes</button>
               </div>
             </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Investment Types Modal (Mobile) -->
+    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="filterModalLabel">Filter by Investment Type</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div id="filterModalCheckboxesContainer"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="clearFiltersModalBtn">Show All</button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Apply</button>
           </div>
         </div>
       </div>

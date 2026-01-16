@@ -307,8 +307,8 @@ development_status:
     status: "done"
     story_file: "8-1-investment-type-filter.md"
   "8-2-mobile-filter-ui":
-    status: "pending"
-    story_file: null
+    status: "done"
+    story_file: "8-2-mobile-filter-ui.md"
   "8-3-mobile-investment-list-header":
     status: "pending"
     story_file: null
