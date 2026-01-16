@@ -382,7 +382,7 @@ function setupForm() {
     });
     
     // Special validation for profit rate (loan types)
-    const investmentTypeSelect = document.getElementById('investmentType');
+    // Reuse investmentTypeSelect from above
     const profitRateInput = document.getElementById('profitRate');
     if (investmentTypeSelect && profitRateInput) {
         investmentTypeSelect.addEventListener('change', () => {
