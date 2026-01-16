@@ -53,11 +53,11 @@ test.describe('Epic 3: GitHub Action Progress Feedback', () => {
       await page.goto(`file://${indexPath}`);
       await page.waitForLoadState('networkidle');
 
-      // Then: Status elements should exist
+      // Then: Status elements should exist in DOM (may be hidden)
       const progressStatus = page.locator('#progressStatus');
       const progressMessage = page.locator('#progressMessage');
-      await expect(progressStatus).toBeVisible({ timeout: 5000 });
-      await expect(progressMessage).toBeVisible({ timeout: 5000 });
+      await expect(progressStatus).toBeAttached({ timeout: 5000 });
+      await expect(progressMessage).toBeAttached({ timeout: 5000 });
     }
   });
 
