@@ -3,8 +3,14 @@ const REPO_OWNER = 'shaylevin89';
 const REPO_NAME = 'follow_the_money';
 const DATA_FILE = 'data.json';
 
-// Get token from URL parameters
-function getTokenFromUrl() {
+// Get token from config.js (local dev) or URL parameters (production)
+function getToken() {
+    // First, try to get from window.CONFIG (generated from .env file for local development)
+    if (window.CONFIG && window.CONFIG.GITHUB_PAT) {
+        return window.CONFIG.GITHUB_PAT;
+    }
+    
+    // Fall back to URL parameter (production or if config.js doesn't exist)
     const params = new URLSearchParams(window.location.search);
     return params.get('token');
 }
@@ -54,7 +60,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    const token = getTokenFromUrl();
+    const token = getToken();
     if (!token) {
         showTokenInput();
     } else {
@@ -241,7 +247,7 @@ function setupForm() {
         };
 
         investmentData.investments.push(newInvestment);
-        await saveData(getTokenFromUrl());
+        await saveData(getToken());
         renderInvestments();
         
         // Reset form
@@ -269,12 +275,202 @@ async function loadData(token) {
     }
 }
 
+// Progress indicator functions
+function showProgress(status = 'Saving...', message = 'Please wait while your changes are being saved...') {
+    const progressModal = new bootstrap.Modal(document.getElementById('progressModal'));
+    document.getElementById('progressStatus').textContent = status;
+    document.getElementById('progressMessage').textContent = message;
+    document.getElementById('progressBar').style.width = '0%';
+    document.getElementById('progressText').textContent = '0%';
+    progressModal.show();
+}
+
+function updateProgress(percent, status = null, message = null) {
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    progressBar.style.width = `${percent}%`;
+    progressBar.setAttribute('aria-valuenow', percent);
+    progressText.textContent = `${Math.round(percent)}%`;
+    
+    if (status) {
+        document.getElementById('progressStatus').textContent = status;
+    }
+    if (message) {
+        document.getElementById('progressMessage').textContent = message;
+    }
+}
+
+function showProgressError(errorMessage) {
+    const progressStatus = document.getElementById('progressStatus');
+    const progressMessage = document.getElementById('progressMessage');
+    const progressBar = document.getElementById('progressBar');
+    
+    progressStatus.textContent = 'Error';
+    progressStatus.className = 'mb-3 text-danger';
+    progressMessage.textContent = errorMessage || 'An error occurred while saving. Please try again.';
+    progressMessage.className = 'text-danger small mb-0';
+    progressBar.className = 'progress-bar bg-danger';
+    progressBar.style.width = '100%';
+    
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+        hideProgress();
+    }, 3000);
+}
+
+function showProgressSuccess(message = 'Changes saved successfully!') {
+    const progressStatus = document.getElementById('progressStatus');
+    const progressMessage = document.getElementById('progressMessage');
+    const progressBar = document.getElementById('progressBar');
+    
+    progressStatus.textContent = 'Complete';
+    progressStatus.className = 'mb-3 text-success';
+    progressMessage.textContent = message;
+    progressMessage.className = 'text-success small mb-0';
+    progressBar.className = 'progress-bar bg-success';
+    progressBar.style.width = '100%';
+    document.getElementById('progressText').textContent = '100%';
+    
+    // Auto-hide after 2 seconds
+    setTimeout(() => {
+        hideProgress();
+    }, 2000);
+}
+
+function hideProgress() {
+    const progressModal = bootstrap.Modal.getInstance(document.getElementById('progressModal'));
+    if (progressModal) {
+        progressModal.hide();
+    }
+    
+    // Reset progress bar styling
+    const progressBar = document.getElementById('progressBar');
+    const progressStatus = document.getElementById('progressStatus');
+    progressBar.className = 'progress-bar progress-bar-striped progress-bar-animated';
+    progressStatus.className = 'mb-3';
+}
+
+// GitHub Actions API polling functions
+async function getLatestWorkflowRun(token, commitSha = null) {
+    try {
+        // Get workflow runs, filtered by workflow file and branch
+        let url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/runs?per_page=5&branch=main`;
+        
+        const response = await fetch(url, {
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch workflow runs');
+        }
+        
+        const data = await response.json();
+        const runs = data.workflow_runs || [];
+        
+        // If commitSha provided, find run for that commit, otherwise get latest
+        if (commitSha) {
+            const runForCommit = runs.find(run => run.head_sha === commitSha);
+            if (runForCommit) {
+                return runForCommit;
+            }
+        }
+        
+        // Return latest run
+        return runs.length > 0 ? runs[0] : null;
+    } catch (error) {
+        console.error('Error fetching workflow run:', error);
+        return null;
+    }
+}
+
+async function getWorkflowRunStatus(token, runId) {
+    try {
+        const response = await fetch(
+            `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/runs/${runId}`,
+            {
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            }
+        );
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch workflow run status');
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching workflow run status:', error);
+        return null;
+    }
+}
+
+async function pollWorkflowStatus(token, commitSha, maxDuration = 60000) {
+    const startTime = Date.now();
+    const pollInterval = 2000; // Poll every 2 seconds
+    let lastStatus = null;
+    let progressPercent = 20; // Start at 20% (queued)
+    
+    updateProgress(progressPercent, 'Processing...', 'Waiting for GitHub Action to start...');
+    
+    while (Date.now() - startTime < maxDuration) {
+        await new Promise(resolve => setTimeout(resolve, pollInterval));
+        
+        const run = await getLatestWorkflowRun(token, commitSha);
+        
+        if (!run) {
+            // Workflow not found yet, continue polling
+            continue;
+        }
+        
+        const status = run.status; // queued, in_progress, completed
+        const conclusion = run.conclusion; // success, failure, cancelled, etc.
+        
+        // Update progress based on status
+        if (status === 'queued' && lastStatus !== 'queued') {
+            progressPercent = 20;
+            updateProgress(progressPercent, 'Queued', 'Workflow is queued and waiting to start...');
+        } else if (status === 'in_progress') {
+            // Gradually increase progress from 30% to 90% while in progress
+            if (progressPercent < 30) progressPercent = 30;
+            if (progressPercent < 90) {
+                progressPercent = Math.min(90, progressPercent + 5);
+            }
+            updateProgress(progressPercent, 'Deploying...', 'GitHub Action is running and deploying your changes...');
+        } else if (status === 'completed') {
+            if (conclusion === 'success') {
+                progressPercent = 100;
+                updateProgress(progressPercent, 'Complete', 'Deployment completed successfully!');
+                return { success: true, run };
+            } else {
+                // Workflow completed but failed
+                showProgressError(`Workflow failed: ${conclusion || 'unknown error'}`);
+                return { success: false, error: conclusion || 'Workflow failed' };
+            }
+        }
+        
+        lastStatus = status;
+    }
+    
+    // Timeout reached
+    updateProgress(90, 'Timeout', 'Workflow is taking longer than expected. It may still be running...');
+    return { success: false, error: 'Polling timeout' };
+}
+
 // Save data to GitHub
 async function saveData(token) {
     if (!token || !REPO_OWNER || !REPO_NAME) {
         alert('Please provide a valid GitHub token');
         return;
     }
+
+    // Show progress indicator immediately
+    showProgress('Saving...', 'Uploading your changes to GitHub...');
+    updateProgress(10);
 
     try {
         // Get current file SHA
@@ -316,11 +512,34 @@ async function saveData(token) {
 
         if (!response.ok) throw new Error('Failed to save data');
         
-        // Update dashboard after successful save
-        await updateDashboard();
+        // Get commit SHA from response to track workflow run
+        const commitData = await response.json();
+        const commitSha = commitData.commit?.sha || null;
+        
+        // Update progress - file saved, now polling GitHub Action
+        updateProgress(15, 'Saved', 'File saved to GitHub. Checking deployment status...');
+        
+        // Poll GitHub Actions API to track workflow progress
+        const workflowResult = await pollWorkflowStatus(token, commitSha, 60000); // 60 second timeout
+        
+        if (workflowResult.success) {
+            // Workflow completed successfully, reload data
+            updateProgress(95, 'Refreshing...', 'Deployment complete! Refreshing your data...');
+            await loadData(token);
+            showProgressSuccess('Your changes have been saved and deployed successfully!');
+        } else if (workflowResult.error === 'Polling timeout') {
+            // Timeout - workflow may still be running, but refresh data anyway
+            await loadData(token);
+            updateProgress(90, 'Still Processing', 'Deployment may still be in progress. Your data has been refreshed.');
+            setTimeout(() => hideProgress(), 3000);
+        } else {
+            // Workflow failed - error already shown by pollWorkflowStatus
+            // Still try to reload data in case it was partially updated
+            await loadData(token);
+        }
     } catch (error) {
         console.error('Error saving data:', error);
-        alert('Error saving data. Please check console for details.');
+        showProgressError('Failed to save data. Please check console for details.');
     }
 }
 
@@ -548,7 +767,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 delete investment.profit_rate;
             }
             investment.notes = document.getElementById('editNotes').value;
-            await saveData(getTokenFromUrl());
+            await saveData(getToken());
             renderInvestments();
             bootstrap.Modal.getInstance(document.getElementById('editInvestmentModal')).hide();
         });
@@ -558,7 +777,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function deleteInvestment(id) {
     investmentData.investments = investmentData.investments.filter(inv => inv.id !== id);
     (async () => {
-        await saveData(getTokenFromUrl());
+        await saveData(getToken());
         renderInvestments();
     })();
 }
@@ -869,7 +1088,7 @@ if (document.getElementById('editTypeForm')) {
             investmentData.metadata.investment_types[idx].name = name;
             investmentData.metadata.investment_types[idx].exclude_periodical_profit = exclude;
         }
-        await saveData(getTokenFromUrl());
+        await saveData(getToken());
         renderInvestmentTypesConfig();
         bootstrap.Modal.getInstance(document.getElementById('editTypeModal')).hide();
     });
