@@ -239,106 +239,72 @@ development_status:
     story_file: null
     note: "Covered in Epic 5 Story 5-4"
 
-  epic-4:
-    title: "Mobile-First UI/UX Redesign"
+  epic-7:
+    title: "Accessibility Improvements"
+    priority: "P2"
+    status: "done"
+    stories:
+      - key: "7-1-aria-labels-semantic"
+        title: "Add ARIA labels and ensure semantic HTML"
+        status: "done"
+        story_file: "7-1-aria-labels-semantic.md"
+      - key: "7-2-keyboard-focus"
+        title: "Keyboard navigation and focus indicators"
+        status: "done"
+        story_file: "7-2-keyboard-focus.md"
+      - key: "7-3-screen-reader-announcements"
+        title: "Screen reader announcements for dynamic content"
+        status: "done"
+        story_file: "7-3-screen-reader-announcements.md"
+      - key: "7-4-color-contrast"
+        title: "Color contrast and text resizing"
+        status: "done"
+        story_file: "7-4-color-contrast.md"
+
+  "7-1-aria-labels-semantic":
+    status: "done"
+    story_file: "7-1-aria-labels-semantic.md"
+  "7-2-keyboard-focus":
+    status: "done"
+    story_file: "7-2-keyboard-focus.md"
+  "7-3-screen-reader-announcements":
+    status: "done"
+    story_file: "7-3-screen-reader-announcements.md"
+  "7-4-color-contrast":
+    status: "done"
+    story_file: "7-4-color-contrast.md"
+
+  epic-8:
+    title: "Mobile UX Improvements and Investment Type Filtering"
     priority: "P1"
-    status: "done"
-
-  epic-5:
-    title: "Enhanced Error Handling and User Feedback"
-    priority: "P2"
-    status: "done"
+    status: "ready"
     stories:
-      - key: "5-1-loading-indicators"
-        title: "Add loading indicators for all async operations"
-        status: "done"
-        story_file: "5-1-loading-indicators.md"
-      - key: "5-2-success-confirmations"
-        title: "Implement success confirmations with clear messaging"
-        status: "done"
-        story_file: "5-2-success-confirmations.md"
-      - key: "5-3-error-messages"
-        title: "Improve error messages to be user-friendly and actionable"
-        status: "done"
-        story_file: "5-3-error-messages.md"
-      - key: "5-4-form-validation"
-        title: "Add real-time form validation feedback"
-        status: "done"
-        story_file: "5-4-form-validation.md"
-      - key: "5-5-network-errors"
-        title: "Handle network errors gracefully"
-        status: "done"
+      - key: "8-1-investment-type-filter"
+        title: "Implement investment type filtering functionality"
+        status: "pending"
         story_file: null
-        note: "Covered in Story 5-3"
-      - key: "5-6-retry-functionality"
-        title: "Add retry functionality for failed operations"
-        status: "done"
-        story_file: "5-6-retry-functionality.md"
+      - key: "8-2-mobile-filter-ui"
+        title: "Create mobile-friendly filter UI"
+        status: "pending"
+        story_file: null
+      - key: "8-3-mobile-investment-list-header"
+        title: "Improve mobile UX for investment list header"
+        status: "pending"
+        story_file: null
+      - key: "8-4-filter-indicators"
+        title: "Add filter indicators and clear functionality"
+        status: "pending"
+        story_file: null
 
-  "5-1-loading-indicators":
-    status: "done"
-    story_file: "5-1-loading-indicators.md"
-  "5-2-success-confirmations":
-    status: "done"
-    story_file: "5-2-success-confirmations.md"
-  "5-3-error-messages":
-    status: "done"
-    story_file: "5-3-error-messages.md"
-  "5-4-form-validation":
-    status: "done"
-    story_file: "5-4-form-validation.md"
-  "5-5-network-errors":
-    status: "done"
+  "8-1-investment-type-filter":
+    status: "pending"
     story_file: null
-    note: "Covered in Story 5-3"
-  "5-6-retry-functionality":
-    status: "done"
-    story_file: "5-6-retry-functionality.md"
-
-  epic-6:
-    title: "Input Validation and Data Integrity"
-    priority: "P2"
-    status: "done"
-    stories:
-      - key: "6-1-date-validation"
-        title: "Validate and normalize date formats"
-        status: "done"
-        story_file: "6-1-date-validation.md"
-      - key: "6-2-duplicate-prevention"
-        title: "Prevent duplicate investments"
-        status: "done"
-        story_file: "6-2-duplicate-prevention.md"
-      - key: "6-3-required-fields"
-        title: "Validate required fields before submission"
-        status: "done"
-        story_file: null
-        note: "Covered in Epic 5 Story 5-4"
-      - key: "6-4-data-types"
-        title: "Validate data types (numbers, dates, strings)"
-        status: "done"
-        story_file: null
-        note: "Covered in Epic 5 Story 5-4"
-      - key: "6-5-profit-rate"
-        title: "Validate profit rate for loan-type investments"
-        status: "done"
-        story_file: null
-        note: "Covered in Epic 5 Story 5-4"
-
-  "6-1-date-validation":
-    status: "done"
-    story_file: "6-1-date-validation.md"
-  "6-2-duplicate-prevention":
-    status: "done"
-    story_file: "6-2-duplicate-prevention.md"
-  "6-3-required-fields":
-    status: "done"
+  "8-2-mobile-filter-ui":
+    status: "pending"
     story_file: null
-    note: "Covered in Epic 5 Story 5-4"
-  "6-4-data-types":
-    status: "done"
+  "8-3-mobile-investment-list-header":
+    status: "pending"
     story_file: null
-    note: "Covered in Epic 5 Story 5-4"
-  "6-5-profit-rate":
-    status: "done"
+  "8-4-filter-indicators":
+    status: "pending"
     story_file: null
-    note: "Covered in Epic 5 Story 5-4"
