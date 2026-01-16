@@ -201,13 +201,71 @@ function setupForm() {
         });
     }
     
+    // Real-time form validation
+    const formFields = form.querySelectorAll('input, select, textarea');
+    formFields.forEach(field => {
+        // Validate on blur (when user leaves field)
+        field.addEventListener('blur', () => {
+            validateField(field);
+        });
+        
+        // For text inputs, also validate on input (as user types)
+        if (field.type === 'text' || field.type === 'number' || field.type === 'date') {
+            field.addEventListener('input', () => {
+                // Only show validation if field has been touched (has was-validated class on form)
+                if (form.classList.contains('was-validated')) {
+                    validateField(field);
+                }
+            });
+        }
+        
+        // For selects, validate on change
+        if (field.tagName === 'SELECT') {
+            field.addEventListener('change', () => {
+                if (form.classList.contains('was-validated')) {
+                    validateField(field);
+                }
+            });
+        }
+    });
+    
+    // Special validation for profit rate (loan types)
+    const investmentTypeSelect = document.getElementById('investmentType');
+    const profitRateInput = document.getElementById('profitRate');
+    if (investmentTypeSelect && profitRateInput) {
+        investmentTypeSelect.addEventListener('change', () => {
+            const type = investmentTypeSelect.value;
+            if (isLoanType(type)) {
+                // Profit rate is required for loan types
+                profitRateInput.required = true;
+                if (form.classList.contains('was-validated')) {
+                    validateField(profitRateInput);
+                }
+            } else {
+                profitRateInput.required = false;
+                // Clear validation state
+                profitRateInput.classList.remove('is-valid', 'is-invalid');
+            }
+        });
+    }
+    
     // Form validation
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        if (!form.checkValidity()) {
+        // Mark form as validated to show all validation feedback
+        form.classList.add('was-validated');
+        
+        // Validate all fields
+        let isValid = true;
+        formFields.forEach(field => {
+            if (!validateField(field)) {
+                isValid = false;
+            }
+        });
+        
+        if (!isValid) {
             e.stopPropagation();
-            form.classList.add('was-validated');
             return;
         }
 
@@ -257,6 +315,15 @@ function setupForm() {
         form.reset();
         form.classList.remove('was-validated');
         document.getElementById('profitRateGroup').style.display = 'none';
+        
+        // Clear all validation states
+        formFields.forEach(field => {
+            field.classList.remove('is-valid', 'is-invalid');
+            const feedback = field.parentElement.querySelector('.valid-feedback, .invalid-feedback');
+            if (feedback) {
+                feedback.remove();
+            }
+        });
     });
 }
 
