@@ -94,16 +94,19 @@ describe('Progress Indicator Functions (Epic 3)', () => {
     progressBar.style.width = `${percent}%`;
     progressText.textContent = `${Math.round(percent)}%`;
 
+    const statusElement = document.getElementById('progressStatus');
+    const messageElement = document.getElementById('progressMessage');
+    
     if (status) {
-      document.getElementById('progressStatus').textContent = status;
+      statusElement.textContent = status;
     }
     if (message) {
-      document.getElementById('progressMessage').textContent = message;
+      messageElement.textContent = message;
     }
 
     // Then: Status and message should be updated
-    expect(document.getElementById('progressStatus').textContent).toBe(status);
-    expect(document.getElementById('progressMessage').textContent).toBe(message);
+    expect(statusElement.textContent).toBe(status);
+    expect(messageElement.textContent).toBe(message);
   });
 
   it('should show error state correctly', () => {
@@ -144,14 +147,15 @@ describe('Progress Indicator Functions (Epic 3)', () => {
     progressMessage.className = 'text-success small mb-0';
     progressBar.className = 'progress-bar bg-success';
     progressBar.style.width = '100%';
-    document.getElementById('progressText').textContent = '100%';
+    const progressText = document.getElementById('progressText');
+    progressText.textContent = '100%';
 
     // Then: Success state should be displayed
     expect(progressStatus.textContent).toBe('Complete');
     expect(progressStatus.className).toBe('mb-3 text-success');
     expect(progressMessage.textContent).toBe(message);
     expect(progressBar.className).toBe('progress-bar bg-success');
-    expect(document.getElementById('progressText').textContent).toBe('100%');
+    expect(progressText.textContent).toBe('100%');
   });
 
   it('should hide progress and reset styling', () => {
