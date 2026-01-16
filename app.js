@@ -189,6 +189,9 @@ function validateField(field) {
 let sortInvestmentsBy = 'default';
 let sortDirection = 'desc'; // 'asc' or 'desc'
 
+// Global filter state
+let selectedInvestmentTypes = []; // Empty array = show all, populated = filter by types
+
 // Listen for sort changes and sort direction toggle
 window.addEventListener('DOMContentLoaded', () => {
     const sortSelect = document.getElementById('sortInvestmentsBy');
@@ -994,8 +997,18 @@ function renderInvestments() {
     }
 
     // Separate active and inactive investments
-    const activeInvestmentsList = investmentData.investments.filter(inv => inv.is_active);
-    const inactiveInvestmentsList = investmentData.investments.filter(inv => !inv.is_active);
+    let activeInvestmentsList = investmentData.investments.filter(inv => inv.is_active);
+    let inactiveInvestmentsList = investmentData.investments.filter(inv => !inv.is_active);
+
+    // Apply investment type filter if types are selected
+    if (selectedInvestmentTypes.length > 0) {
+        activeInvestmentsList = activeInvestmentsList.filter(inv => 
+            selectedInvestmentTypes.includes(inv.investment_type)
+        );
+        inactiveInvestmentsList = inactiveInvestmentsList.filter(inv => 
+            selectedInvestmentTypes.includes(inv.investment_type)
+        );
+    }
 
     // Sort only active investments
     let sortedActive = activeInvestmentsList.slice().sort((a, b) => {
@@ -1134,6 +1147,16 @@ function renderInvestments() {
             }
         });
     });
+}
+
+// Apply investment type filter
+function applyInvestmentTypeFilter(types) {
+    if (Array.isArray(types)) {
+        selectedInvestmentTypes = types;
+    } else {
+        selectedInvestmentTypes = [];
+    }
+    renderInvestments();
 }
 
 function showNotesModal(id) {

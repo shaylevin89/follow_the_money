@@ -1,6 +1,6 @@
 # Story 8.1: Implement Investment Type Filtering Functionality
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -19,27 +19,27 @@ so that I can quickly find and manage specific types of investments in my portfo
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Add global filter state variable (AC: 2)
-  - [ ] Create global variable `selectedInvestmentTypes` (array)
-  - [ ] Initialize as empty array (show all by default)
+- [x] Task 1: Add global filter state variable (AC: 2)
+  - [x] Create global variable `selectedInvestmentTypes` (array)
+  - [x] Initialize as empty array (show all by default)
   
-- [ ] Task 2: Implement filter logic in renderInvestments() (AC: 4)
-  - [ ] Add filter step before sorting in renderInvestments()
-  - [ ] Filter investments by selected types (if array is not empty)
-  - [ ] If array is empty, show all investments
-  - [ ] Maintain existing sort functionality after filtering
+- [x] Task 2: Implement filter logic in renderInvestments() (AC: 4)
+  - [x] Add filter step before sorting in renderInvestments()
+  - [x] Filter investments by selected types (if array is not empty)
+  - [x] If array is empty, show all investments
+  - [x] Maintain existing sort functionality after filtering
   
-- [ ] Task 3: Create filter function (AC: 1, 6)
-  - [ ] Create `applyInvestmentTypeFilter()` function
-  - [ ] Function accepts array of investment type names
-  - [ ] Updates global `selectedInvestmentTypes` variable
-  - [ ] Calls renderInvestments() to refresh display
-  - [ ] If empty array passed, clears filter (show all)
+- [x] Task 3: Create filter function (AC: 1, 6)
+  - [x] Create `applyInvestmentTypeFilter()` function
+  - [x] Function accepts array of investment type names
+  - [x] Updates global `selectedInvestmentTypes` variable
+  - [x] Calls renderInvestments() to refresh display
+  - [x] If empty array passed, clears filter (show all)
   
-- [ ] Task 4: Integrate filter with existing code (AC: 3)
-  - [ ] Ensure filter runs before sort in renderInvestments()
-  - [ ] Verify sort direction and sort field work with filtered results
-  - [ ] Test that inactive investments are still handled correctly
+- [x] Task 4: Integrate filter with existing code (AC: 3)
+  - [x] Ensure filter runs before sort in renderInvestments()
+  - [x] Verify sort direction and sort field work with filtered results
+  - [x] Test that inactive investments are still handled correctly
 
 ## Dev Notes
 
@@ -96,8 +96,15 @@ Auto (Cursor AI)
 
 ### Completion Notes List
 
-(To be filled by dev agent)
+- Added global `selectedInvestmentTypes` variable initialized as empty array
+- Modified `renderInvestments()` to filter investments by type before sorting
+- Created `applyInvestmentTypeFilter()` function to update filter state
+- Filter works seamlessly with existing sort functionality
+- Filter applies to both active and inactive investments
+- All acceptance criteria met
+- Unit tests created and passing (11/11)
 
 ### File List
 
-(To be filled by dev agent)
+- `app.js` - Added filter state variable, filter logic in renderInvestments(), and applyInvestmentTypeFilter() function
+- `tests/unit/investment-type-filter.test.js` - Unit tests for filter functionality
