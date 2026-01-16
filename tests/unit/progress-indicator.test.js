@@ -51,7 +51,8 @@ describe('Progress Indicator Functions (Epic 3)', () => {
     const message = 'Please wait...';
 
     // When: showProgress is called
-    const progressModal = new bootstrap.Modal(document.getElementById('progressModal'));
+    const modalElement = document.getElementById('progressModal');
+    const progressModal = new bootstrap.Modal(modalElement);
     document.getElementById('progressStatus').textContent = status;
     document.getElementById('progressMessage').textContent = message;
     document.getElementById('progressBar').style.width = '0%';
@@ -59,7 +60,7 @@ describe('Progress Indicator Functions (Epic 3)', () => {
     progressModal.show();
 
     // Then: Modal should be shown with correct status
-    expect(bootstrap.Modal).toHaveBeenCalled();
+    expect(bootstrap.Modal).toHaveBeenCalledWith(modalElement);
     expect(progressModal.show).toHaveBeenCalled();
     expect(document.getElementById('progressStatus').textContent).toBe(status);
     expect(document.getElementById('progressMessage').textContent).toBe(message);
