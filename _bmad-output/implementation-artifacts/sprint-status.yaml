@@ -175,20 +175,69 @@ development_status:
     status: "done"
     story_file: "5-1-loading-indicators.md"
   "5-2-success-confirmations":
-    status: "backlog"
-    story_file: null
+    status: "done"
+    story_file: "5-2-success-confirmations.md"
   "5-3-error-messages":
-    status: "backlog"
-    story_file: null
+    status: "done"
+    story_file: "5-3-error-messages.md"
   "5-4-form-validation":
-    status: "backlog"
-    story_file: null
+    status: "done"
+    story_file: "5-4-form-validation.md"
   "5-5-network-errors":
-    status: "backlog"
+    status: "done"
     story_file: null
+    note: "Covered in Story 5-3"
   "5-6-retry-functionality":
-    status: "backlog"
+    status: "done"
+    story_file: "5-6-retry-functionality.md"
+
+  epic-6:
+    title: "Input Validation and Data Integrity"
+    priority: "P2"
+    status: "done"
+    stories:
+      - key: "6-1-date-validation"
+        title: "Validate and normalize date formats"
+        status: "done"
+        story_file: "6-1-date-validation.md"
+      - key: "6-2-duplicate-prevention"
+        title: "Prevent duplicate investments"
+        status: "done"
+        story_file: "6-2-duplicate-prevention.md"
+      - key: "6-3-required-fields"
+        title: "Validate required fields before submission"
+        status: "done"
+        story_file: null
+        note: "Covered in Epic 5 Story 5-4"
+      - key: "6-4-data-types"
+        title: "Validate data types (numbers, dates, strings)"
+        status: "done"
+        story_file: null
+        note: "Covered in Epic 5 Story 5-4"
+      - key: "6-5-profit-rate"
+        title: "Validate profit rate for loan-type investments"
+        status: "done"
+        story_file: null
+        note: "Covered in Epic 5 Story 5-4"
+
+  "6-1-date-validation":
+    status: "done"
+    story_file: "6-1-date-validation.md"
+  "6-2-duplicate-prevention":
+    status: "done"
+    story_file: "6-2-duplicate-prevention.md"
+  "6-3-required-fields":
+    status: "done"
     story_file: null
+    note: "Covered in Epic 5 Story 5-4"
+  "6-4-data-types":
+    status: "done"
+    story_file: null
+    note: "Covered in Epic 5 Story 5-4"
+  "6-5-profit-rate":
+    status: "done"
+    story_file: null
+    note: "Covered in Epic 5 Story 5-4"
 
   epic-4:
     title: "Mobile-First UI/UX Redesign"
@@ -230,17 +279,66 @@ development_status:
     status: "done"
     story_file: "5-1-loading-indicators.md"
   "5-2-success-confirmations":
-    status: "backlog"
-    story_file: null
+    status: "done"
+    story_file: "5-2-success-confirmations.md"
   "5-3-error-messages":
-    status: "backlog"
-    story_file: null
+    status: "done"
+    story_file: "5-3-error-messages.md"
   "5-4-form-validation":
-    status: "backlog"
-    story_file: null
+    status: "done"
+    story_file: "5-4-form-validation.md"
   "5-5-network-errors":
-    status: "backlog"
+    status: "done"
     story_file: null
+    note: "Covered in Story 5-3"
   "5-6-retry-functionality":
-    status: "backlog"
+    status: "done"
+    story_file: "5-6-retry-functionality.md"
+
+  epic-6:
+    title: "Input Validation and Data Integrity"
+    priority: "P2"
+    status: "done"
+    stories:
+      - key: "6-1-date-validation"
+        title: "Validate and normalize date formats"
+        status: "done"
+        story_file: "6-1-date-validation.md"
+      - key: "6-2-duplicate-prevention"
+        title: "Prevent duplicate investments"
+        status: "done"
+        story_file: "6-2-duplicate-prevention.md"
+      - key: "6-3-required-fields"
+        title: "Validate required fields before submission"
+        status: "done"
+        story_file: null
+        note: "Covered in Epic 5 Story 5-4"
+      - key: "6-4-data-types"
+        title: "Validate data types (numbers, dates, strings)"
+        status: "done"
+        story_file: null
+        note: "Covered in Epic 5 Story 5-4"
+      - key: "6-5-profit-rate"
+        title: "Validate profit rate for loan-type investments"
+        status: "done"
+        story_file: null
+        note: "Covered in Epic 5 Story 5-4"
+
+  "6-1-date-validation":
+    status: "done"
+    story_file: "6-1-date-validation.md"
+  "6-2-duplicate-prevention":
+    status: "done"
+    story_file: "6-2-duplicate-prevention.md"
+  "6-3-required-fields":
+    status: "done"
     story_file: null
+    note: "Covered in Epic 5 Story 5-4"
+  "6-4-data-types":
+    status: "done"
+    story_file: null
+    note: "Covered in Epic 5 Story 5-4"
+  "6-5-profit-rate":
+    status: "done"
+    story_file: null
+    note: "Covered in Epic 5 Story 5-4"
