@@ -485,13 +485,30 @@ async function loadData(token) {
     showLoadingIndicator('Loading data from GitHub...');
     
     try {
-        const response = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${DATA_FILE}?t=${Date.now()}`);
-        if (response.ok) {
-            investmentData = await response.json();
-            migrateInvestmentTypes();
-            renderInvestmentTypesConfig();
-            setupForm();
+        const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${DATA_FILE}?t=${Date.now()}`;
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            // Log detailed error information
+            console.error(`Failed to load data.json: ${response.status} ${response.statusText}`);
+            console.error(`URL: ${url}`);
+            
+            // Try to get error details
+            let errorText = '';
+            try {
+                errorText = await response.text();
+                console.error('Response body:', errorText);
+            } catch (e) {
+                console.error('Could not read error response');
+            }
+            
+            throw new Error(`Failed to load data: ${response.status} ${response.statusText}. Please ensure data.json exists in the repository.`);
         }
+        
+        investmentData = await response.json();
+        migrateInvestmentTypes();
+        renderInvestmentTypesConfig();
+        setupForm();
         renderInvestments();
         await updateDashboard();
     } catch (error) {
