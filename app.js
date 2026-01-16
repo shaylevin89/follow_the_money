@@ -346,7 +346,12 @@ async function loadData(token) {
         console.error('Error loading data:', error);
         // Show user-friendly error message
         const userMessage = getUserFriendlyErrorMessage(error, 'loading data');
-        showErrorToast(userMessage);
+        
+        // Store failed operation for retry
+        setLastFailedOperation(loadData, token);
+        
+        // Show error with retry option
+        showErrorToast(userMessage, true);
         renderInvestments();
     } finally {
         // Hide loading indicator
@@ -383,6 +388,61 @@ function showSuccessToast(message) {
             delay: 3000
         });
         toast.show();
+    }
+}
+
+// Retry functionality
+let lastFailedOperation = null;
+
+function setLastFailedOperation(operation, ...args) {
+    lastFailedOperation = {
+        operation: operation,
+        args: args
+    };
+}
+
+function clearLastFailedOperation() {
+    lastFailedOperation = null;
+}
+
+async function retryLastOperation() {
+    if (!lastFailedOperation) {
+        return;
+    }
+    
+    const { operation, args } = lastFailedOperation;
+    const retryButton = document.getElementById('retryButton');
+    
+    // Disable retry button and show loading state
+    if (retryButton) {
+        retryButton.disabled = true;
+        retryButton.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Retrying...';
+    }
+    
+    try {
+        // Hide error toast
+        const errorToast = document.getElementById('errorToast');
+        if (errorToast) {
+            const toast = bootstrap.Toast.getInstance(errorToast);
+            if (toast) {
+                toast.hide();
+            }
+        }
+        
+        // Retry the operation
+        await operation(...args);
+        
+        // Clear failed operation on success
+        clearLastFailedOperation();
+    } catch (error) {
+        // Operation failed again - error will be shown by the operation's error handling
+        console.error('Retry failed:', error);
+        
+        // Re-enable retry button
+        if (retryButton) {
+            retryButton.disabled = false;
+            retryButton.innerHTML = '<i class="bi bi-arrow-clockwise me-1"></i> Retry';
+        }
     }
 }
 
@@ -436,15 +496,29 @@ function getUserFriendlyErrorMessage(error, context = 'operation') {
     return `Something went wrong with ${context}. Please try again.`;
 }
 
-function showErrorToast(message) {
+function showErrorToast(message, showRetry = false) {
     const toastElement = document.getElementById('errorToast');
-    const toastBody = document.getElementById('errorToastBody');
+    const toastMessage = document.getElementById('errorToastMessage');
+    const retryContainer = document.getElementById('errorToastRetry');
+    const retryButton = document.getElementById('retryButton');
     
-    if (toastElement && toastBody) {
-        toastBody.textContent = message;
+    if (toastElement && toastMessage) {
+        toastMessage.textContent = message;
+        
+        // Show/hide retry button
+        if (retryContainer) {
+            retryContainer.style.display = showRetry ? 'block' : 'none';
+        }
+        
+        // Reset retry button state
+        if (retryButton) {
+            retryButton.disabled = false;
+            retryButton.innerHTML = '<i class="bi bi-arrow-clockwise me-1"></i> Retry';
+        }
+        
         const toast = new bootstrap.Toast(toastElement, {
-            autohide: true,
-            delay: 5000
+            autohide: !showRetry, // Don't auto-hide if retry is available
+            delay: showRetry ? 0 : 5000
         });
         toast.show();
     }
@@ -722,6 +796,9 @@ async function saveData(token) {
             updateProgress(95, 'Refreshing...', 'Deployment complete! Refreshing your data...');
             await loadData(token);
             showProgressSuccess('Your changes have been saved and deployed successfully!');
+            
+            // Clear any failed operation on success
+            clearLastFailedOperation();
         } else if (workflowResult.error === 'Polling timeout') {
             // Timeout - workflow may still be running, but refresh data anyway
             await loadData(token);

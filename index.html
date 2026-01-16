@@ -504,14 +504,19 @@
           Operation completed successfully!
         </div>
       </div>
-      <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="5000">
+      <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
         <div class="toast-header bg-danger text-white">
           <i class="bi bi-exclamation-triangle-fill me-2"></i>
           <strong class="me-auto">Error</strong>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         <div class="toast-body" id="errorToastBody">
-          An error occurred. Please try again.
+          <div id="errorToastMessage">An error occurred. Please try again.</div>
+          <div class="mt-2" id="errorToastRetry" style="display: none;">
+            <button type="button" class="btn btn-sm btn-outline-light" id="retryButton" aria-label="Retry operation">
+              <i class="bi bi-arrow-clockwise me-1"></i> Retry
+            </button>
+          </div>
         </div>
       </div>
     </div>
