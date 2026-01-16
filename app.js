@@ -75,8 +75,11 @@ function validateField(field) {
         const value = parseFloat(field.value);
         if (isNaN(value) || value <= 0) {
             field.classList.add('is-invalid');
+            field.setAttribute('aria-invalid', 'true');
             const feedback = document.createElement('div');
             feedback.className = 'invalid-feedback';
+            feedback.setAttribute('role', 'alert');
+            feedback.setAttribute('aria-live', 'polite');
             feedback.textContent = 'Please enter a valid profit rate (greater than 0).';
             field.parentElement.appendChild(feedback);
             return false;
@@ -88,8 +91,11 @@ function validateField(field) {
         const value = parseFloat(field.value);
         if (isNaN(value) || value < 0) {
             field.classList.add('is-invalid');
+            field.setAttribute('aria-invalid', 'true');
             const feedback = document.createElement('div');
             feedback.className = 'invalid-feedback';
+            feedback.setAttribute('role', 'alert');
+            feedback.setAttribute('aria-live', 'polite');
             feedback.textContent = 'Please enter a valid number (greater than or equal to 0).';
             field.parentElement.appendChild(feedback);
             return false;
@@ -104,8 +110,11 @@ function validateField(field) {
         
         if (isNaN(date.getTime())) {
             field.classList.add('is-invalid');
+            field.setAttribute('aria-invalid', 'true');
             const feedback = document.createElement('div');
             feedback.className = 'invalid-feedback';
+            feedback.setAttribute('role', 'alert');
+            feedback.setAttribute('aria-live', 'polite');
             feedback.textContent = 'Please enter a valid date.';
             field.parentElement.appendChild(feedback);
             return false;
@@ -126,8 +135,11 @@ function validateField(field) {
                 const startDate = new Date(startDateField.value);
                 if (date < startDate) {
                     field.classList.add('is-invalid');
+                    field.setAttribute('aria-invalid', 'true');
                     const feedback = document.createElement('div');
                     feedback.className = 'invalid-feedback';
+                    feedback.setAttribute('role', 'alert');
+                    feedback.setAttribute('aria-live', 'polite');
                     feedback.textContent = 'Liquidity date must be after or equal to start date.';
                     field.parentElement.appendChild(feedback);
                     return false;
@@ -142,8 +154,11 @@ function validateField(field) {
                 const startDate = new Date(startDateField.value);
                 if (date < startDate) {
                     field.classList.add('is-invalid');
+                    field.setAttribute('aria-invalid', 'true');
                     const feedback = document.createElement('div');
                     feedback.className = 'invalid-feedback';
+                    feedback.setAttribute('role', 'alert');
+                    feedback.setAttribute('aria-live', 'polite');
                     feedback.textContent = 'End date must be after or equal to start date.';
                     field.parentElement.appendChild(feedback);
                     return false;
@@ -154,11 +169,15 @@ function validateField(field) {
     
     if (isValid) {
         field.classList.add('is-valid');
+        field.setAttribute('aria-invalid', 'false');
     } else {
         field.classList.add('is-invalid');
+        field.setAttribute('aria-invalid', 'true');
         // Show default browser validation message or custom message
         const feedback = document.createElement('div');
         feedback.className = 'invalid-feedback';
+        feedback.setAttribute('role', 'alert');
+        feedback.setAttribute('aria-live', 'polite');
         feedback.textContent = field.validationMessage || 'Please fill in this field correctly.';
         field.parentElement.appendChild(feedback);
     }
@@ -1074,8 +1093,8 @@ function renderInvestments() {
                     <div class="amount">${investment.currency === 'USD' ? '$' : '₪'}${investment.current_amount.toLocaleString()}</div>
                     <div class="text-muted small">Initial: ${investment.currency === 'USD' ? '$' : '₪'}${investment.initial_amount.toLocaleString()}</div>
                     <div class="mt-2 d-flex gap-2 justify-content-end">
-                        <button class="btn btn-sm btn-outline-primary edit-investment-btn" data-id="${investment.id}" title="Edit"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger delete-investment-btn" data-id="${investment.id}" title="Delete"><i class="bi bi-trash"></i></button>
+                        <button class="btn btn-sm btn-outline-primary edit-investment-btn" data-id="${investment.id}" title="Edit" aria-label="Edit investment ${investment.name}"><i class="bi bi-pencil" aria-hidden="true"></i></button>
+                        <button class="btn btn-sm btn-outline-danger delete-investment-btn" data-id="${investment.id}" title="Delete" aria-label="Delete investment ${investment.name}"><i class="bi bi-trash" aria-hidden="true"></i></button>
                     </div>
                 </div>
             </div>
