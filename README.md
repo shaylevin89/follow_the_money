@@ -142,6 +142,21 @@ tests/
 - Tests must pass before merging
 - See `_bmad-output/planning-artifacts/testing-standards.md` for detailed requirements
 
+### CI/CD
+
+Tests run automatically on every push and pull request via GitHub Actions:
+
+- **Unit Tests:** Run on every push/PR (fast feedback)
+- **E2E Tests:** Run on every push/PR (comprehensive testing)
+- **Coverage Reports:** Generated and uploaded as artifacts
+
+**View Test Results:**
+- Go to the "Actions" tab in GitHub
+- Click on the latest workflow run
+- View test results and download coverage reports
+
+**Workflow File:** `.github/workflows/test.yml`
+
 ## Contributing
 
 Feel free to submit issues and enhancement requests! 
