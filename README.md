@@ -13,6 +13,8 @@ A simple web application to track and manage your passive income sources. This a
 
 ## Setup Instructions
 
+### Production Setup (GitHub Pages)
+
 1. Fork this repository to your GitHub account
 2. Enable GitHub Pages in your repository settings
 3. Create a GitHub Personal Access Token:
@@ -20,14 +22,39 @@ A simple web application to track and manage your passive income sources. This a
    - Generate a new token with `repo` scope
    - Copy the token
 
-4. Configure the application:
-   - Open `app.js`
-   - Fill in the following variables:
-     ```javascript
-     const GITHUB_TOKEN = 'your-token-here';
-     const REPO_OWNER = 'your-github-username';
-     const REPO_NAME = 'your-repo-name';
-     ```
+4. Access the application with token in URL:
+   ```
+   https://your-username.github.io/repo-name/?token=your-token-here
+   ```
+
+### Local Development Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/follow_the_money.git
+   cd follow_the_money
+   ```
+
+2. Create a `.env` file (copy from `.env.example`):
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Edit `.env` and add your GitHub Personal Access Token:
+   ```
+   GITHUB_PAT=your_github_personal_access_token_here
+   ```
+
+4. Generate `config.js` from `.env`:
+   ```bash
+   node load-env.js
+   ```
+
+5. Open `index.html` in your browser:
+   - The application will automatically use the token from `config.js`
+   - No need to add token to URL when developing locally
+
+**Note:** The `.env` file is gitignored and will not be committed. The `config.js` file is also gitignored and generated locally.
 
 5. Create the data directory and initial JSON file:
    ```bash
@@ -75,6 +102,45 @@ Your GitHub token is stored in the frontend code. While this is not ideal for pr
 1. Use a token with minimal required permissions
 2. Regularly rotate your token
 3. Never share your repository with the token included
+
+## Testing
+
+### Setup
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Install Playwright browsers:
+   ```bash
+   npx playwright install
+   ```
+
+### Running Tests
+
+- **Unit tests:** `npm test` (or `npm run test:watch` for watch mode)
+- **E2E tests:** `npm run test:e2e`
+- **All tests:** `npm run test:all`
+- **Coverage:** `npm run test:coverage`
+
+### Test Structure
+
+```
+tests/
+├── e2e/          # End-to-end tests (Playwright)
+├── unit/         # Unit tests (Vitest)
+└── support/      # Test utilities
+    ├── fixtures/ # Test data
+    └── helpers/  # Helper functions
+```
+
+### Test Requirements
+
+- All new code must include automated tests
+- Code coverage must be >80% overall
+- Tests must pass before merging
+- See `_bmad-output/planning-artifacts/testing-standards.md` for detailed requirements
 
 ## Contributing
 
