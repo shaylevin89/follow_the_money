@@ -28,6 +28,12 @@ const LIVE_SITE_URL = GITHUB_PAT
 
 test.describe('Live GitHub Pages Site', () => {
   test.beforeEach(async ({ page }) => {
+    // Skip tests if no token is provided
+    if (!GITHUB_PAT) {
+      test.skip();
+      return;
+    }
+    
     // Navigate to live site
     await page.goto(LIVE_SITE_URL);
     await page.waitForLoadState('networkidle');

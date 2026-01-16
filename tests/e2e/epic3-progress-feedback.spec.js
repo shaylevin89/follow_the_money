@@ -27,9 +27,9 @@ test.describe('Epic 3: GitHub Action Progress Feedback', () => {
       await page.goto(`file://${indexPath}`);
       await page.waitForLoadState('networkidle');
 
-      // Then: Progress modal should exist in DOM
+      // Then: Progress modal should exist in DOM (may be hidden)
       const progressModal = page.locator('#progressModal');
-      await expect(progressModal).toBeVisible({ timeout: 5000 });
+      await expect(progressModal).toBeAttached({ timeout: 5000 });
     }
   });
 
@@ -40,9 +40,9 @@ test.describe('Epic 3: GitHub Action Progress Feedback', () => {
       await page.goto(`file://${indexPath}`);
       await page.waitForLoadState('networkidle');
 
-      // Then: Progress bar should exist
+      // Then: Progress bar should exist in DOM (may be hidden)
       const progressBar = page.locator('#progressBar');
-      await expect(progressBar).toBeVisible({ timeout: 5000 });
+      await expect(progressBar).toBeAttached({ timeout: 5000 });
     }
   });
 
