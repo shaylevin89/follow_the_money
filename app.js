@@ -33,6 +33,25 @@ function isLoanType(type) {
     return typeof type === 'string' && type.toLowerCase().includes('loan');
 }
 
+// Normalize date to YYYY-MM-DD format
+function normalizeDate(date) {
+    if (!date) return null;
+    
+    // If already in YYYY-MM-DD format, return as is
+    if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return date;
+    }
+    
+    // Try to parse and normalize
+    const dateObj = new Date(date);
+    if (isNaN(dateObj.getTime())) {
+        return null;
+    }
+    
+    // Return in YYYY-MM-DD format
+    return dateObj.toISOString().split('T')[0];
+}
+
 // Check for duplicate investments
 function checkForDuplicateInvestment(name, startDate, excludeId = null) {
     if (!name || !startDate) {
