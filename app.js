@@ -921,6 +921,10 @@ async function pollWorkflowStatus(token, commitSha, maxDuration = 60000) {
     return { success: false, error: 'Polling timeout' };
 }
 
+// Track ongoing save operations to prevent conflicts
+let isSaving = false;
+let latestCommitSha = null;
+
 // Save data to GitHub
 async function saveData(token) {
     if (!token || !REPO_OWNER || !REPO_NAME) {
@@ -928,12 +932,24 @@ async function saveData(token) {
         return;
     }
 
+    // Prevent concurrent saves - queue the request
+    if (isSaving) {
+        // Wait a bit and retry
+        await new Promise(resolve => setTimeout(resolve, 500));
+        if (isSaving) {
+            showErrorToast('Another save is in progress. Please wait...');
+            return;
+        }
+    }
+
+    isSaving = true;
+
     // Show progress indicator immediately
     showProgress('Saving...', 'Uploading your changes to GitHub...');
     updateProgress(10);
 
     try {
-        // Get current file SHA
+        // Always get the latest file SHA to handle concurrent saves
         const getFileResponse = await fetch(
             `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DATA_FILE}`,
             {
@@ -949,7 +965,6 @@ async function saveData(token) {
             const fileData = await getFileResponse.json();
             sha = fileData.sha;
         } else if (getFileResponse.status !== 404) {
-            // If it's not a 404, we already handled it above, but just in case
             throw new Error('Failed to fetch file');
         }
 
@@ -973,39 +988,72 @@ async function saveData(token) {
             }
         );
 
-        if (!response.ok) throw new Error('Failed to save data');
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            if (response.status === 409) {
+                // Conflict - file was modified, need to retry with new SHA
+                throw new Error('File was modified. Please try again.');
+            }
+            throw new Error(errorData.message || 'Failed to save data');
+        }
         
         // Get commit SHA from response to track workflow run
         const commitData = await response.json();
         const commitSha = commitData.commit?.sha || null;
+        latestCommitSha = commitSha; // Track latest commit
         
-        // Update progress - file saved, now polling GitHub Action
-        updateProgress(15, 'Saved', 'File saved to GitHub. Checking deployment status...');
+        // Update progress - file saved
+        updateProgress(50, 'Saved', 'File saved to GitHub. Deployment will start shortly...');
         
-        // Poll GitHub Actions API to track workflow progress
-        const workflowResult = await pollWorkflowStatus(token, commitSha, 60000); // 60 second timeout
+        // Hide progress modal quickly - don't block user
+        setTimeout(() => {
+            hideProgress();
+        }, 1500);
+        
+        // Poll GitHub Actions API in background (non-blocking)
+        pollWorkflowStatusInBackground(token, commitSha);
+        
+        // Show success immediately - don't wait for workflow
+        showSuccessToast('Changes saved successfully! Deployment in progress...');
+        
+        // Clear any failed operation on success
+        clearLastFailedOperation();
+        
+    } catch (error) {
+        console.error('Error saving data:', error);
+        const errorMessage = error.message || 'Failed to save data. Please check console for details.';
+        showProgressError(errorMessage);
+        showErrorToast(errorMessage);
+    } finally {
+        isSaving = false;
+    }
+}
+
+// Poll workflow status in background without blocking
+async function pollWorkflowStatusInBackground(token, commitSha, maxDuration = 120000) {
+    // Wait a bit for workflow to start
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    try {
+        const workflowResult = await pollWorkflowStatus(token, commitSha, maxDuration);
         
         if (workflowResult.success) {
-            // Workflow completed successfully, reload data
-            updateProgress(95, 'Refreshing...', 'Deployment complete! Refreshing your data...');
+            // Workflow completed successfully, reload data in background
             await loadData(token);
-            showProgressSuccess('Your changes have been saved and deployed successfully!');
-            
-            // Clear any failed operation on success
-            clearLastFailedOperation();
+            showSuccessToast('Deployment completed successfully!');
         } else if (workflowResult.error === 'Polling timeout') {
             // Timeout - workflow may still be running, but refresh data anyway
             await loadData(token);
-            updateProgress(90, 'Still Processing', 'Deployment may still be in progress. Your data has been refreshed.');
-            setTimeout(() => hideProgress(), 3000);
+            showSuccessToast('Deployment may still be in progress. Data refreshed.');
         } else {
-            // Workflow failed - error already shown by pollWorkflowStatus
-            // Still try to reload data in case it was partially updated
+            // Workflow failed - reload data anyway
             await loadData(token);
+            showErrorToast('Deployment failed. Data refreshed, but please check GitHub Actions.');
         }
     } catch (error) {
-        console.error('Error saving data:', error);
-        showProgressError('Failed to save data. Please check console for details.');
+        console.error('Error polling workflow status:', error);
+        // Silently fail - don't bother user with background polling errors
+        // Data was already saved successfully
     }
 }
 
