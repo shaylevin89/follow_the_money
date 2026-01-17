@@ -308,6 +308,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target.closest('button')) return;
             // Prevent toggle if clicking inside the sort dropdown, its label, or the funnel icon
             if (e.target.closest('#sortInvestmentsBy, label[for=sortInvestmentsBy], .bi-funnel')) return;
+            // Prevent toggle if clicking on filter button, dropdown, or sort controls
+            if (e.target.closest('#filterDropdownBtn, #filterDropdownMenu, #filterModalBtn, #sortInvestmentsBy, #sortDirectionBtn, .dropdown, .dropdown-menu')) return;
+            // Prevent toggle if clicking on the sum display
+            if (e.target.closest('#filteredSumHeader')) return;
             const target = header.getAttribute('data-target');
             if (target) {
                 const collapse = document.querySelector(target);
