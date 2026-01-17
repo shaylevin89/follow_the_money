@@ -613,7 +613,7 @@
       "id": "1747961000000",
       "name": "Noga",
       "is_active": true,
-      "track_profit": true,
+      "track_profit": false,
       "start_date": "2024-04-28",
       "end_date": null,
       "initial_amount": 20061,
