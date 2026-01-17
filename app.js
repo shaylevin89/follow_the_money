@@ -1676,10 +1676,14 @@ async function updateTotalValue(usdToIlsRate) {
                 const amount = inv.current_amount || inv.initial_amount;
                 if (daysSinceStart < 30) {
                     profit = (amount * (inv.profit_rate / 100) / 12) * (daysSinceStart / 30);
-                    detail.calculation = `${formatNumber(amount)} × ${inv.profit_rate}% ÷ 12 × ${Math.round(daysSinceStart)}/30 days = ${formatNumber(profit)} ${inv.currency}`;
+                    detail.calculation = `${formatNumber(amount)} × ${inv.profit_rate}% ÷ 12 × ${Math.round(daysSinceStart)}/30`;
                 } else {
                     profit = amount * (inv.profit_rate / 100) / 12;
-                    detail.calculation = `${formatNumber(amount)} × ${inv.profit_rate}% ÷ 12 = ${formatNumber(profit)} ${inv.currency}`;
+                    detail.calculation = `${formatNumber(amount)} × ${inv.profit_rate}% ÷ 12`;
+                }
+                if (inv.currency === 'USD') {
+                    profit = profit * usdToIlsRate;
+                    detail.calculation += ` × ${usdToIlsRate.toFixed(2)}`;
                 }
             } else if (Array.isArray(inv.updates) && inv.updates.length >= 2) {
                 // Use first and last update
@@ -1691,26 +1695,21 @@ async function updateTotalValue(usdToIlsRate) {
                 const days = (lastDate - firstDate) / (1000 * 60 * 60 * 24);
                 if (days < 30) {
                     profit = last.amount - first.amount;
-                    detail.calculation = `${formatNumber(last.amount)} - ${formatNumber(first.amount)} = ${formatNumber(profit)} ${inv.currency} (${Math.round(days)} days)`;
+                    detail.calculation = `${formatNumber(last.amount)} - ${formatNumber(first.amount)} (${Math.round(days)}d)`;
                 } else if (days > 0) {
                     const totalChange = last.amount - first.amount;
                     profit = (totalChange / days) * 30;
-                    detail.calculation = `(${formatNumber(last.amount)} - ${formatNumber(first.amount)}) ÷ ${Math.round(days)} days × 30 = ${formatNumber(profit)} ${inv.currency}/month`;
+                    detail.calculation = `(${formatNumber(last.amount)} - ${formatNumber(first.amount)}) ÷ ${Math.round(days)}d × 30`;
                 } else {
                     profit = 0;
                     detail.calculation = 'No data';
                 }
+                if (inv.currency === 'USD') {
+                    profit = profit * usdToIlsRate;
+                    detail.calculation += ` × ${usdToIlsRate.toFixed(2)}`;
+                }
             } else {
                 return;
-            }
-            
-            // Convert to ILS if needed
-            const originalProfit = profit;
-            if (inv.currency === 'USD') {
-                profit = profit * usdToIlsRate;
-                detail.calculation += ` × ${usdToIlsRate.toFixed(2)} = ₪${formatNumber(profit)}`;
-            } else {
-                detail.calculation += ` = ₪${formatNumber(profit)}`;
             }
             
             detail.profit = profit;
