@@ -1797,6 +1797,57 @@ async function updateTotalValue(usdToIlsRate) {
     }
 }
 
+// Update profit popover with calculation details
+function updateProfitPopover(element, details, period) {
+    if (!element) return;
+    
+    // Destroy existing popover if it exists
+    const existingPopover = bootstrap.Popover.getInstance(element);
+    if (existingPopover) {
+        existingPopover.dispose();
+    }
+    
+    if (details.length === 0) {
+        // No investments contributing to profit
+        element.setAttribute('data-bs-toggle', 'popover');
+        element.setAttribute('data-bs-trigger', 'hover');
+        element.setAttribute('data-bs-placement', 'top');
+        element.setAttribute('data-bs-html', 'true');
+        element.setAttribute('data-bs-content', '<p class="mb-0">No investments with profit tracking enabled.</p>');
+        new bootstrap.Popover(element);
+        return;
+    }
+    
+    // Build detailed breakdown HTML
+    let html = `<div style="max-width: 400px; max-height: 400px; overflow-y: auto;">`;
+    html += `<strong>${period} Profit Breakdown:</strong><hr class="my-2">`;
+    
+    details.forEach((detail, index) => {
+        html += `<div class="mb-2 ${index < details.length - 1 ? 'border-bottom pb-2' : ''}">`;
+        html += `<strong>${detail.name}</strong><br>`;
+        html += `<small class="text-muted">${detail.type}</small><br>`;
+        html += `<small>${detail.calculation}</small><br>`;
+        html += `<strong class="text-success">₪${formatNumber(detail.profit)}</strong>`;
+        html += `</div>`;
+    });
+    
+    html += `<hr class="my-2">`;
+    html += `<div class="text-end"><strong>Total: ₪${formatNumber(details.reduce((sum, d) => sum + d.profit, 0))}</strong></div>`;
+    html += `</div>`;
+    
+    // Set up popover
+    element.setAttribute('data-bs-toggle', 'popover');
+    element.setAttribute('data-bs-trigger', 'hover');
+    element.setAttribute('data-bs-placement', 'top');
+    element.setAttribute('data-bs-html', 'true');
+    element.setAttribute('data-bs-content', html);
+    element.style.cursor = 'help';
+    element.setAttribute('title', `${period} Profit Calculation Details`);
+    
+    // Initialize popover
+    new bootstrap.Popover(element);
+}
+
 async function getUsdToIlsRate() {
     try {
         const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
