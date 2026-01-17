@@ -1806,10 +1806,13 @@ function updateProfitPopover(element, details, period) {
         existingPopover.dispose();
     }
     
+    // Detect if device is touch-enabled (mobile)
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    
     if (details.length === 0) {
         // No investments contributing to profit
         element.setAttribute('data-bs-toggle', 'popover');
-        element.setAttribute('data-bs-trigger', 'hover');
+        element.setAttribute('data-bs-trigger', isTouchDevice ? 'click' : 'hover');
         element.setAttribute('data-bs-placement', 'top');
         element.setAttribute('data-bs-html', 'true');
         element.setAttribute('data-bs-content', '<p class="mb-0">No investments with profit tracking enabled.</p>');
@@ -1834,17 +1837,30 @@ function updateProfitPopover(element, details, period) {
     html += `<div class="d-flex justify-content-between"><strong>Total:</strong><strong>₪${formatNumber(details.reduce((sum, d) => sum + d.profit, 0))}</strong></div>`;
     html += `</div>`;
     
-    // Set up popover
+    // Set up popover - use click for mobile, hover for desktop
     element.setAttribute('data-bs-toggle', 'popover');
-    element.setAttribute('data-bs-trigger', 'hover');
+    element.setAttribute('data-bs-trigger', isTouchDevice ? 'click' : 'hover');
     element.setAttribute('data-bs-placement', 'top');
     element.setAttribute('data-bs-html', 'true');
     element.setAttribute('data-bs-content', html);
-    element.style.cursor = 'help';
+    element.style.cursor = isTouchDevice ? 'pointer' : 'help';
     element.setAttribute('title', `${period} Profit Breakdown`);
     
     // Initialize popover
-    new bootstrap.Popover(element);
+    const popover = new bootstrap.Popover(element);
+    
+    // For mobile, add click outside to close functionality
+    if (isTouchDevice) {
+        // Close popover when clicking outside
+        document.addEventListener('click', function closePopoverOnOutsideClick(e) {
+            if (popover && !element.contains(e.target) && !document.querySelector('.popover')?.contains(e.target)) {
+                const instance = bootstrap.Popover.getInstance(element);
+                if (instance) {
+                    instance.hide();
+                }
+            }
+        });
+    }
 }
 
 async function getUsdToIlsRate() {
