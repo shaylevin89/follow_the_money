@@ -929,6 +929,75 @@
         }
       ],
       "profit_rate": null
+    },
+    {
+      "id": "1768635014138",
+      "name": "crypto redotpay",
+      "is_active": true,
+      "is_static": false,
+      "start_date": "2026-01-17",
+      "end_date": null,
+      "initial_amount": 4137,
+      "currency": "USD",
+      "current_amount": 4137,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": true,
+      "investment_type": "crypto",
+      "liquidity_date": "2026-01-17",
+      "updates": [
+        {
+          "date": "2026-01-17",
+          "amount": 4137
+        }
+      ],
+      "profit_rate": null
+    },
+    {
+      "id": "1768635014140",
+      "name": "crypto redotpay",
+      "is_active": true,
+      "is_static": false,
+      "start_date": "2026-01-17",
+      "end_date": null,
+      "initial_amount": 4137,
+      "currency": "USD",
+      "current_amount": 4137,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": true,
+      "investment_type": "crypto",
+      "liquidity_date": "2026-01-17",
+      "updates": [
+        {
+          "date": "2026-01-17",
+          "amount": 4137
+        }
+      ],
+      "profit_rate": null
+    },
+    {
+      "id": "1768635014140",
+      "name": "crypto redotpay",
+      "is_active": true,
+      "is_static": false,
+      "start_date": "2026-01-17",
+      "end_date": null,
+      "initial_amount": 4137,
+      "currency": "USD",
+      "current_amount": 4137,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": true,
+      "investment_type": "crypto",
+      "liquidity_date": "2026-01-17",
+      "updates": [
+        {
+          "date": "2026-01-17",
+          "amount": 4137
+        }
+      ],
+      "profit_rate": null
     }
   ],
   "metadata": {
