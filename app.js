@@ -1655,19 +1655,31 @@ async function updateTotalValue(usdToIlsRate) {
         totalValueElement.textContent = `₪${formatNumber(totalValue)}`;
         // --- Monthly Profit Calculation ---
         let monthlyProfit = 0;
+        const monthlyProfitDetails = [];
         activeInvestments.filter(inv => 
             inv.track_profit && 
             !excludedTypes.includes(inv.investment_type)
         ).forEach(inv => {
             let profit = 0;
+            let detail = {
+                name: inv.name,
+                type: inv.investment_type,
+                currency: inv.currency,
+                calculation: '',
+                profit: 0
+            };
+            
             if (isLoanType(inv.investment_type) && typeof inv.profit_rate === 'number' && !isNaN(inv.profit_rate)) {
                 const startDate = new Date(inv.start_date);
                 const now = new Date();
                 const daysSinceStart = (now - startDate) / (1000 * 60 * 60 * 24);
+                const amount = inv.current_amount || inv.initial_amount;
                 if (daysSinceStart < 30) {
-                    profit = ((inv.current_amount || inv.initial_amount) * (inv.profit_rate / 100) / 12) * (daysSinceStart / 30);
+                    profit = (amount * (inv.profit_rate / 100) / 12) * (daysSinceStart / 30);
+                    detail.calculation = `${formatNumber(amount)} × ${inv.profit_rate}% ÷ 12 × ${Math.round(daysSinceStart)}/30 days = ${formatNumber(profit)} ${inv.currency}`;
                 } else {
-                    profit = (inv.current_amount || inv.initial_amount) * (inv.profit_rate / 100) / 12;
+                    profit = amount * (inv.profit_rate / 100) / 12;
+                    detail.calculation = `${formatNumber(amount)} × ${inv.profit_rate}% ÷ 12 = ${formatNumber(profit)} ${inv.currency}`;
                 }
             } else if (Array.isArray(inv.updates) && inv.updates.length >= 2) {
                 // Use first and last update
@@ -1679,38 +1691,65 @@ async function updateTotalValue(usdToIlsRate) {
                 const days = (lastDate - firstDate) / (1000 * 60 * 60 * 24);
                 if (days < 30) {
                     profit = last.amount - first.amount;
+                    detail.calculation = `${formatNumber(last.amount)} - ${formatNumber(first.amount)} = ${formatNumber(profit)} ${inv.currency} (${Math.round(days)} days)`;
                 } else if (days > 0) {
-                    profit = ((last.amount - first.amount) / days) * 30;
+                    const totalChange = last.amount - first.amount;
+                    profit = (totalChange / days) * 30;
+                    detail.calculation = `(${formatNumber(last.amount)} - ${formatNumber(first.amount)}) ÷ ${Math.round(days)} days × 30 = ${formatNumber(profit)} ${inv.currency}/month`;
                 } else {
                     profit = 0;
+                    detail.calculation = 'No data';
                 }
             } else {
                 return;
             }
+            
             // Convert to ILS if needed
+            const originalProfit = profit;
             if (inv.currency === 'USD') {
                 profit = profit * usdToIlsRate;
+                detail.calculation += ` × ${usdToIlsRate.toFixed(2)} = ₪${formatNumber(profit)}`;
+            } else {
+                detail.calculation += ` = ₪${formatNumber(profit)}`;
             }
+            
+            detail.profit = profit;
             monthlyProfit += profit;
+            monthlyProfitDetails.push(detail);
         });
         const monthlyProfitElement = document.getElementById('monthlyProfit');
         monthlyProfitElement.textContent = `₪${formatNumber(monthlyProfit)}`;
+        
+        // Update popover with details
+        updateProfitPopover(monthlyProfitElement, monthlyProfitDetails, 'Monthly');
         // --- End Monthly Profit Calculation ---
         // --- Yearly Profit Calculation ---
         let yearlyProfit = 0;
+        const yearlyProfitDetails = [];
         activeInvestments.filter(inv => 
             inv.track_profit && 
             !excludedTypes.includes(inv.investment_type)
         ).forEach(inv => {
             let profit = 0;
+            let detail = {
+                name: inv.name,
+                type: inv.investment_type,
+                currency: inv.currency,
+                calculation: '',
+                profit: 0
+            };
+            
             if (isLoanType(inv.investment_type) && typeof inv.profit_rate === 'number' && !isNaN(inv.profit_rate)) {
                 const startDate = new Date(inv.start_date);
                 const now = new Date();
                 const daysSinceStart = (now - startDate) / (1000 * 60 * 60 * 24);
+                const amount = inv.current_amount || inv.initial_amount;
                 if (daysSinceStart < 365) {
-                    profit = ((inv.current_amount || inv.initial_amount) * (inv.profit_rate / 100)) * (daysSinceStart / 365);
+                    profit = (amount * (inv.profit_rate / 100)) * (daysSinceStart / 365);
+                    detail.calculation = `${formatNumber(amount)} × ${inv.profit_rate}% × ${Math.round(daysSinceStart)}/365 days = ${formatNumber(profit)} ${inv.currency}`;
                 } else {
-                    profit = (inv.current_amount || inv.initial_amount) * (inv.profit_rate / 100);
+                    profit = amount * (inv.profit_rate / 100);
+                    detail.calculation = `${formatNumber(amount)} × ${inv.profit_rate}% = ${formatNumber(profit)} ${inv.currency}`;
                 }
             } else if (Array.isArray(inv.updates) && inv.updates.length >= 2) {
                 // Use first and last update
@@ -1722,21 +1761,36 @@ async function updateTotalValue(usdToIlsRate) {
                 const days = (lastDate - firstDate) / (1000 * 60 * 60 * 24);
                 if (days < 365) {
                     profit = last.amount - first.amount;
+                    detail.calculation = `${formatNumber(last.amount)} - ${formatNumber(first.amount)} = ${formatNumber(profit)} ${inv.currency} (${Math.round(days)} days)`;
                 } else if (days > 0) {
-                    profit = ((last.amount - first.amount) / days) * 365;
+                    const totalChange = last.amount - first.amount;
+                    profit = (totalChange / days) * 365;
+                    detail.calculation = `(${formatNumber(last.amount)} - ${formatNumber(first.amount)}) ÷ ${Math.round(days)} days × 365 = ${formatNumber(profit)} ${inv.currency}/year`;
                 } else {
                     profit = 0;
+                    detail.calculation = 'No data';
                 }
             } else {
                 return;
             }
+            
+            // Convert to ILS if needed
             if (inv.currency === 'USD') {
                 profit = profit * usdToIlsRate;
+                detail.calculation += ` × ${usdToIlsRate.toFixed(2)} = ₪${formatNumber(profit)}`;
+            } else {
+                detail.calculation += ` = ₪${formatNumber(profit)}`;
             }
+            
+            detail.profit = profit;
             yearlyProfit += profit;
+            yearlyProfitDetails.push(detail);
         });
         const yearlyProfitElement = document.getElementById('yearlyProfit');
         yearlyProfitElement.textContent = `₪${formatNumber(yearlyProfit)}`;
+        
+        // Update popover with details
+        updateProfitPopover(yearlyProfitElement, yearlyProfitDetails, 'Yearly');
         // --- End Yearly Profit Calculation ---
     } catch (error) {
         console.error('Error updating total value:', error);
