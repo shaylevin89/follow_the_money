@@ -1851,15 +1851,27 @@ function updateProfitPopover(element, details, period) {
     
     // For mobile, add click outside to close functionality
     if (isTouchDevice) {
-        // Close popover when clicking outside
-        document.addEventListener('click', function closePopoverOnOutsideClick(e) {
-            if (popover && !element.contains(e.target) && !document.querySelector('.popover')?.contains(e.target)) {
-                const instance = bootstrap.Popover.getInstance(element);
-                if (instance) {
-                    instance.hide();
-                }
-            }
-        });
+        // Use a single global listener to avoid duplicates
+        if (!window.profitPopoverClickHandler) {
+            window.profitPopoverClickHandler = function(e) {
+                // Check all profit elements
+                const monthlyProfit = document.getElementById('monthlyProfit');
+                const yearlyProfit = document.getElementById('yearlyProfit');
+                const profitElements = [monthlyProfit, yearlyProfit].filter(el => el);
+                
+                profitElements.forEach(el => {
+                    const instance = bootstrap.Popover.getInstance(el);
+                    if (instance && instance._isShown()) {
+                        // If click is outside both the element and the popover, close it
+                        const popoverEl = document.querySelector('.popover');
+                        if (!el.contains(e.target) && (!popoverEl || !popoverEl.contains(e.target))) {
+                            instance.hide();
+                        }
+                    }
+                });
+            };
+            document.addEventListener('click', window.profitPopoverClickHandler);
+        }
     }
 }
 
