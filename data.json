@@ -635,7 +635,7 @@
       "id": "1747963000000",
       "name": "Getsmine",
       "is_active": true,
-      "track_profit": true,
+      "track_profit": false,
       "start_date": "2024-07-13",
       "end_date": null,
       "initial_amount": 12000,
