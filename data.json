@@ -165,7 +165,7 @@
       "id": "1747951000000",
       "name": "Peoplbiz - Cannibal 2",
       "is_active": true,
-      "track_profit": true,
+      "track_profit": false,
       "start_date": "2019-03-15",
       "end_date": null,
       "initial_amount": 20625,
