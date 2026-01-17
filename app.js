@@ -1746,10 +1746,14 @@ async function updateTotalValue(usdToIlsRate) {
                 const amount = inv.current_amount || inv.initial_amount;
                 if (daysSinceStart < 365) {
                     profit = (amount * (inv.profit_rate / 100)) * (daysSinceStart / 365);
-                    detail.calculation = `${formatNumber(amount)} × ${inv.profit_rate}% × ${Math.round(daysSinceStart)}/365 days = ${formatNumber(profit)} ${inv.currency}`;
+                    detail.calculation = `${formatNumber(amount)} × ${inv.profit_rate}% × ${Math.round(daysSinceStart)}/365`;
                 } else {
                     profit = amount * (inv.profit_rate / 100);
-                    detail.calculation = `${formatNumber(amount)} × ${inv.profit_rate}% = ${formatNumber(profit)} ${inv.currency}`;
+                    detail.calculation = `${formatNumber(amount)} × ${inv.profit_rate}%`;
+                }
+                if (inv.currency === 'USD') {
+                    profit = profit * usdToIlsRate;
+                    detail.calculation += ` × ${usdToIlsRate.toFixed(2)}`;
                 }
             } else if (Array.isArray(inv.updates) && inv.updates.length >= 2) {
                 // Use first and last update
@@ -1761,25 +1765,21 @@ async function updateTotalValue(usdToIlsRate) {
                 const days = (lastDate - firstDate) / (1000 * 60 * 60 * 24);
                 if (days < 365) {
                     profit = last.amount - first.amount;
-                    detail.calculation = `${formatNumber(last.amount)} - ${formatNumber(first.amount)} = ${formatNumber(profit)} ${inv.currency} (${Math.round(days)} days)`;
+                    detail.calculation = `${formatNumber(last.amount)} - ${formatNumber(first.amount)} (${Math.round(days)}d)`;
                 } else if (days > 0) {
                     const totalChange = last.amount - first.amount;
                     profit = (totalChange / days) * 365;
-                    detail.calculation = `(${formatNumber(last.amount)} - ${formatNumber(first.amount)}) ÷ ${Math.round(days)} days × 365 = ${formatNumber(profit)} ${inv.currency}/year`;
+                    detail.calculation = `(${formatNumber(last.amount)} - ${formatNumber(first.amount)}) ÷ ${Math.round(days)}d × 365`;
                 } else {
                     profit = 0;
                     detail.calculation = 'No data';
                 }
+                if (inv.currency === 'USD') {
+                    profit = profit * usdToIlsRate;
+                    detail.calculation += ` × ${usdToIlsRate.toFixed(2)}`;
+                }
             } else {
                 return;
-            }
-            
-            // Convert to ILS if needed
-            if (inv.currency === 'USD') {
-                profit = profit * usdToIlsRate;
-                detail.calculation += ` × ${usdToIlsRate.toFixed(2)} = ₪${formatNumber(profit)}`;
-            } else {
-                detail.calculation += ` = ₪${formatNumber(profit)}`;
             }
             
             detail.profit = profit;
@@ -1818,21 +1818,21 @@ function updateProfitPopover(element, details, period) {
         return;
     }
     
-    // Build detailed breakdown HTML
-    let html = `<div style="max-width: 400px; max-height: 400px; overflow-y: auto;">`;
-    html += `<strong>${period} Profit Breakdown:</strong><hr class="my-2">`;
+    // Build compact breakdown HTML
+    let html = `<div style="max-width: 350px; max-height: 300px; overflow-y: auto; font-size: 0.9rem;">`;
     
     details.forEach((detail, index) => {
-        html += `<div class="mb-2 ${index < details.length - 1 ? 'border-bottom pb-2' : ''}">`;
+        html += `<div class="d-flex justify-content-between align-items-start mb-1 ${index < details.length - 1 ? 'border-bottom pb-1' : ''}">`;
+        html += `<div class="flex-grow-1">`;
         html += `<strong>${detail.name}</strong><br>`;
-        html += `<small class="text-muted">${detail.type}</small><br>`;
-        html += `<small>${detail.calculation}</small><br>`;
-        html += `<strong class="text-success">₪${formatNumber(detail.profit)}</strong>`;
+        html += `<small class="text-muted">${detail.calculation}</small>`;
+        html += `</div>`;
+        html += `<div class="text-end ms-2"><strong class="text-success">₪${formatNumber(detail.profit)}</strong></div>`;
         html += `</div>`;
     });
     
-    html += `<hr class="my-2">`;
-    html += `<div class="text-end"><strong>Total: ₪${formatNumber(details.reduce((sum, d) => sum + d.profit, 0))}</strong></div>`;
+    html += `<hr class="my-1">`;
+    html += `<div class="d-flex justify-content-between"><strong>Total:</strong><strong>₪${formatNumber(details.reduce((sum, d) => sum + d.profit, 0))}</strong></div>`;
     html += `</div>`;
     
     // Set up popover
@@ -1842,7 +1842,7 @@ function updateProfitPopover(element, details, period) {
     element.setAttribute('data-bs-html', 'true');
     element.setAttribute('data-bs-content', html);
     element.style.cursor = 'help';
-    element.setAttribute('title', `${period} Profit Calculation Details`);
+    element.setAttribute('title', `${period} Profit Breakdown`);
     
     // Initialize popover
     new bootstrap.Popover(element);
