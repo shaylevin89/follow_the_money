@@ -695,7 +695,7 @@
       "id": "1747965000000",
       "name": "Naama stocks",
       "is_active": true,
-      "track_profit": true,
+      "track_profit": false,
       "start_date": "2024-07-13",
       "end_date": null,
       "initial_amount": 163353.92,
