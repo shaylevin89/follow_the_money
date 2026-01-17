@@ -475,7 +475,7 @@ function setupForm() {
                 id: Date.now().toString(),
                 name: document.getElementById('investmentName').value,
                 is_active: document.getElementById('isActive').checked,
-                is_static: document.getElementById('isStatic').checked,
+                track_profit: document.getElementById('trackProfit').checked,
                 start_date: document.getElementById('startDate').value,
                 end_date: null,
                 initial_amount: parseFloat(document.getElementById('initialAmount').value),
@@ -1206,7 +1206,7 @@ function renderInvestments() {
                             ${investment.is_active ? 'Active' : 'Inactive'}
                         </span>
                         ${!investment.is_liquid ? '<span class="badge bg-warning ms-2">Illiquid</span>' : ''}
-                        ${investment.is_static ? '<span class="badge bg-info ms-2">Static</span>' : ''}
+                        ${investment.track_profit ? '<span class="badge bg-info ms-2">Track Profit</span>' : ''}
                     </div>
                     <div class="text-muted small">
                         ${investment.investment_type} • Started ${new Date(investment.start_date).toLocaleDateString('en-GB', {day: '2-digit', month: '2-digit', year: '2-digit'})}
@@ -1368,11 +1368,16 @@ function setupFilterUI() {
     
     // Mobile filter modal button
     const filterModalBtn = document.getElementById('filterModalBtn');
-    if (filterModalBtn) {
-        filterModalBtn.addEventListener('click', () => {
-            // Update filter UI before showing modal
+    const filterModal = document.getElementById('filterModal');
+    if (filterModalBtn && filterModal) {
+        // Update filter UI when modal is about to show
+        filterModal.addEventListener('show.bs.modal', () => {
             updateFilterUI();
-            const modal = new bootstrap.Modal(document.getElementById('filterModal'));
+        });
+        
+        // Open modal when button is clicked
+        filterModalBtn.addEventListener('click', () => {
+            const modal = bootstrap.Modal.getOrCreateInstance(filterModal);
             modal.show();
         });
     }
@@ -1485,7 +1490,7 @@ function openEditInvestmentModal(id) {
     document.getElementById('editCurrentAmount').value = investment.current_amount;
     document.getElementById('editIsActive').checked = investment.is_active;
     document.getElementById('editIsLiquid').checked = investment.is_liquid;
-    document.getElementById('editIsStatic').checked = investment.is_static || false;
+    document.getElementById('editTrackProfit').checked = investment.track_profit || false;
     document.getElementById('editLiquidityDate').value = investment.liquidity_date || '';
     // Profit rate logic
     const editProfitRateGroup = document.getElementById('editProfitRateGroup');
@@ -1573,7 +1578,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 investment.current_amount = newAmount;
                 investment.is_active = document.getElementById('editIsActive').checked;
                 investment.is_liquid = document.getElementById('editIsLiquid').checked;
-                investment.is_static = document.getElementById('editIsStatic').checked;
+                investment.track_profit = document.getElementById('editTrackProfit').checked;
                 investment.liquidity_date = document.getElementById('editLiquidityDate').value || (investment.is_liquid ? investment.start_date : null);
                 
                 // Profit rate logic
@@ -1651,7 +1656,7 @@ async function updateTotalValue(usdToIlsRate) {
         // --- Monthly Profit Calculation ---
         let monthlyProfit = 0;
         activeInvestments.filter(inv => 
-            inv.is_static && 
+            inv.track_profit && 
             !excludedTypes.includes(inv.investment_type)
         ).forEach(inv => {
             let profit = 0;
@@ -1694,7 +1699,7 @@ async function updateTotalValue(usdToIlsRate) {
         // --- Yearly Profit Calculation ---
         let yearlyProfit = 0;
         activeInvestments.filter(inv => 
-            inv.is_static && 
+            inv.track_profit && 
             !excludedTypes.includes(inv.investment_type)
         ).forEach(inv => {
             let profit = 0;
