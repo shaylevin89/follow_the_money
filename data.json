@@ -565,14 +565,14 @@
     },
     {
       "id": "1747960000000",
-      "name": "Crypto",
+      "name": "Crypto binance",
       "is_active": true,
       "is_static": true,
       "start_date": "2024-04-28",
       "end_date": null,
       "initial_amount": 1358.43,
       "currency": "USD",
-      "current_amount": 16345.49,
+      "current_amount": 4168,
       "profit_type": "price",
       "notes": "",
       "is_liquid": true,
@@ -602,6 +602,10 @@
         {
           "date": "2025-06-01",
           "amount": 16345.49
+        },
+        {
+          "date": "2026-01-17",
+          "amount": 4168
         }
       ]
     },
