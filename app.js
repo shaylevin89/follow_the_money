@@ -1010,6 +1010,9 @@ async function saveData(token) {
             hideProgress();
         }, 1500);
         
+        // Reset isSaving flag immediately after successful save (before background polling)
+        isSaving = false;
+        
         // Poll GitHub Actions API in background (non-blocking)
         pollWorkflowStatusInBackground(token, commitSha);
         
@@ -1024,7 +1027,7 @@ async function saveData(token) {
         const errorMessage = error.message || 'Failed to save data. Please check console for details.';
         showProgressError(errorMessage);
         showErrorToast(errorMessage);
-    } finally {
+        // Reset flag on error
         isSaving = false;
     }
 }
@@ -1261,21 +1264,11 @@ function updateFilterIndicator() {
     updateFilteredSumDisplay();
 }
 
-// Calculate and display sum of filtered active investments
+// Calculate and display sum of filtered active investments in header
 async function updateFilteredSumDisplay() {
-    const showSumCheckbox = document.getElementById('showFilteredSumCheckbox');
-    const showSumCheckboxMobile = document.getElementById('showFilteredSumCheckboxMobile');
-    const sumDisplay = document.getElementById('filteredSumDisplay');
-    const sumDisplayMobile = document.getElementById('filteredSumDisplayMobile');
+    const sumHeader = document.getElementById('filteredSumHeader');
     
-    // Check if checkbox is checked
-    const showSum = (showSumCheckbox && showSumCheckbox.checked) || (showSumCheckboxMobile && showSumCheckboxMobile.checked);
-    
-    if (!showSum) {
-        if (sumDisplay) sumDisplay.style.display = 'none';
-        if (sumDisplayMobile) sumDisplayMobile.style.display = 'none';
-        return;
-    }
+    if (!sumHeader) return;
     
     // Get filtered active investments
     let filteredInvestments = investmentData.investments.filter(inv => inv.is_active);
@@ -1285,36 +1278,38 @@ async function updateFilteredSumDisplay() {
         filteredInvestments = filteredInvestments.filter(inv => 
             selectedInvestmentTypes.includes(inv.investment_type)
         );
-    }
-    
-    // Calculate sum in ILS
-    const usdToIlsRate = await getUsdToIlsRate();
-    let totalIls = 0;
-    let totalUsd = 0;
-    
-    filteredInvestments.forEach(inv => {
-        const amount = inv.current_amount || inv.initial_amount;
-        if (inv.currency === 'USD') {
-            totalUsd += amount;
-        } else {
-            totalIls += amount;
+        
+        // Only show sum if filters are active
+        if (filteredInvestments.length === 0) {
+            sumHeader.style.display = 'none';
+            return;
         }
-    });
-    
-    // Convert USD to ILS and add to total
-    const totalIlsConverted = totalIls + (totalUsd * usdToIlsRate);
-    
-    // Display sum
-    const displayText = `Total: ₪${formatNumber(totalIlsConverted)}${totalUsd > 0 ? ` ($${formatNumber(totalUsd)} + ₪${formatNumber(totalIls)})` : ''}`;
-    
-    if (sumDisplay) {
-        sumDisplay.textContent = displayText;
-        sumDisplay.style.display = 'block';
-    }
-    
-    if (sumDisplayMobile) {
-        sumDisplayMobile.textContent = displayText;
-        sumDisplayMobile.style.display = 'block';
+        
+        // Calculate sum in ILS
+        const usdToIlsRate = await getUsdToIlsRate();
+        let totalIls = 0;
+        let totalUsd = 0;
+        
+        filteredInvestments.forEach(inv => {
+            const amount = inv.current_amount || inv.initial_amount;
+            if (inv.currency === 'USD') {
+                totalUsd += amount;
+            } else {
+                totalIls += amount;
+            }
+        });
+        
+        // Convert USD to ILS and add to total
+        const totalIlsConverted = totalIls + (totalUsd * usdToIlsRate);
+        
+        // Display sum in header
+        const count = filteredInvestments.length;
+        const displayText = `(${count} ${count === 1 ? 'investment' : 'investments'}: ₪${formatNumber(totalIlsConverted)})`;
+        sumHeader.textContent = displayText;
+        sumHeader.style.display = 'inline';
+    } else {
+        // No filters active - hide sum
+        sumHeader.style.display = 'none';
     }
 }
 
@@ -1359,22 +1354,6 @@ function setupFilterUI() {
             applyInvestmentTypeFilter([]);
             const modal = bootstrap.Modal.getInstance(document.getElementById('filterModal'));
             if (modal) modal.hide();
-        });
-    }
-    
-    // Show filtered sum checkboxes
-    const showSumCheckbox = document.getElementById('showFilteredSumCheckbox');
-    const showSumCheckboxMobile = document.getElementById('showFilteredSumCheckboxMobile');
-    
-    if (showSumCheckbox) {
-        showSumCheckbox.addEventListener('change', () => {
-            updateFilteredSumDisplay();
-        });
-    }
-    
-    if (showSumCheckboxMobile) {
-        showSumCheckboxMobile.addEventListener('change', () => {
-            updateFilteredSumDisplay();
         });
     }
 }
