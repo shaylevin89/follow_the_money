@@ -933,7 +933,7 @@
       "id": "1768635014138",
       "name": "crypto redotpay",
       "is_active": true,
-      "is_static": false,
+      "is_static": true,
       "start_date": "2026-01-17",
       "end_date": null,
       "initial_amount": 4137,
@@ -949,8 +949,7 @@
           "date": "2026-01-17",
           "amount": 4137
         }
-      ],
-      "profit_rate": null
+      ]
     }
   ],
   "metadata": {
