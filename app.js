@@ -430,72 +430,106 @@ function setupForm() {
         });
     }
     
-    // Form validation
+    // Form validation - prevent multiple submissions
+    let isSubmitting = false;
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        // Mark form as validated to show all validation feedback
-        form.classList.add('was-validated');
-        
-        // Validate all fields
-        let isValid = true;
-        formFields.forEach(field => {
-            if (!validateField(field)) {
-                isValid = false;
-            }
-        });
-        
-        if (!isValid) {
-            e.stopPropagation();
+        // Prevent multiple submissions
+        if (isSubmitting) {
             return;
         }
-
-        const type = document.getElementById('investmentType').value;
-        let profitRate = null;
-        if (isLoanType(type)) {
-            profitRate = parseFloat(document.getElementById('profitRate').value);
-            if (isNaN(profitRate)) {
-                document.getElementById('profitRate').focus();
+        
+        isSubmitting = true;
+        
+        try {
+            // Mark form as validated to show all validation feedback
+            form.classList.add('was-validated');
+            
+            // Validate all fields
+            let isValid = true;
+            formFields.forEach(field => {
+                if (!validateField(field)) {
+                    isValid = false;
+                }
+            });
+            
+            if (!isValid) {
+                e.stopPropagation();
+                isSubmitting = false;
                 return;
             }
-        }
 
-        const newInvestment = {
-            id: Date.now().toString(),
-            name: document.getElementById('investmentName').value,
-            is_active: document.getElementById('isActive').checked,
-            is_static: document.getElementById('isStatic').checked,
-            start_date: document.getElementById('startDate').value,
-            end_date: null,
-            initial_amount: parseFloat(document.getElementById('initialAmount').value),
-            currency: document.getElementById('currency').value,
-            current_amount: parseFloat(document.getElementById('initialAmount').value),
-            profit_type: document.getElementById('profitType').value,
-            notes: document.getElementById('notes').value,
-            is_liquid: document.getElementById('isLiquid').checked,
-            investment_type: type,
-            liquidity_date: document.getElementById('liquidityDate').value || 
-                (document.getElementById('isLiquid').checked ? document.getElementById('startDate').value : null),
-            updates: [
-                {
-                    date: document.getElementById('startDate').value,
-                    amount: parseFloat(document.getElementById('initialAmount').value)
+            const type = document.getElementById('investmentType').value;
+            let profitRate = null;
+            if (isLoanType(type)) {
+                profitRate = parseFloat(document.getElementById('profitRate').value);
+                if (isNaN(profitRate)) {
+                    document.getElementById('profitRate').focus();
+                    isSubmitting = false;
+                    return;
                 }
-            ],
-            profit_rate: profitRate
-        };
+            }
 
-        investmentData.investments.push(newInvestment);
-        await saveData(getToken());
-        renderInvestments();
-        
-        // Show success confirmation (saveData already shows progress success, this is additional feedback)
-        // Note: saveData's showProgressSuccess will handle the main success message
-        
-        // Reset form
-        form.reset();
-        form.classList.remove('was-validated');
-        document.getElementById('profitRateGroup').style.display = 'none';
+            const newInvestment = {
+                id: Date.now().toString(),
+                name: document.getElementById('investmentName').value,
+                is_active: document.getElementById('isActive').checked,
+                is_static: document.getElementById('isStatic').checked,
+                start_date: document.getElementById('startDate').value,
+                end_date: null,
+                initial_amount: parseFloat(document.getElementById('initialAmount').value),
+                currency: document.getElementById('currency').value,
+                current_amount: parseFloat(document.getElementById('initialAmount').value),
+                profit_type: document.getElementById('profitType').value,
+                notes: document.getElementById('notes').value,
+                is_liquid: document.getElementById('isLiquid').checked,
+                investment_type: type,
+                liquidity_date: document.getElementById('liquidityDate').value || 
+                    (document.getElementById('isLiquid').checked ? document.getElementById('startDate').value : null),
+                updates: [
+                    {
+                        date: document.getElementById('startDate').value,
+                        amount: parseFloat(document.getElementById('initialAmount').value)
+                    }
+                ],
+                profit_rate: profitRate
+            };
+
+            // Add investment to array
+            investmentData.investments.push(newInvestment);
+            
+            // Save to GitHub
+            const token = getToken();
+            if (!token) {
+                // Remove investment if token is missing
+                investmentData.investments = investmentData.investments.filter(inv => inv.id !== newInvestment.id);
+                showErrorToast('Please provide a valid GitHub token');
+                isSubmitting = false;
+                return;
+            }
+            
+            try {
+                await saveData(token);
+                // Only render and reset form if save was successful
+                renderInvestments();
+                
+                // Reset form
+                form.reset();
+                form.classList.remove('was-validated');
+                document.getElementById('profitRateGroup').style.display = 'none';
+            } catch (error) {
+                // Remove investment if save failed
+                investmentData.investments = investmentData.investments.filter(inv => inv.id !== newInvestment.id);
+                console.error('Failed to save investment:', error);
+                throw error; // Re-throw to be caught by outer catch
+            }
+        } catch (error) {
+            console.error('Error adding investment:', error);
+            // Error toast is already shown by saveData
+        } finally {
+            isSubmitting = false;
+        }
         
         // Clear all validation states
         formFields.forEach(field => {
