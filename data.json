@@ -881,7 +881,7 @@
       "id": "1747955338901",
       "name": "pepper bank account",
       "is_active": true,
-      "is_static": false,
+      "is_static": true,
       "start_date": "2025-05-23",
       "end_date": null,
       "initial_amount": 37043,
