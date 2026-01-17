@@ -911,7 +911,7 @@
       "id": "1768633704248",
       "name": "pepper bank account usd",
       "is_active": true,
-      "is_static": false,
+      "is_static": true,
       "start_date": "2026-01-17",
       "end_date": null,
       "initial_amount": 17537,
@@ -927,8 +927,7 @@
           "date": "2026-01-17",
           "amount": 17537
         }
-      ],
-      "profit_rate": null
+      ]
     },
     {
       "id": "1768635014138",
