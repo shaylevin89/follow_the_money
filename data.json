@@ -932,7 +932,7 @@
       "end_date": null,
       "initial_amount": 17537,
       "currency": "USD",
-      "current_amount": 17537,
+      "current_amount": 17579,
       "profit_type": "price",
       "notes": "",
       "is_liquid": true,
@@ -942,6 +942,10 @@
         {
           "date": "2026-01-17",
           "amount": 17537
+        },
+        {
+          "date": "2026-05-08",
+          "amount": 17579
         }
       ]
     },
