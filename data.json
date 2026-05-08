@@ -902,7 +902,7 @@
       "end_date": null,
       "initial_amount": 37043,
       "currency": "ILS",
-      "current_amount": 217685,
+      "current_amount": 154695,
       "profit_type": "price",
       "notes": "",
       "is_liquid": true,
@@ -920,10 +920,6 @@
         {
           "date": "2026-01-17",
           "amount": 154695
-        },
-        {
-          "date": "2026-05-08",
-          "amount": 217685
         }
       ]
     },
@@ -958,7 +954,7 @@
       "end_date": null,
       "initial_amount": 4137,
       "currency": "USD",
-      "current_amount": 4137,
+      "current_amount": 58,
       "profit_type": "price",
       "notes": "",
       "is_liquid": true,
@@ -968,6 +964,10 @@
         {
           "date": "2026-01-17",
           "amount": 4137
+        },
+        {
+          "date": "2026-05-08",
+          "amount": 58
         }
       ]
     }
