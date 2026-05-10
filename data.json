@@ -274,9 +274,9 @@
       "end_date": null,
       "initial_amount": 37823,
       "currency": "ILS",
-      "current_amount": 71876,
+      "current_amount": 68718,
       "profit_type": "price",
-      "notes": "חשבון 39294396",
+      "notes": "",
       "is_liquid": true,
       "investment_type": "Training_fund",
       "liquidity_date": "2023-07-01",
@@ -340,10 +340,6 @@
         {
           "date": "2026-01-16",
           "amount": 68718
-        },
-        {
-          "date": "2026-05-10",
-          "amount": 71876
         }
       ]
     },
@@ -754,9 +750,9 @@
       "end_date": null,
       "initial_amount": 57702.91,
       "currency": "ILS",
-      "current_amount": 68949,
+      "current_amount": 72165,
       "profit_type": "price",
-      "notes": "",
+      "notes": "חשבון 44725779",
       "is_liquid": false,
       "investment_type": "Training_fund",
       "liquidity_date": "2027-10-31",
@@ -788,6 +784,10 @@
         {
           "date": "2026-01-16",
           "amount": 68949
+        },
+        {
+          "date": "2026-05-10",
+          "amount": 72165
         }
       ]
     },
