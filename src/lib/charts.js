@@ -6,7 +6,7 @@ import { toIls, formatIls } from './domain/money.js';
 function baseScales(theme, { money = true } = {}) {
   return {
     x: {
-      ticks: { color: theme.muted },
+      ticks: { color: theme.muted, maxTicksLimit: 6, maxRotation: 0 },
       grid: { color: 'transparent' },
       border: { color: theme.border },
     },
