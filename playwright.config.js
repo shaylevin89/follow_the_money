@@ -1,72 +1,29 @@
-// @ts-check
 import { defineConfig, devices } from '@playwright/test';
 
-/**
- * Playwright configuration for follow_the_money static site
- * @see https://playwright.dev/docs/test-configuration
- */
 export default defineConfig({
   testDir: './tests/e2e',
-  
-  // Maximum time one test can run
-  timeout: 30 * 1000,
-  
-  // Test execution timeout
-  expect: {
-    // Maximum time expect() should wait for condition
-    timeout: 5000
-  },
-  
-  // Run tests in files in parallel
   fullyParallel: true,
-  
-  // Fail the build on CI if you accidentally left test.only in the source code
   forbidOnly: !!process.env.CI,
-  
-  // Retry on CI only
   retries: process.env.CI ? 2 : 0,
-  
-  // Opt out of parallel tests on CI
-  workers: process.env.CI ? 1 : undefined,
-  
-  // Reporter to use
-  reporter: 'html',
-  
-  // Shared settings for all projects
+  reporter: process.env.CI ? 'github' : 'list',
   use: {
-    // Base URL for tests (use file:// protocol for local static files)
-    baseURL: process.env.BASE_URL || 'http://localhost:3000',
-    
-    // Collect trace when retrying the failed test
+    baseURL: 'http://localhost:4173',
     trace: 'on-first-retry',
-    
-    // Screenshot on failure
-    screenshot: 'only-on-failure',
-    
-    // Video on failure
-    video: 'retain-on-failure',
   },
-
-  // Configure projects for major browsers
   projects: [
     {
-      name: 'chromium',
+      name: 'desktop-chromium',
       use: { ...devices['Desktop Chrome'] },
     },
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      name: 'mobile-pixel7',
+      use: { ...devices['Pixel 7'] },
     },
   ],
-
-  // Run local dev server before starting tests (if needed)
-  // webServer: {
-  //   command: 'python -m http.server 3000',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
+  webServer: {
+    command: 'npm run build && npm run preview -- --port 4173 --strictPort',
+    port: 4173,
+    reuseExistingServer: !process.env.CI,
+    timeout: 120000,
+  },
 });

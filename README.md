@@ -1,162 +1,96 @@
-# Money Management Dashboard
+# Follow the Money
 
-A simple web application to track and manage your passive income sources. This application is designed to be hosted on GitHub Pages and uses GitHub's API for data persistence.
+A personal investment portfolio tracker. Mobile-first Svelte app, hosted as a
+static site, with your data stored as `data.json` in this repository — every
+change is a git commit, so you get full history for free.
 
 ## Features
 
-- Track multiple passive income sources
-- View monthly income summaries
-- Categorize income by type (rental, investment, dividends, etc.)
-- Automatic data persistence using GitHub
-- Clean, modern interface
-- Mobile-responsive design
+- **Dashboard** — total value (₪), monthly/yearly profit with tap-to-expand
+  calculation breakdowns, portfolio-value-over-time chart, liquidity and
+  per-type charts.
+- **Assets** — filter/sort your investments, subtle staleness dots for assets
+  that haven't been updated in a while, per-asset detail with value history
+  chart, return %, and update timeline.
+- **Check-in** — walk over all active assets once a month, type the new
+  values, and save everything as a single commit.
+- **Settings** — GitHub token, staleness threshold, investment types.
 
-## Setup Instructions
+## How it works
 
-### Production Setup (GitHub Pages)
+The app is a static bundle (GitHub Pages / Cloudflare Pages). It reads and
+writes `data.json` in this repo through the GitHub Contents API using a
+personal access token that is stored **only in your browser's localStorage**.
+Conflicts (edits from two devices) are detected via the file SHA and surfaced
+with a reload prompt instead of overwriting.
 
-1. Fork this repository to your GitHub account
-2. Enable GitHub Pages in your repository settings
-3. Create a GitHub Personal Access Token:
-   - Go to GitHub Settings > Developer Settings > Personal Access Tokens
-   - Generate a new token with `repo` scope
-   - Copy the token
+## Setup
 
-4. Access the application with token in URL:
-   ```
-   https://your-username.github.io/repo-name/?token=your-token-here
-   ```
+1. Create a fine-grained GitHub personal access token with read/write access
+   to this repository's contents.
+2. Open the deployed app and paste the token when asked. Done.
 
-### Local Development Setup
+Legacy `?token=<PAT>` URLs still work: the token is adopted into localStorage
+and scrubbed from the URL.
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/follow_the_money.git
-   cd follow_the_money
-   ```
+## Development
 
-2. Create a `.env` file (copy from `.env.example`):
-   ```bash
-   cp .env.example .env
-   ```
+```bash
+npm install
+npm run dev        # local dev server
+npm run build      # production build → dist/
+npm test           # unit tests (vitest)
+npm run test:e2e   # e2e tests (playwright, mocked GitHub API)
+```
 
-3. Edit `.env` and add your GitHub Personal Access Token:
-   ```
-   GITHUB_PAT=your_github_personal_access_token_here
-   ```
+### Structure
 
-4. Generate `config.js` from `.env`:
-   ```bash
-   node load-env.js
-   ```
+```
+src/
+├── lib/
+│   ├── domain/     # pure logic: profit, history, validation, staleness…
+│   ├── data/       # GitHub Contents API, exchange rates, token storage
+│   ├── stores/     # portfolio / settings / ui stores
+│   ├── components/ # reusable UI components
+│   └── charts.js   # Chart.js config builders (pure)
+└── views/          # Dashboard, Assets, AssetDetail, CheckIn, Settings
+```
 
-5. Open `index.html` in your browser:
-   - The application will automatically use the token from `config.js`
-   - No need to add token to URL when developing locally
+`domain/` and `data/` are plain modules with no DOM or Svelte imports; all
+network access goes through an injectable `fetch`, which is what the unit
+tests mock.
 
-**Note:** The `.env` file is gitignored and will not be committed. The `config.js` file is also gitignored and generated locally.
+## Deployment
 
-5. Create the data directory and initial JSON file:
-   ```bash
-   mkdir data
-   echo '{"passiveIncome":[],"lastUpdated":"'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"}' > data/finances.json
-   ```
+- **GitHub Pages**: `.github/workflows/static.yml` builds and deploys `dist/`
+  on push to `main`. Commits that only touch `data.json` do **not** trigger a
+  deploy (the app reads data via the API, so a redeploy would be wasted
+  runner minutes).
+- **Cloudflare Pages**: create a Pages project with build command
+  `npm run build` and output directory `dist`. The bundle uses relative paths
+  (`base: './'`), so no extra configuration is needed.
 
-6. Commit and push your changes:
-   ```bash
-   git add .
-   git commit -m "Initial setup"
-   git push
-   ```
+## Data format
 
-## Usage
-
-1. Open your GitHub Pages URL (usually `https://your-username.github.io/repo-name/`)
-2. Click "Add Income Source" to add new passive income entries
-3. View your monthly summary and total passive income
-4. All changes are automatically saved to your GitHub repository
-
-## Data Structure
-
-The application uses a simple JSON structure to store data:
+`data.json` at the repo root:
 
 ```json
 {
-  "passiveIncome": [
+  "version": "1.0",
+  "lastUpdated": "…",
+  "investments": [
     {
-      "id": 1234567890,
-      "name": "Rental Property A",
-      "amount": 1500.00,
-      "type": "rental",
-      "dateAdded": "2024-03-20T12:00:00Z"
+      "id": "…", "name": "…", "is_active": true, "track_profit": true,
+      "start_date": "YYYY-MM-DD", "initial_amount": 0, "currency": "ILS|USD",
+      "current_amount": 0, "profit_type": "price|commission|other",
+      "investment_type": "…", "is_liquid": false, "profit_rate": 6.75,
+      "updates": [{ "date": "YYYY-MM-DD", "amount": 0 }]
     }
   ],
-  "lastUpdated": "2024-03-20T12:00:00Z"
+  "metadata": {
+    "currencies": ["ILS", "USD"],
+    "profit_types": ["price", "commission", "other"],
+    "investment_types": [{ "name": "…", "exclude_periodical_profit": false }]
+  }
 }
 ```
-
-## Security Note
-
-Your GitHub token is stored in the frontend code. While this is not ideal for production applications, for personal use it's acceptable. However, you should:
-
-1. Use a token with minimal required permissions
-2. Regularly rotate your token
-3. Never share your repository with the token included
-
-## Testing
-
-### Setup
-
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-2. Install Playwright browsers:
-   ```bash
-   npx playwright install
-   ```
-
-### Running Tests
-
-- **Unit tests:** `npm test` (or `npm run test:watch` for watch mode)
-- **E2E tests:** `npm run test:e2e`
-- **All tests:** `npm run test:all`
-- **Coverage:** `npm run test:coverage`
-
-### Test Structure
-
-```
-tests/
-├── e2e/          # End-to-end tests (Playwright)
-├── unit/         # Unit tests (Vitest)
-└── support/      # Test utilities
-    ├── fixtures/ # Test data
-    └── helpers/  # Helper functions
-```
-
-### Test Requirements
-
-- All new code must include automated tests
-- Code coverage must be >80% overall
-- Tests must pass before merging
-- See `_bmad-output/planning-artifacts/testing-standards.md` for detailed requirements
-
-### CI/CD
-
-Tests run automatically on every push and pull request via GitHub Actions:
-
-- **Unit Tests:** Run on every push/PR (fast feedback)
-- **E2E Tests:** Run on every push/PR (comprehensive testing)
-- **Coverage Reports:** Generated and uploaded as artifacts
-
-**View Test Results:**
-- Go to the "Actions" tab in GitHub
-- Click on the latest workflow run
-- View test results and download coverage reports
-
-**Workflow File:** `.github/workflows/test.yml`
-
-## Contributing
-
-Feel free to submit issues and enhancement requests! 
