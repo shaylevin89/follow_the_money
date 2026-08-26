@@ -14,6 +14,10 @@
   --negative: #dc2626;
   --warning: #d97706;
 
+  /* Validated categorical slots (dataviz reference palette, light mode) */
+  --viz-1: #2a78d6;
+  --viz-2: #eb6834;
+
   --radius: 14px;
   --radius-sm: 9px;
   --shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 4px 14px rgba(15, 23, 42, 0.05);
@@ -34,6 +38,8 @@
     --positive: #34d399;
     --negative: #f87171;
     --warning: #fbbf24;
+    --viz-1: #3987e5;
+    --viz-2: #d95926;
     --shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.3);
   }
 }
