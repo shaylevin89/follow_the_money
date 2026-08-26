@@ -5,6 +5,9 @@ export const view = writable({ name: 'dashboard', params: {} });
 
 export function navigate(name, params = {}) {
   view.set({ name, params });
+  if (typeof window !== 'undefined') {
+    window.scrollTo(0, 0);
+  }
 }
 
 export const toasts = writable([]);
