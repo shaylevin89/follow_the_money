@@ -22,6 +22,9 @@ node_modules/
 # Wrangler local state
 .wrangler/
 
+# Generated migration SQL (run scripts/migrate-data.mjs to regenerate)
+migration.sql
+
 # Build outputs (if added later)
 dist/
 build/
