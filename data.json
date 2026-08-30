@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-08-30T09:00:51.146Z",
+  "lastUpdated": "2026-08-30T09:01:14.231Z",
   "investments": [
     {
       "id": "usa1",
@@ -71,7 +71,8 @@
           "amount": 5000
         }
       ],
-      "profit_rate": 6.75
+      "profit_rate": 6.75,
+      "staleness_reminder": false
     },
     {
       "id": "1747948000000",
