@@ -93,6 +93,42 @@ test.describe('assets', () => {
       { asset_id: 'fund1', date: expect.any(String), amount: 14200 },
     ]);
   });
+
+  test('edits an asset and persists the change via PATCH', async ({ page }) => {
+    const { posted } = await installApiMocks(page);
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Assets' }).click();
+    await page.getByText('Training Fund A').click();
+
+    await page.getByRole('button', { name: /edit details/i }).click();
+    await page.getByRole('textbox', { name: 'Name' }).fill('Training Fund A Renamed');
+    await page.getByRole('button', { name: /save changes/i }).click();
+    await expect(page.getByText('Asset updated')).toBeVisible();
+
+    const last = posted.patches.at(-1);
+    expect(last.id).toBe('fund1');
+    expect(last.fields).toMatchObject({ name: 'Training Fund A Renamed' });
+
+    // Mutations reload the portfolio afterwards, so the merged settings from
+    // the mock's PATCH handler should show up in the detail view.
+    await expect(page.getByRole('heading', { name: 'Training Fund A Renamed' })).toBeVisible();
+  });
+
+  test('toggles off the staleness reminder and persists it via PATCH', async ({ page }) => {
+    const { posted } = await installApiMocks(page);
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Assets' }).click();
+    await page.getByText('Training Fund A').click();
+
+    await page.getByRole('button', { name: /edit details/i }).click();
+    await page.getByRole('checkbox', { name: /remind to update/i }).uncheck();
+    await page.getByRole('button', { name: /save changes/i }).click();
+    await expect(page.getByText('Asset updated')).toBeVisible();
+
+    const last = posted.patches.at(-1);
+    expect(last.id).toBe('fund1');
+    expect(last.fields).toMatchObject({ staleness_reminder: false });
+  });
 });
 
 test.describe('check-in', () => {
