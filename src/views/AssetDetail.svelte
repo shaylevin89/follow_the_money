@@ -44,6 +44,7 @@
       is_liquid: fields.is_liquid,
       liquidity_date: fields.liquidity_date,
       track_profit: fields.track_profit,
+      staleness_reminder: fields.staleness_reminder,
       notes: fields.notes,
       ...(fields.profit_rate !== undefined ? { profit_rate: fields.profit_rate } : {}),
     });

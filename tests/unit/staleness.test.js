@@ -19,6 +19,20 @@ describe('isStale', () => {
     expect(isStale(inv, 3, NOW)).toBe(true);
   });
 
+  it('is never stale when the asset opted out of the reminder', () => {
+    const inv = {
+      is_active: true,
+      staleness_reminder: false,
+      updates: [{ date: '2020-01-01', amount: 1 }],
+    };
+    expect(isStale(inv, 3, NOW)).toBe(false);
+  });
+
+  it('defaults to reminding when staleness_reminder is absent', () => {
+    const inv = { is_active: true, updates: [{ date: '2020-01-01', amount: 1 }] };
+    expect(isStale(inv, 3, NOW)).toBe(true);
+  });
+
   it('inactive investments are never stale', () => {
     const inv = { is_active: false, updates: [{ date: '2020-01-01', amount: 1 }] };
     expect(isStale(inv, 3, NOW)).toBe(false);

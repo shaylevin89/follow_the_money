@@ -49,6 +49,14 @@
   box-sizing: border-box;
 }
 
+/* Keep scrolled-to elements clear of the fixed bottom nav (and the check-in
+   footer) — without this, rows scrolled to the viewport bottom sit behind
+   the bars and taps hit the bar instead of the row. */
+html {
+  scroll-padding-top: 72px;
+  scroll-padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom) + 96px);
+}
+
 body {
   margin: 0;
   background: var(--bg);

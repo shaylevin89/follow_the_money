@@ -119,9 +119,11 @@
     font-size: 0.8rem;
   }
 
+  /* Flush against the bottom nav — no gap where a row could show through
+     but be untappable. */
   .footer {
     position: sticky;
-    bottom: calc(var(--nav-height) + env(safe-area-inset-bottom) + 0.5rem);
+    bottom: calc(var(--nav-height) + env(safe-area-inset-bottom));
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -129,8 +131,13 @@
     margin-top: 1rem;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: var(--radius) var(--radius) 0 0;
     box-shadow: var(--shadow);
     padding: 0.6rem 1rem;
+  }
+
+  form {
+    /* Let the last rows scroll clear of the sticky footer. */
+    padding-bottom: 8px;
   }
 </style>

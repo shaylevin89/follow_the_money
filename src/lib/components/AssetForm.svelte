@@ -25,6 +25,7 @@
           is_liquid: inv.is_liquid,
           liquidity_date: inv.liquidity_date || '',
           track_profit: inv.track_profit,
+          staleness_reminder: inv.staleness_reminder !== false,
           notes: inv.notes || '',
         }
       : {
@@ -39,6 +40,7 @@
           is_liquid: false,
           liquidity_date: '',
           track_profit: true,
+          staleness_reminder: true,
           notes: '',
         }
   );
@@ -125,6 +127,7 @@
     <label class="check"><input type="checkbox" bind:checked={fields.is_active} /> Active</label>
     <label class="check"><input type="checkbox" bind:checked={fields.is_liquid} /> Liquid</label>
     <label class="check"><input type="checkbox" bind:checked={fields.track_profit} /> Track profit</label>
+    <label class="check"><input type="checkbox" bind:checked={fields.staleness_reminder} /> Remind to update</label>
   </div>
 
   {#if !fields.is_liquid}

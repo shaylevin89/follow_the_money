@@ -86,6 +86,7 @@ export function createPortfolioStore(client) {
           profit_type: fields.profit_type,
           notes: fields.notes || '',
           is_liquid: fields.is_liquid ?? false,
+          staleness_reminder: fields.staleness_reminder ?? true,
           investment_type: fields.investment_type,
           liquidity_date: fields.liquidity_date || null,
           updates: [{ date: fields.start_date, amount }],

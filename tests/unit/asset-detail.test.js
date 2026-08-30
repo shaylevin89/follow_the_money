@@ -73,6 +73,23 @@ describe('AssetDetail — existing asset', () => {
   });
 });
 
+describe('AssetDetail — staleness reminder toggle', () => {
+  it('persists opting out of the staleness reminder', async () => {
+    const { store } = await makePortfolio();
+    render(AssetDetail, { portfolio: store, rate: 2, id: 'fund1' });
+
+    await userEvent.click(screen.getByRole('button', { name: /edit details/i }));
+    const toggle = screen.getByRole('checkbox', { name: /remind to update/i });
+    expect(toggle).toBeChecked();
+    await userEvent.click(toggle);
+    await userEvent.click(screen.getByRole('button', { name: /save changes/i }));
+
+    expect(
+      get(store.state).data.investments.find((i) => i.id === 'fund1').staleness_reminder
+    ).toBe(false);
+  });
+});
+
 describe('AssetDetail — create mode', () => {
   it('creates a new asset', async () => {
     const { store, client } = await makePortfolio();
