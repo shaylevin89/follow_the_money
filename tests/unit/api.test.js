@@ -172,6 +172,20 @@ describe('createApiClient', () => {
     );
   });
 
+  it('patchType() encodes the name in the URL', async () => {
+    const fetchFn = vi.fn().mockResolvedValue(jsonResponse({ ok: true }));
+    const api = createApiClient({ fetchFn });
+    await api.patchType('a/b c', { exclude_periodical_profit: true });
+    expect(fetchFn).toHaveBeenCalledWith(
+      '/api/types/a%2Fb%20c',
+      expect.objectContaining({
+        method: 'PATCH',
+        credentials: 'same-origin',
+        body: JSON.stringify({ exclude_periodical_profit: true }),
+      })
+    );
+  });
+
   it('propagates the server error message for non-401 failures', async () => {
     const fetchFn = vi.fn().mockResolvedValue(jsonResponse({ error: 'Name is required' }, 400));
     const api = createApiClient({ fetchFn });

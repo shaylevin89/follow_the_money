@@ -71,7 +71,7 @@ export function createApiClient({ fetchFn = fetch } = {}) {
     },
 
     patchType(name, fields) {
-      return request(`/api/types/${name}`, { method: 'PATCH', body: fields });
+      return request(`/api/types/${encodeURIComponent(name)}`, { method: 'PATCH', body: fields });
     },
   };
 }
