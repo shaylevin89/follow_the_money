@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-08-30T09:00:24.176Z",
+  "lastUpdated": "2026-08-30T09:00:36.193Z",
   "investments": [
     {
       "id": "usa1",
@@ -656,7 +656,8 @@
           "date": "2024-04-28",
           "amount": 20061
         }
-      ]
+      ],
+      "staleness_reminder": false
     },
     {
       "id": "1747963000000",
