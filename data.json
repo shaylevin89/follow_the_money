@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-08-30T07:57:49.088Z",
+  "lastUpdated": "2026-08-30T08:16:45.425Z",
   "investments": [
     {
       "id": "usa1",
@@ -984,6 +984,28 @@
         {
           "date": "2026-05-08",
           "amount": 58
+        }
+      ]
+    },
+    {
+      "id": "1788077805425",
+      "name": "Poalim bank account",
+      "is_active": true,
+      "track_profit": false,
+      "start_date": "2026-08-30",
+      "end_date": null,
+      "initial_amount": 11827.96,
+      "currency": "ILS",
+      "current_amount": 11827.96,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": true,
+      "investment_type": "bank",
+      "liquidity_date": null,
+      "updates": [
+        {
+          "date": "2026-08-30",
+          "amount": 11827.96
         }
       ]
     }
