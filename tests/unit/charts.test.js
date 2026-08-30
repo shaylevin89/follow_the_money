@@ -5,6 +5,7 @@ import {
   typeConfig,
   currencyConfig,
   topAssetsConfig,
+  typeHistoryConfig,
 } from '../../src/lib/charts.js';
 import { sampleData } from './fixtures/sample-data.js';
 
@@ -62,6 +63,48 @@ describe('topAssetsConfig', () => {
     expect(cfg.options.indexAxis).toBe('y');
     expect(cfg.data.labels).toEqual(['USA Real Estate Loan 1', 'Pension X']); // 70000, 60000
     expect(cfg.data.datasets[0].data).toEqual([70000, 60000]);
+  });
+});
+
+describe('doughnut numbers (liquidity & currency)', () => {
+  it('legend entries carry value and percentage', () => {
+    const { investments } = sampleData();
+    const cfg = liquidityConfig(investments, 2, THEME);
+    const fakeChart = {
+      data: cfg.data,
+    };
+    const labels = cfg.options.plugins.legend.labels.generateLabels(fakeChart);
+    // liquid 13000 / total 143000 ≈ 9%
+    expect(labels[0].text).toBe('Liquid · ₪13,000 · 9%');
+    expect(labels[1].text).toBe('Not liquid · ₪130,000 · 91%');
+  });
+
+  it('includes a center-total plugin', () => {
+    const { investments } = sampleData();
+    const cfg = currencyConfig(investments, 2, THEME);
+    expect(cfg.plugins?.[0]?.id).toBe('centerTotal');
+    expect(typeof cfg.plugins[0].afterDraw).toBe('function');
+  });
+});
+
+describe('typeHistoryConfig', () => {
+  it('builds stacked yearly bars, one dataset per type', () => {
+    const cfg = typeHistoryConfig(
+      {
+        years: [2020, 2021],
+        series: [
+          { type: 'stocks', values: [100, 200] },
+          { type: 'crypto', values: [0, 50] },
+        ],
+      },
+      THEME
+    );
+    expect(cfg.type).toBe('bar');
+    expect(cfg.data.labels).toEqual(['2020', '2021']);
+    expect(cfg.data.datasets.map((d) => d.label)).toEqual(['stocks', 'crypto']);
+    expect(cfg.data.datasets[0].data).toEqual([100, 200]);
+    expect(cfg.options.scales.x.stacked).toBe(true);
+    expect(cfg.options.scales.y.stacked).toBe(true);
   });
 });
 

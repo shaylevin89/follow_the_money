@@ -14,7 +14,16 @@
       muted: read('--muted', '#64748b'),
       border: read('--border', '#e2e8f0'),
       surface: read('--surface', '#ffffff'),
-      series: [read('--viz-1', '#2a78d6'), read('--viz-2', '#eb6834')],
+      series: [
+        read('--viz-1', '#2a78d6'),
+        read('--viz-2', '#eb6834'),
+        read('--viz-3', '#1baf7a'),
+        read('--viz-4', '#eda100'),
+        read('--viz-5', '#e87ba4'),
+        read('--viz-6', '#008300'),
+        read('--viz-7', '#4a3aa7'),
+        read('--viz-8', '#e34948'),
+      ],
     };
   }
 

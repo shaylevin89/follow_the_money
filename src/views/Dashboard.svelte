@@ -1,13 +1,14 @@
 <script>
   import { totalValueIls } from '../lib/domain/money.js';
   import { profitBreakdown } from '../lib/domain/profit.js';
-  import { portfolioHistory } from '../lib/domain/history.js';
+  import { portfolioHistory, typeHistoryByYear } from '../lib/domain/history.js';
   import {
     portfolioHistoryConfig,
     liquidityConfig,
     typeConfig,
     currencyConfig,
     topAssetsConfig,
+    typeHistoryConfig,
   } from '../lib/charts.js';
   import { portfolioStats } from '../lib/domain/stats.js';
   import { settings } from '../lib/stores/settings.js';
@@ -25,6 +26,7 @@
   const yearly = $derived(profitBreakdown(investments, metadata, rate, 365));
   const history = $derived(portfolioHistory(investments, rate));
   const stats = $derived(portfolioStats(investments, rate, $settings.stalenessMonths));
+  const typeHistory = $derived(typeHistoryByYear(investments, rate));
 </script>
 
 <h1>Dashboard</h1>
@@ -70,6 +72,15 @@
       height={220}
       buildConfig={(theme) => topAssetsConfig(investments, rate, theme, 5)}
     />
+    {#if typeHistory.years.length > 1}
+      <div class="wide">
+        <ChartCard
+          title="By type over the years"
+          height={320}
+          buildConfig={(theme) => typeHistoryConfig(typeHistory, theme)}
+        />
+      </div>
+    {/if}
   {/key}
 </div>
 

@@ -21,6 +21,78 @@ function baseScales(theme, { money = true } = {}) {
   };
 }
 
+// Doughnut with readable numbers: legend entries carry value + share, and the
+// total is drawn in the center hole.
+function doughnutConfig(labels, values, theme) {
+  const total = values.reduce((a, b) => a + b, 0);
+  return {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [
+        {
+          data: values,
+          backgroundColor: labels.map((_, i) => theme.series[i % theme.series.length]),
+          borderColor: theme.surface || '#fff',
+          borderWidth: 2,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '65%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            color: theme.text,
+            boxWidth: 14,
+            generateLabels(chart) {
+              const data = chart.data.datasets[0].data;
+              const sum = data.reduce((a, b) => a + b, 0) || 1;
+              return chart.data.labels.map((label, i) => ({
+                text: `${label} · ${formatIls(data[i])} · ${Math.round((data[i] / sum) * 100)}%`,
+                fillStyle: chart.data.datasets[0].backgroundColor[i],
+                strokeStyle: 'transparent',
+                fontColor: theme.text,
+                index: i,
+              }));
+            },
+          },
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) =>
+              ` ${ctx.label}: ${formatIls(ctx.parsed)} (${Math.round((ctx.parsed / (total || 1)) * 100)}%)`,
+          },
+        },
+      },
+    },
+    plugins: [
+      {
+        id: 'centerTotal',
+        afterDraw(chart) {
+          const { ctx } = chart;
+          const meta = chart.getDatasetMeta(0);
+          if (!meta?.data?.[0]) return;
+          const { x, y } = meta.data[0];
+          ctx.save();
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = theme.muted;
+          ctx.font = '11px system-ui, sans-serif';
+          ctx.fillText('Total', x, y - 12);
+          ctx.fillStyle = theme.text;
+          ctx.font = '600 15px system-ui, sans-serif';
+          ctx.fillText(formatIls(total), x, y + 7);
+          ctx.restore();
+        },
+      },
+    ],
+  };
+}
+
 const tooltipMoney = {
   callbacks: {
     label: (ctx) => ` ${formatIls(ctx.parsed.y ?? ctx.parsed.x ?? ctx.parsed)}`,
@@ -67,31 +139,11 @@ export function liquidityConfig(investments, usdToIlsRate, theme) {
         .filter(pred)
         .reduce((s, inv) => s + toIls(currentAmount(inv), inv.currency, usdToIlsRate), 0)
     );
-  return {
-    type: 'doughnut',
-    data: {
-      labels: ['Liquid', 'Not liquid'],
-      datasets: [
-        {
-          data: [sum((i) => i.is_liquid), sum((i) => !i.is_liquid)],
-          backgroundColor: [theme.series[0], theme.series[1]],
-          borderColor: theme.surface || '#fff',
-          borderWidth: 2,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: '65%',
-      plugins: {
-        legend: { position: 'bottom', labels: { color: theme.text, boxWidth: 14 } },
-        tooltip: {
-          callbacks: { label: (ctx) => ` ${ctx.label}: ${formatIls(ctx.parsed)}` },
-        },
-      },
-    },
-  };
+  return doughnutConfig(
+    ['Liquid', 'Not liquid'],
+    [sum((i) => i.is_liquid), sum((i) => !i.is_liquid)],
+    theme
+  );
 }
 
 export function currencyConfig(investments, usdToIlsRate, theme) {
@@ -102,27 +154,48 @@ export function currencyConfig(investments, usdToIlsRate, theme) {
         .filter((inv) => inv.currency === currency)
         .reduce((s, inv) => s + toIls(currentAmount(inv), inv.currency, usdToIlsRate), 0)
     );
+  return doughnutConfig(['ILS', 'USD'], [sum('ILS'), sum('USD')], theme);
+}
+
+export function typeHistoryConfig(history, theme) {
+  const { years, series } = history;
   return {
-    type: 'doughnut',
+    type: 'bar',
     data: {
-      labels: ['ILS', 'USD'],
-      datasets: [
-        {
-          data: [sum('ILS'), sum('USD')],
-          backgroundColor: [theme.series[0], theme.series[1]],
-          borderColor: theme.surface || '#fff',
-          borderWidth: 2,
-        },
-      ],
+      labels: years.map(String),
+      datasets: series.map((s, i) => ({
+        label: s.type,
+        data: s.values,
+        backgroundColor: theme.series[i % theme.series.length],
+        stack: 'total',
+        borderRadius: 2,
+        maxBarThickness: 44,
+      })),
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: '65%',
+      interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: { position: 'bottom', labels: { color: theme.text, boxWidth: 14 } },
+        legend: { position: 'bottom', labels: { color: theme.text, boxWidth: 12 } },
         tooltip: {
-          callbacks: { label: (ctx) => ` ${ctx.label}: ${formatIls(ctx.parsed)}` },
+          callbacks: {
+            label: (ctx) => ` ${ctx.dataset.label}: ${formatIls(ctx.parsed.y)}`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          stacked: true,
+          ticks: { color: theme.muted, maxRotation: 0 },
+          grid: { color: 'transparent' },
+          border: { color: theme.border },
+        },
+        y: {
+          stacked: true,
+          ticks: { color: theme.muted, callback: (v) => formatIls(v) },
+          grid: { color: theme.border },
+          border: { display: false },
         },
       },
     },
