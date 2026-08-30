@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-08-30T08:18:05.830Z",
+  "lastUpdated": "2026-08-30T08:20:04.150Z",
   "investments": [
     {
       "id": "usa1",
@@ -1006,6 +1006,28 @@
         {
           "date": "2026-08-30",
           "amount": 11827.96
+        }
+      ]
+    },
+    {
+      "id": "1788078004150",
+      "name": "Poalim stocks",
+      "is_active": true,
+      "track_profit": true,
+      "start_date": "2026-08-30",
+      "end_date": null,
+      "initial_amount": 88741.56,
+      "currency": "ILS",
+      "current_amount": 88741.56,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": true,
+      "investment_type": "stocks",
+      "liquidity_date": null,
+      "updates": [
+        {
+          "date": "2026-08-30",
+          "amount": 88741.56
         }
       ]
     }
