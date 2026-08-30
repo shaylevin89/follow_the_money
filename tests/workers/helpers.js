@@ -34,8 +34,12 @@ export async function seedUser(db, username, password) {
  * @param {object} opts.env - the workers `env` (e.g. { DB } from cloudflare:test)
  * @param {string} [opts.ip] - value for the CF-Connecting-IP header
  * @param {string} [opts.path='/api/x'] - request path
+ * @param {object} [opts.params] - Pages Functions dynamic route params, e.g. { id: 'x' }
  */
-export async function callFn(mod, { method = 'POST', body, cookie, env, ip, path = '/api/x' } = {}) {
+export async function callFn(
+  mod,
+  { method = 'POST', body, cookie, env, ip, path = '/api/x', params = {} } = {}
+) {
   const headers = {};
   if (cookie) headers.Cookie = cookie;
   if (ip) headers['CF-Connecting-IP'] = ip;
@@ -47,11 +51,18 @@ export async function callFn(mod, { method = 'POST', body, cookie, env, ip, path
   }
 
   const request = new Request(`https://app.test${path}`, init);
-  const context = { request, env, params: {} };
+  const context = { request, env, params };
 
-  const handler = method === 'GET' ? mod.onRequestGet : mod.onRequestPost;
+  const HANDLERS = {
+    GET: 'onRequestGet',
+    POST: 'onRequestPost',
+    PATCH: 'onRequestPatch',
+    DELETE: 'onRequestDelete',
+  };
+  const handlerName = HANDLERS[method];
+  const handler = handlerName && mod[handlerName];
   if (!handler) {
-    throw new Error(`Module has no onRequest${method === 'GET' ? 'Get' : 'Post'} handler`);
+    throw new Error(`Module has no ${handlerName || `onRequest for ${method}`} handler`);
   }
   return handler(context);
 }
