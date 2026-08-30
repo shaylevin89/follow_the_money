@@ -23,7 +23,7 @@ export function createPortfolioStore(api) {
     state.update((s) => ({ ...s, loading: true, error: null }));
     try {
       const data = await api.loadPortfolio();
-      state.update((s) => ({ ...s, data, loading: false }));
+      state.update((s) => ({ ...s, data, loading: false, authRequired: false }));
     } catch (e) {
       if (e instanceof AuthError) {
         state.update((s) => ({ ...s, loading: false, authRequired: true }));

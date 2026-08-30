@@ -139,4 +139,22 @@ describe('portfolio store', () => {
     await expect(freshStore.load()).rejects.toBeInstanceOf(AuthError);
     expect(get(freshStore.state).authRequired).toBe(true);
   });
+
+  it('clears authRequired on the next successful load() after an AuthError', async () => {
+    api.patchAsset.mockRejectedValueOnce(new AuthError());
+    await store.updateInvestment('fund1', { name: 'X' });
+    expect(get(store.state).authRequired).toBe(true);
+
+    await store.load();
+    expect(get(store.state).authRequired).toBe(false);
+  });
+
+  it('clears authRequired on the next successful mutation after an AuthError', async () => {
+    api.patchAsset.mockRejectedValueOnce(new AuthError());
+    await store.updateInvestment('fund1', { name: 'X' });
+    expect(get(store.state).authRequired).toBe(true);
+
+    await store.updateInvestment('fund1', { name: 'Y' });
+    expect(get(store.state).authRequired).toBe(false);
+  });
 });

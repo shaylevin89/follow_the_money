@@ -50,12 +50,19 @@
       });
   });
 
-  // Session expired mid-use: flip back to the login screen.
+  // Session expired mid-use: flip back to the login screen. Edge-triggered
+  // (fires only when authRequired newly becomes true) so that re-logging in
+  // and reloading — which clears authRequired asynchronously — doesn't get
+  // undone by this effect re-running on the store's other, unrelated
+  // updates while the stale flag is still true.
+  let wasAuthRequired = false;
   $effect(() => {
-    if ($pstate.authRequired) {
+    const isAuthRequired = $pstate.authRequired;
+    if (isAuthRequired && !wasAuthRequired) {
       authed = false;
       loaded = false;
     }
+    wasAuthRequired = isAuthRequired;
   });
 
   async function handleLogin(loginUsername, password) {
