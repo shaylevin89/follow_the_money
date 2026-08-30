@@ -6,11 +6,10 @@ import { createPortfolioStore } from '../../src/lib/stores/portfolio.js';
 import { sampleData } from './fixtures/sample-data.js';
 
 async function makePortfolio(data = sampleData()) {
-  const client = {
-    load: vi.fn().mockResolvedValue({ data, sha: 's' }),
-    save: vi.fn().mockResolvedValue({ sha: 's2' }),
+  const api = {
+    loadPortfolio: vi.fn().mockResolvedValue(data),
   };
-  const store = createPortfolioStore(client);
+  const store = createPortfolioStore(api);
   await store.load();
   return store;
 }

@@ -13,11 +13,10 @@ vi.mock('chart.js/auto', () => ({
 }));
 
 async function makePortfolio() {
-  const client = {
-    load: vi.fn().mockResolvedValue({ data: sampleData(), sha: 's' }),
-    save: vi.fn().mockResolvedValue({ sha: 's2' }),
+  const api = {
+    loadPortfolio: vi.fn().mockResolvedValue(sampleData()),
   };
-  const store = createPortfolioStore(client);
+  const store = createPortfolioStore(api);
   await store.load();
   return store;
 }

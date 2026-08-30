@@ -6,15 +6,13 @@ import CheckIn from '../../src/views/CheckIn.svelte';
 import Settings from '../../src/views/Settings.svelte';
 import { createPortfolioStore } from '../../src/lib/stores/portfolio.js';
 import { sampleData } from './fixtures/sample-data.js';
+import { makeFakeApi } from './fixtures/fake-api.js';
 
 async function makePortfolio() {
-  const client = {
-    load: vi.fn().mockResolvedValue({ data: sampleData(), sha: 's' }),
-    save: vi.fn().mockResolvedValue({ sha: 's2' }),
-  };
-  const store = createPortfolioStore(client);
+  const api = makeFakeApi(sampleData());
+  const store = createPortfolioStore(api);
   await store.load();
-  return { store, client };
+  return { store, api };
 }
 
 describe('CheckIn view', () => {
@@ -26,7 +24,7 @@ describe('CheckIn view', () => {
   });
 
   it('saves only filled values, in a single commit', async () => {
-    const { store, client } = await makePortfolio();
+    const { store, api } = await makePortfolio();
     render(CheckIn, { portfolio: store });
 
     await userEvent.type(screen.getByLabelText(/new value for Training Fund A/i), '15500');
@@ -38,7 +36,7 @@ describe('CheckIn view', () => {
     expect(data.investments.find((i) => i.id === 'pension1').current_amount).toBe(62000);
     // usa1 untouched
     expect(data.investments.find((i) => i.id === 'usa1').current_amount).toBe(35000);
-    expect(client.save).toHaveBeenCalledTimes(1);
+    expect(api.postUpdates).toHaveBeenCalledTimes(1);
   });
 
   it('disables save with nothing filled', async () => {

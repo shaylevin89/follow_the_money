@@ -5,6 +5,7 @@ import { get } from 'svelte/store';
 import AssetDetail from '../../src/views/AssetDetail.svelte';
 import { createPortfolioStore } from '../../src/lib/stores/portfolio.js';
 import { sampleData } from './fixtures/sample-data.js';
+import { makeFakeApi } from './fixtures/fake-api.js';
 
 vi.mock('chart.js/auto', () => ({
   default: class ChartMock {
@@ -14,13 +15,10 @@ vi.mock('chart.js/auto', () => ({
 }));
 
 async function makePortfolio() {
-  const client = {
-    load: vi.fn().mockResolvedValue({ data: sampleData(), sha: 's' }),
-    save: vi.fn().mockResolvedValue({ sha: 's2' }),
-  };
-  const store = createPortfolioStore(client);
+  const api = makeFakeApi(sampleData());
+  const store = createPortfolioStore(api);
   await store.load();
-  return { store, client };
+  return { store, api };
 }
 
 describe('AssetDetail — existing asset', () => {
@@ -34,7 +32,7 @@ describe('AssetDetail — existing asset', () => {
   });
 
   it('adds a value update through the form', async () => {
-    const { store, client } = await makePortfolio();
+    const { store, api } = await makePortfolio();
     render(AssetDetail, { portfolio: store, rate: 2, id: 'fund1' });
 
     await userEvent.type(screen.getByLabelText(/new amount/i), '14000');
@@ -42,7 +40,7 @@ describe('AssetDetail — existing asset', () => {
 
     const inv = get(store.state).data.investments.find((i) => i.id === 'fund1');
     expect(inv.current_amount).toBe(14000);
-    expect(client.save).toHaveBeenCalledTimes(1);
+    expect(api.postUpdates).toHaveBeenCalledTimes(1);
   });
 
   it('deletes after confirmation', async () => {
@@ -92,7 +90,7 @@ describe('AssetDetail — staleness reminder toggle', () => {
 
 describe('AssetDetail — create mode', () => {
   it('creates a new asset', async () => {
-    const { store, client } = await makePortfolio();
+    const { store, api } = await makePortfolio();
     render(AssetDetail, { portfolio: store, rate: 2, id: null });
 
     await userEvent.type(screen.getByLabelText(/^name$/i), 'Gold Bar');
@@ -105,11 +103,11 @@ describe('AssetDetail — create mode', () => {
     const added = get(store.state).data.investments.find((i) => i.name === 'Gold Bar');
     expect(added).toBeTruthy();
     expect(added.updates).toEqual([{ date: '2024-01-15', amount: 2500 }]);
-    expect(client.save).toHaveBeenCalledTimes(1);
+    expect(api.createAsset).toHaveBeenCalledTimes(1);
   });
 
   it('blocks duplicate name + start date', async () => {
-    const { store, client } = await makePortfolio();
+    const { store, api } = await makePortfolio();
     render(AssetDetail, { portfolio: store, rate: 2, id: null });
 
     await userEvent.type(screen.getByLabelText(/^name$/i), 'Training Fund A');
@@ -119,6 +117,6 @@ describe('AssetDetail — create mode', () => {
     await userEvent.click(screen.getByRole('button', { name: /add asset/i }));
 
     expect(screen.getByText(/already exists/i)).toBeInTheDocument();
-    expect(client.save).not.toHaveBeenCalled();
+    expect(api.createAsset).not.toHaveBeenCalled();
   });
 });
