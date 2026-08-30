@@ -5,4 +5,4 @@ pages_build_output_dir = "dist"
 [[d1_databases]]
 binding = "DB"
 database_name = "follow-the-money"
-database_id = "placeholder-filled-in-task-8"
+database_id = "c810d2d7-9172-4eba-b753-66c6aaf8fa1d"
