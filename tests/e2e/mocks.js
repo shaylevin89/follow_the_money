@@ -40,6 +40,8 @@ export function e2eData() {
         liquidity_date: null,
         updates: [
           { date: '2020-01-01', amount: 10000 },
+          // Duplicate date: legacy data contains these; detail view must not crash.
+          { date: '2022-01-01', amount: 12500 },
           { date: '2022-01-01', amount: 13000 },
         ],
       },

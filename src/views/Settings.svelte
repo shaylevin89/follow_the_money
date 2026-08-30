@@ -51,7 +51,7 @@
 <section class="card">
   <h3>Investment types</h3>
   <ul class="types">
-    {#each types as t, idx (t.name)}
+    {#each types as t, idx (`${t.name}#${idx}`)}
       <li>
         <span class="name">{t.name}</span>
         <label class="inline small">

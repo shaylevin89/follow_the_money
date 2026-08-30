@@ -8,7 +8,8 @@
 </script>
 
 <ul>
-  {#each sorted as u, i (u.date)}
+  <!-- Key includes the index: legacy data can contain duplicate dates. -->
+  {#each sorted as u, i (`${u.date}#${i}`)}
     {@const prev = sorted[i + 1]}
     <li>
       <span class="date muted">{u.date}</span>

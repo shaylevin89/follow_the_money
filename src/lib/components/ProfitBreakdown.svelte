@@ -9,7 +9,7 @@
     <p class="muted">No investments with profit tracking enabled.</p>
   {:else}
     <ul>
-      {#each details as d (d.name)}
+      {#each details as d, i (`${d.name}#${i}`)}
         <li>
           <div class="who">
             <span class="name">{d.name}</span>
