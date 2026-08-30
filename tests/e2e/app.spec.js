@@ -149,6 +149,24 @@ test.describe('assets', () => {
   });
 });
 
+test.describe('back navigation', () => {
+  test('browser/PWA back returns to the previous view instead of leaving', async ({ page }) => {
+    await installApiMocks(page);
+    await page.goto('/');
+    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+
+    await page.getByRole('button', { name: 'Assets' }).click();
+    await expect(page.getByRole('heading', { name: 'Assets' })).toBeVisible();
+    await page.getByText('Training Fund A').click();
+    await expect(page.getByText(/since start/)).toBeVisible();
+
+    await page.goBack();
+    await expect(page.getByRole('heading', { name: 'Assets' })).toBeVisible();
+    await page.goBack();
+    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+  });
+});
+
 test.describe('check-in', () => {
   test('bulk updates changed assets in a single /api/updates POST', async ({ page }) => {
     const { posted } = await installApiMocks(page);

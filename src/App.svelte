@@ -2,7 +2,7 @@
   import { createApiClient, AuthError } from './lib/data/api.js';
   import { getUsdToIlsRate } from './lib/data/rates.js';
   import { createPortfolioStore } from './lib/stores/portfolio.js';
-  import { view, toast } from './lib/stores/ui.js';
+  import { view, toast, initHistory } from './lib/stores/ui.js';
   import NavBar from './lib/components/NavBar.svelte';
   import Toasts from './lib/components/Toasts.svelte';
   import LoginGate from './lib/components/LoginGate.svelte';
@@ -15,6 +15,8 @@
   const api = createApiClient();
   const portfolio = createPortfolioStore(api);
   const pstate = portfolio.state;
+
+  $effect(() => initHistory());
 
   let authed = $state(false);
   let mustChange = $state(false);

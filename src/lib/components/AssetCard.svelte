@@ -1,14 +1,20 @@
 <script>
   import { formatIls, formatNumber, toIls } from '../domain/money.js';
-  import { currentAmount } from '../domain/investments.js';
+  import { currentAmount, lastUpdate } from '../domain/investments.js';
 
-  let { inv, rate, stale = false, onclick } = $props();
+  let { inv, rate, stale = false, typeIndex = 0, onclick } = $props();
 
   const amount = $derived(currentAmount(inv));
   const ils = $derived(toIls(amount, inv.currency, rate));
+  const latest = $derived(lastUpdate(inv));
+  const returnPct = $derived(
+    inv.initial_amount > 0 ? ((amount - inv.initial_amount) / inv.initial_amount) * 100 : null
+  );
+  // Stable, muted per-type color from the validated palette (8 slots).
+  const typeColor = $derived(`var(--viz-${(typeIndex % 8) + 1})`);
 </script>
 
-<button class="card asset" {onclick}>
+<button class="card asset" style="--type-color: {typeColor}" {onclick}>
   <div class="left">
     <span class="name">
       {inv.name}
@@ -17,16 +23,27 @@
       {/if}
     </span>
     <span class="meta">
-      <span class="chip">{inv.investment_type}</span>
+      <span class="chip type-chip"><span class="type-dot" aria-hidden="true"></span>{inv.investment_type}</span>
+      {#if inv.is_liquid}
+        <span class="chip liquid">liquid</span>
+      {/if}
       {#if !inv.is_active}
         <span class="chip inactive">inactive</span>
       {/if}
     </span>
+    {#if latest}
+      <span class="muted updated">updated {latest.date}</span>
+    {/if}
   </div>
   <div class="right">
     <strong>{formatIls(ils)}</strong>
     {#if inv.currency !== 'ILS'}
       <span class="muted native">${formatNumber(amount)}</span>
+    {/if}
+    {#if returnPct !== null && inv.is_active}
+      <span class="return" class:positive={returnPct >= 0} class:negative={returnPct < 0}>
+        {returnPct >= 0 ? '+' : ''}{returnPct.toFixed(1)}%
+      </span>
     {/if}
   </div>
 </button>
@@ -40,13 +57,14 @@
     width: 100%;
     text-align: left;
     border: 1px solid var(--border);
+    border-left: 3px solid var(--type-color);
     padding: 0.8rem 1rem;
     color: inherit;
   }
 
   .left {
     display: grid;
-    gap: 0.25rem;
+    gap: 0.3rem;
     min-width: 0;
   }
 
@@ -71,8 +89,30 @@
     flex-wrap: wrap;
   }
 
+  .type-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .type-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--type-color);
+    flex: 0 0 auto;
+  }
+
+  .chip.liquid {
+    color: var(--positive);
+  }
+
   .chip.inactive {
     color: var(--negative);
+  }
+
+  .updated {
+    font-size: 0.75rem;
   }
 
   .right {
@@ -88,5 +128,11 @@
 
   .native {
     font-size: 0.8rem;
+  }
+
+  .return {
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
   }
 </style>

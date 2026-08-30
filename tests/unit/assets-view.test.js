@@ -38,6 +38,15 @@ describe('Assets view', () => {
     expect(screen.getByText(/filtered total/i).textContent).toContain('₪13,000');
   });
 
+  it('shows last-updated date, liquid chip, and return % on cards', async () => {
+    const portfolio = await makePortfolio();
+    render(Assets, { portfolio, rate: 2 });
+    // fund1: last update 2022-01-01, liquid, +30% (13000 vs 10000)
+    expect(screen.getByText('updated 2022-01-01')).toBeInTheDocument();
+    expect(screen.getByText('liquid')).toBeInTheDocument();
+    expect(screen.getByText('+30.0%')).toBeInTheDocument();
+  });
+
   it('marks stale assets with a dot', async () => {
     // fund1's last update is 2022-01-01 — stale for any recent "now".
     const portfolio = await makePortfolio();

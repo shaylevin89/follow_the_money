@@ -21,6 +21,11 @@
   const allTypes = $derived(
     [...new Set(investments.map((i) => i.investment_type))].sort((a, b) => a.localeCompare(b))
   );
+  // Stable per-type color index: order of the metadata types list, so colors
+  // match across sessions and don't shift with filters.
+  const typeOrder = $derived(
+    ($pstate.data.metadata?.investment_types || []).map((t) => t.name)
+  );
   const visible = $derived(
     sortInvestments(
       filterByTypes(
@@ -62,6 +67,7 @@
       {inv}
       {rate}
       stale={isStale(inv, $settings.stalenessMonths)}
+      typeIndex={Math.max(0, typeOrder.indexOf(inv.investment_type))}
       onclick={() => navigate('asset', { id: inv.id })}
     />
   {/each}
