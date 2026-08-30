@@ -55,13 +55,20 @@
     const result = validateInvestment(fields, investments, inv?.id ?? null);
     errors = result.errors;
     if (!result.valid) return;
-    onsubmit({
+    const payload = {
       ...fields,
-      initial_amount: Number(fields.initial_amount),
       profit_rate: showRate && fields.profit_rate !== '' ? Number(fields.profit_rate) : undefined,
       liquidity_date: fields.liquidity_date || null,
       notes: fields.notes,
-    });
+    };
+    if (inv) {
+      // Edit mode: initial_amount is read-only here (amount changes go
+      // through the "Update value" flow instead), so it's never sent.
+      delete payload.initial_amount;
+    } else {
+      payload.initial_amount = Number(fields.initial_amount);
+    }
+    onsubmit(payload);
   }
 </script>
 
@@ -96,7 +103,15 @@
   <div class="row">
     <label>
       Initial amount
-      <input type="number" inputmode="decimal" step="any" bind:value={fields.initial_amount} required />
+      <input
+        type="number"
+        inputmode="decimal"
+        step="any"
+        bind:value={fields.initial_amount}
+        required
+        disabled={!!inv}
+        readonly={!!inv}
+      />
       {#if errors.initial_amount}<span class="field-error">{errors.initial_amount}</span>{/if}
     </label>
     <label>

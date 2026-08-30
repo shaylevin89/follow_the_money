@@ -1,61 +1,96 @@
 <script>
-  import { getToken, setToken } from './lib/data/token.js';
-  import { createGithubClient } from './lib/data/github.js';
+  import { createApiClient, AuthError } from './lib/data/api.js';
   import { getUsdToIlsRate } from './lib/data/rates.js';
   import { createPortfolioStore } from './lib/stores/portfolio.js';
-  import { REPO_OWNER, REPO_NAME, DATA_FILE } from './lib/config.js';
   import { view, toast } from './lib/stores/ui.js';
   import NavBar from './lib/components/NavBar.svelte';
   import Toasts from './lib/components/Toasts.svelte';
-  import TokenGate from './lib/components/TokenGate.svelte';
+  import LoginGate from './lib/components/LoginGate.svelte';
   import Dashboard from './views/Dashboard.svelte';
   import Assets from './views/Assets.svelte';
   import AssetDetail from './views/AssetDetail.svelte';
   import CheckIn from './views/CheckIn.svelte';
   import Settings from './views/Settings.svelte';
 
-  let token = $state(
-    getToken({ storage: localStorage, location: window.location, history: window.history })
-  );
-  let portfolio = $state(null);
+  const api = createApiClient();
+  const portfolio = createPortfolioStore(api);
+  const pstate = portfolio.state;
+
+  let authed = $state(false);
+  let mustChange = $state(false);
+  let username = $state('');
   let rate = $state(3.65);
+  let loaded = $state(false);
 
-  $effect(() => {
-    if (token && !portfolio) {
-      const client = createGithubClient({
-        owner: REPO_OWNER,
-        repo: REPO_NAME,
-        path: DATA_FILE,
-        token,
-      });
-      const store = createPortfolioStore(client);
-      portfolio = store;
-      store.load().catch((e) => toast(`Failed to load data: ${e.message}`, 'error', 6000));
-      getUsdToIlsRate({ storage: localStorage }).then((r) => (rate = r));
-    }
-  });
-
-  function saveToken(value) {
-    setToken(localStorage, value);
-    token = value;
+  function loadAppData() {
+    portfolio.load().catch((e) => {
+      if (!(e instanceof AuthError)) {
+        toast(`Failed to load data: ${e.message}`, 'error', 6000);
+      }
+    });
+    getUsdToIlsRate({ storage: localStorage }).then((r) => (rate = r));
+    loaded = true;
   }
 
-  const pstate = $derived(portfolio ? portfolio.state : null);
+  $effect(() => {
+    api
+      .me()
+      .then((res) => {
+        authed = true;
+        mustChange = !!res.mustChangePassword;
+        username = res.username;
+        if (!mustChange) loadAppData();
+      })
+      .catch((e) => {
+        if (e instanceof AuthError) {
+          authed = false;
+        } else {
+          toast(`Failed to check session: ${e.message}`, 'error', 6000);
+        }
+      });
+  });
+
+  // Session expired mid-use: flip back to the login screen. Edge-triggered
+  // (fires only when authRequired newly becomes true) so that re-logging in
+  // and reloading — which clears authRequired asynchronously — doesn't get
+  // undone by this effect re-running on the store's other, unrelated
+  // updates while the stale flag is still true.
+  let wasAuthRequired = false;
+  $effect(() => {
+    const isAuthRequired = $pstate.authRequired;
+    if (isAuthRequired && !wasAuthRequired) {
+      authed = false;
+      loaded = false;
+    }
+    wasAuthRequired = isAuthRequired;
+  });
+
+  async function handleLogin(loginUsername, password) {
+    const res = await api.login(loginUsername, password);
+    authed = true;
+    mustChange = !!res.mustChangePassword;
+    username = loginUsername;
+    if (!mustChange) loadAppData();
+  }
+
+  async function handleChangePassword(current, next) {
+    await api.changePassword(current, next);
+    mustChange = false;
+    if (!loaded) loadAppData();
+  }
+
+  function handleLogout() {
+    authed = false;
+    mustChange = false;
+    loaded = false;
+  }
 </script>
 
-<TokenGate hasToken={!!token} onsave={saveToken}>
+<LoginGate {authed} {mustChange} onlogin={handleLogin} onchangepassword={handleChangePassword}>
   {#snippet children()}
     <NavBar />
     <main>
-      {#if pstate && $pstate.conflict}
-        <div class="card conflict" role="alert">
-          <strong>Data changed elsewhere.</strong>
-          <span>Reload to get the latest version, then redo your last change.</span>
-          <button class="btn btn-primary" onclick={() => portfolio.reload()}>Reload</button>
-        </div>
-      {/if}
-
-      {#if !pstate || $pstate.loading}
+      {#if $pstate.loading || (!$pstate.data && !$pstate.error)}
         <p class="muted loading">Loading your portfolio…</p>
       {:else if $pstate.error && !$pstate.data}
         <div class="card">
@@ -72,13 +107,13 @@
         {:else if $view.name === 'checkin'}
           <CheckIn {portfolio} />
         {:else if $view.name === 'settings'}
-          <Settings {portfolio} onclearToken={() => (token = null)} />
+          <Settings {portfolio} {api} {username} onlogout={handleLogout} />
         {/if}
       {/if}
     </main>
     <Toasts />
   {/snippet}
-</TokenGate>
+</LoginGate>
 
 <style>
   main {
@@ -90,13 +125,6 @@
   .loading {
     text-align: center;
     padding: 3rem 0;
-  }
-
-  .conflict {
-    display: grid;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    border-left: 4px solid var(--warning);
   }
 
   @media (min-width: 768px) {

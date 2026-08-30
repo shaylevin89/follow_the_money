@@ -1,34 +1,40 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { get } from 'svelte/store';
 import { createPortfolioStore } from '../../src/lib/stores/portfolio.js';
-import { ConflictError } from '../../src/lib/data/github.js';
+import { AuthError } from '../../src/lib/data/api.js';
 import { sampleData } from './fixtures/sample-data.js';
 
-function fakeClient(data = sampleData()) {
+function fakeApi(data = sampleData()) {
   return {
-    load: vi.fn().mockResolvedValue({ data, sha: 'sha0' }),
-    save: vi.fn().mockResolvedValue({ sha: 'sha1' }),
+    loadPortfolio: vi.fn().mockResolvedValue(data),
+    createAsset: vi.fn().mockResolvedValue({ id: 'new1' }),
+    patchAsset: vi.fn().mockResolvedValue({ ok: true }),
+    deleteAsset: vi.fn().mockResolvedValue({ ok: true }),
+    postUpdates: vi.fn().mockResolvedValue({ inserted: 1 }),
+    addType: vi.fn().mockResolvedValue({ name: 'gold', exclude_periodical_profit: true }),
+    patchType: vi.fn().mockResolvedValue({ ok: true }),
   };
 }
 
 describe('portfolio store', () => {
-  let client, store;
+  let api, store;
 
   beforeEach(async () => {
-    client = fakeClient();
-    store = createPortfolioStore(client);
+    api = fakeApi();
+    store = createPortfolioStore(api);
     await store.load();
   });
 
-  it('loads data and sha', () => {
+  it('loads data via loadPortfolio', () => {
     const s = get(store.state);
     expect(s.data.investments).toHaveLength(4);
-    expect(s.sha).toBe('sha0');
     expect(s.loading).toBe(false);
+    expect(s.error).toBeNull();
   });
 
-  it('addInvestment appends with generated id, seeded update, and saves', async () => {
-    await store.addInvestment({
+  it('addInvestment posts then reloads', async () => {
+    api.loadPortfolio.mockResolvedValueOnce(sampleData()); // initial load already consumed
+    const fields = {
       name: 'New',
       investment_type: 'stocks',
       initial_amount: 500,
@@ -39,76 +45,116 @@ describe('portfolio store', () => {
       is_liquid: true,
       track_profit: false,
       notes: '',
-    });
-    const s = get(store.state);
-    const added = s.data.investments.find((i) => i.name === 'New');
-    expect(added).toBeTruthy();
-    expect(added.updates).toEqual([{ date: '2024-01-01', amount: 500 }]);
-    expect(added.current_amount).toBe(500);
-    expect(client.save).toHaveBeenCalledTimes(1);
-    expect(s.sha).toBe('sha1'); // sha updated after save
+    };
+    await store.addInvestment(fields);
+    expect(api.createAsset).toHaveBeenCalledTimes(1);
+    expect(api.createAsset).toHaveBeenCalledWith(fields);
+    expect(api.loadPortfolio).toHaveBeenCalledTimes(2); // initial load + reload after mutation
   });
 
-  it('updateInvestment merges fields and saves', async () => {
+  it('updateInvestment patches then reloads', async () => {
     await store.updateInvestment('fund1', { name: 'Renamed' });
-    const s = get(store.state);
-    expect(s.data.investments.find((i) => i.id === 'fund1').name).toBe('Renamed');
-    expect(client.save).toHaveBeenCalledTimes(1);
+    expect(api.patchAsset).toHaveBeenCalledWith('fund1', { name: 'Renamed' });
+    expect(api.loadPortfolio).toHaveBeenCalledTimes(2);
   });
 
-  it('deleteInvestment removes and saves', async () => {
+  it('deleteInvestment deletes then reloads', async () => {
     await store.deleteInvestment('fund1');
-    expect(get(store.state).data.investments.find((i) => i.id === 'fund1')).toBeUndefined();
-    expect(client.save).toHaveBeenCalledTimes(1);
+    expect(api.deleteAsset).toHaveBeenCalledWith('fund1');
+    expect(api.loadPortfolio).toHaveBeenCalledTimes(2);
   });
 
-  it('addUpdate appends, replaces same-date entries, and sets current_amount', async () => {
+  it('addUpdate posts an array of one update then reloads', async () => {
     await store.addUpdate('fund1', { date: '2024-02-01', amount: 14000 });
-    let inv = get(store.state).data.investments.find((i) => i.id === 'fund1');
-    expect(inv.current_amount).toBe(14000);
-    expect(inv.updates.filter((u) => u.date === '2024-02-01')).toHaveLength(1);
-
-    await store.addUpdate('fund1', { date: '2024-02-01', amount: 14500 });
-    inv = get(store.state).data.investments.find((i) => i.id === 'fund1');
-    expect(inv.updates.filter((u) => u.date === '2024-02-01')).toHaveLength(1);
-    expect(inv.updates.find((u) => u.date === '2024-02-01').amount).toBe(14500);
+    expect(api.postUpdates).toHaveBeenCalledTimes(1);
+    expect(api.postUpdates).toHaveBeenCalledWith([
+      { asset_id: 'fund1', date: '2024-02-01', amount: 14000 },
+    ]);
+    expect(api.loadPortfolio).toHaveBeenCalledTimes(2);
   });
 
-  it('applyCheckIn applies all updates with a single save', async () => {
+  it('applyCheckIn issues exactly one bulk postUpdates call with all items', async () => {
     await store.applyCheckIn([
       { id: 'fund1', date: '2024-03-01', amount: 15000 },
       { id: 'pension1', date: '2024-03-01', amount: 61000 },
     ]);
-    const s = get(store.state);
-    expect(s.data.investments.find((i) => i.id === 'fund1').current_amount).toBe(15000);
-    expect(s.data.investments.find((i) => i.id === 'pension1').current_amount).toBe(61000);
-    expect(client.save).toHaveBeenCalledTimes(1);
+    expect(api.postUpdates).toHaveBeenCalledTimes(1);
+    expect(api.postUpdates).toHaveBeenCalledWith([
+      { asset_id: 'fund1', date: '2024-03-01', amount: 15000 },
+      { asset_id: 'pension1', date: '2024-03-01', amount: 61000 },
+    ]);
+    expect(api.loadPortfolio).toHaveBeenCalledTimes(2);
   });
 
-  it('sets conflict flag on ConflictError and keeps local edits', async () => {
-    client.save.mockRejectedValueOnce(new ConflictError());
-    await store.updateInvestment('fund1', { name: 'Conflicted' });
-    const s = get(store.state);
-    expect(s.conflict).toBe(true);
-    expect(s.data.investments.find((i) => i.id === 'fund1').name).toBe('Conflicted');
-  });
-
-  it('addType and updateType manage metadata types', async () => {
+  it('addType posts then reloads', async () => {
     await store.addType('gold', true);
-    let meta = get(store.state).data.metadata;
-    expect(meta.investment_types.find((t) => t.name === 'gold')).toEqual({
-      name: 'gold',
+    expect(api.addType).toHaveBeenCalledWith('gold', true);
+    expect(api.loadPortfolio).toHaveBeenCalledTimes(2);
+  });
+
+  it('updateType resolves idx to the type name from metadata and patches', async () => {
+    const idx = get(store.state).data.metadata.investment_types.findIndex(
+      (t) => t.name === 'Training_fund'
+    );
+    await store.updateType(idx, { exclude_periodical_profit: true });
+    expect(api.patchType).toHaveBeenCalledWith('Training_fund', {
       exclude_periodical_profit: true,
     });
-    const idx = meta.investment_types.findIndex((t) => t.name === 'gold');
-    await store.updateType(idx, { exclude_periodical_profit: false });
-    meta = get(store.state).data.metadata;
-    expect(meta.investment_types[idx].exclude_periodical_profit).toBe(false);
+    expect(api.loadPortfolio).toHaveBeenCalledTimes(2);
   });
 
-  it('updates lastUpdated on mutation', async () => {
-    const before = get(store.state).data.lastUpdated;
-    await store.updateInvestment('fund1', { notes: 'x' });
-    expect(get(store.state).data.lastUpdated).not.toBe(before);
+  it('sets saving true during a mutation', async () => {
+    let sawSaving = false;
+    api.patchAsset.mockImplementationOnce(async () => {
+      sawSaving = get(store.state).saving;
+      return { ok: true };
+    });
+    await store.updateInvestment('fund1', { name: 'X' });
+    expect(sawSaving).toBe(true);
+    expect(get(store.state).saving).toBe(false);
+  });
+
+  it('sets authRequired on AuthError and stops without reloading further', async () => {
+    api.patchAsset.mockRejectedValueOnce(new AuthError());
+    await store.updateInvestment('fund1', { name: 'X' });
+    const s = get(store.state);
+    expect(s.authRequired).toBe(true);
+    expect(s.saving).toBe(false);
+    expect(api.loadPortfolio).toHaveBeenCalledTimes(1); // only the initial load, no reload after auth failure
+  });
+
+  it('sets error message on non-auth errors', async () => {
+    api.patchAsset.mockRejectedValueOnce(new Error('boom'));
+    await store.updateInvestment('fund1', { name: 'X' });
+    const s = get(store.state);
+    expect(s.error).toBe('boom');
+    expect(s.saving).toBe(false);
+    expect(s.authRequired).toBe(false);
+  });
+
+  it('sets authRequired when the initial load fails with AuthError', async () => {
+    const freshApi = fakeApi();
+    freshApi.loadPortfolio.mockRejectedValueOnce(new AuthError());
+    const freshStore = createPortfolioStore(freshApi);
+    await expect(freshStore.load()).rejects.toBeInstanceOf(AuthError);
+    expect(get(freshStore.state).authRequired).toBe(true);
+  });
+
+  it('clears authRequired on the next successful load() after an AuthError', async () => {
+    api.patchAsset.mockRejectedValueOnce(new AuthError());
+    await store.updateInvestment('fund1', { name: 'X' });
+    expect(get(store.state).authRequired).toBe(true);
+
+    await store.load();
+    expect(get(store.state).authRequired).toBe(false);
+  });
+
+  it('clears authRequired on the next successful mutation after an AuthError', async () => {
+    api.patchAsset.mockRejectedValueOnce(new AuthError());
+    await store.updateInvestment('fund1', { name: 'X' });
+    expect(get(store.state).authRequired).toBe(true);
+
+    await store.updateInvestment('fund1', { name: 'Y' });
+    expect(get(store.state).authRequired).toBe(false);
   });
 });

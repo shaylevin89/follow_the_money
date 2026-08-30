@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { installMocks, e2eData } from './mocks.js';
+import { installApiMocks, e2eData } from './mocks.js';
 
 // Regression: rows scrolled to the viewport bottom must not end up behind the
 // fixed bottom nav / check-in footer (tap would hit the bar → "nothing happens").
@@ -22,7 +22,7 @@ async function hitsItself(locator) {
 }
 
 test('check-in input scrolled to viewport bottom stays tappable', async ({ page }) => {
-  await installMocks(page, { data: manyAssets() });
+  await installApiMocks(page, { data: manyAssets() });
   await page.goto('/');
   await page.getByRole('button', { name: 'Check-in' }).click();
 
@@ -36,7 +36,7 @@ test('check-in input scrolled to viewport bottom stays tappable', async ({ page 
 });
 
 test('asset card scrolled to viewport bottom stays tappable', async ({ page }) => {
-  await installMocks(page, { data: manyAssets() });
+  await installApiMocks(page, { data: manyAssets() });
   await page.goto('/');
   await page.getByRole('button', { name: 'Assets' }).click();
 

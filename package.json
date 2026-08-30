@@ -11,7 +11,9 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:all": "npm run test && npm run test:e2e",
+    "test:workers": "vitest run --config vitest.workers.config.js",
     "dev": "vite",
+    "dev:cf": "wrangler pages dev dist --local",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -23,6 +25,7 @@
   "author": "shay",
   "license": "MIT",
   "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.22.0",
     "@playwright/test": "^1.57.0",
     "@sveltejs/vite-plugin-svelte": "^7.3.0",
     "@testing-library/jest-dom": "^7.0.1",
@@ -32,7 +35,8 @@
     "jsdom": "^29.1.1",
     "svelte": "^5.56.10",
     "vite": "^8.2.2",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.11",
+    "wrangler": "^4.127.1"
   },
   "dependencies": {
     "chart.js": "^4.5.1"

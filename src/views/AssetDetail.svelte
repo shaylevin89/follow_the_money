@@ -33,10 +33,12 @@
   }
 
   async function saveEdit(fields) {
+    // initial_amount is intentionally omitted: it's read-only in edit mode
+    // (PATCH /api/assets/:id rejects it) — amount changes go through the
+    // "Update value" flow instead.
     await portfolio.updateInvestment(id, {
       name: fields.name.trim(),
       investment_type: fields.investment_type,
-      initial_amount: fields.initial_amount,
       currency: fields.currency,
       start_date: fields.start_date,
       profit_type: fields.profit_type,

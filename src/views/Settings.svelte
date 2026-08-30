@@ -1,9 +1,9 @@
 <script>
   import { settings } from '../lib/stores/settings.js';
-  import { clearToken } from '../lib/data/token.js';
   import { toast } from '../lib/stores/ui.js';
+  import ChangePassword from '../lib/components/ChangePassword.svelte';
 
-  let { portfolio, onclearToken } = $props();
+  let { portfolio, api, username, onlogout } = $props();
 
   const pstate = $derived(portfolio.state);
   const types = $derived($pstate.data.metadata?.investment_types || []);
@@ -25,9 +25,17 @@
     newTypeExclude = false;
   }
 
-  function disconnect() {
-    clearToken(localStorage);
-    onclearToken();
+  async function handleChangePassword(current, next) {
+    await api.changePassword(current, next);
+    toast('Password changed');
+  }
+
+  async function logout() {
+    try {
+      await api.logout();
+    } finally {
+      onlogout();
+    }
   }
 </script>
 
@@ -76,12 +84,10 @@
 </section>
 
 <section class="card">
-  <h3>GitHub connection</h3>
-  <p class="muted">
-    Your token is stored only in this browser. Disconnecting removes it here — it stays
-    valid on GitHub until you revoke it there.
-  </p>
-  <button class="btn danger" onclick={disconnect}>Disconnect token</button>
+  <h3>Account</h3>
+  <p class="muted">Signed in as {username}</p>
+  <ChangePassword onsubmit={handleChangePassword} requireCurrent={true} />
+  <button class="btn btn-danger logout" onclick={logout}>Log out</button>
 </section>
 
 <style>
@@ -153,8 +159,8 @@
     align-items: center;
   }
 
-  .danger {
-    color: var(--negative);
+  .logout {
+    margin-top: 0.9rem;
   }
 
   @media (max-width: 480px) {
