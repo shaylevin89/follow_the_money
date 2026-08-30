@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-08-30T08:17:27.451Z",
+  "lastUpdated": "2026-08-30T08:18:05.830Z",
   "investments": [
     {
       "id": "usa1",
@@ -672,7 +672,7 @@
     {
       "id": "1747964000000",
       "name": "Leumi Stocks",
-      "is_active": true,
+      "is_active": false,
       "track_profit": false,
       "start_date": "2024-07-13",
       "end_date": null,
