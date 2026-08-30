@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-08-30T08:37:19.181Z",
+  "lastUpdated": "2026-08-30T08:39:05.407Z",
   "investments": [
     {
       "id": "usa1",
@@ -812,7 +812,7 @@
       "end_date": null,
       "initial_amount": 14119.09,
       "currency": "ILS",
-      "current_amount": 48017,
+      "current_amount": 53454,
       "profit_type": "price",
       "notes": "the only active fund\nחשבון 44725777",
       "is_liquid": true,
@@ -846,6 +846,10 @@
         {
           "date": "2026-05-10",
           "amount": 48017
+        },
+        {
+          "date": "2026-08-30",
+          "amount": 53454
         }
       ]
     },
