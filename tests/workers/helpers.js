@@ -60,3 +60,67 @@ export async function callFn(mod, { method = 'POST', body, cookie, env, ip, path
 export function getSetCookie(response) {
   return response.headers.get('Set-Cookie');
 }
+
+/**
+ * Inserts an asset row with sensible defaults for any column not given.
+ * @param {object} overrides - e.g. { id, name, investment_type, currency, ... }
+ * @returns {Promise<string>} the asset id
+ */
+export async function seedAsset(db, overrides = {}) {
+  const asset = {
+    id: 'asset-1',
+    name: 'Test Asset',
+    investment_type: 'real_estate_loan',
+    currency: 'ILS',
+    start_date: '2020-01-01',
+    initial_amount: 1000,
+    profit_type: 'price',
+    profit_rate: null,
+    is_active: 1,
+    is_liquid: 0,
+    liquidity_date: null,
+    track_profit: 0,
+    staleness_reminder: 1,
+    notes: '',
+    deleted_at: null,
+    ...overrides,
+  };
+
+  await db
+    .prepare(
+      `INSERT INTO assets
+        (id, name, investment_type, currency, start_date, initial_amount, profit_type,
+         profit_rate, is_active, is_liquid, liquidity_date, track_profit, staleness_reminder,
+         notes, deleted_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    )
+    .bind(
+      asset.id,
+      asset.name,
+      asset.investment_type,
+      asset.currency,
+      asset.start_date,
+      asset.initial_amount,
+      asset.profit_type,
+      asset.profit_rate,
+      asset.is_active,
+      asset.is_liquid,
+      asset.liquidity_date,
+      asset.track_profit,
+      asset.staleness_reminder,
+      asset.notes,
+      asset.deleted_at
+    )
+    .run();
+
+  return asset.id;
+}
+
+/** Inserts an asset_updates row (append-only value history). */
+export async function seedUpdate(db, assetId, date, amount) {
+  const result = await db
+    .prepare('INSERT INTO asset_updates (asset_id, date, amount) VALUES (?, ?, ?)')
+    .bind(assetId, date, amount)
+    .run();
+  return result.meta.last_row_id;
+}
