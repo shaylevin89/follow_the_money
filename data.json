@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-08-30T08:40:41.908Z",
+  "lastUpdated": "2026-08-30T08:42:29.496Z",
   "investments": [
     {
       "id": "usa1",
@@ -1048,6 +1048,28 @@
         {
           "date": "2026-08-30",
           "amount": 88741.56
+        }
+      ]
+    },
+    {
+      "id": "1788079349495",
+      "name": "Amal 26",
+      "is_active": true,
+      "track_profit": false,
+      "start_date": "2026-07-17",
+      "end_date": null,
+      "initial_amount": 537413,
+      "currency": "ILS",
+      "current_amount": 537413,
+      "profit_type": "price",
+      "notes": "",
+      "is_liquid": false,
+      "investment_type": "real_estate",
+      "liquidity_date": null,
+      "updates": [
+        {
+          "date": "2026-07-17",
+          "amount": 537413
         }
       ]
     }
