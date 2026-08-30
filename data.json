@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-08-30T08:39:05.407Z",
+  "lastUpdated": "2026-08-30T08:40:02.357Z",
   "investments": [
     {
       "id": "usa1",
@@ -530,7 +530,7 @@
       "end_date": null,
       "initial_amount": 20000,
       "currency": "ILS",
-      "current_amount": 30828,
+      "current_amount": 31350,
       "profit_type": "price",
       "notes": "",
       "is_liquid": true,
@@ -576,6 +576,10 @@
         {
           "date": "2026-05-10",
           "amount": 30828
+        },
+        {
+          "date": "2026-08-30",
+          "amount": 31350
         }
       ]
     },
