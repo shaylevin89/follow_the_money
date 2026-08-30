@@ -19,6 +19,9 @@ npm-debug.log*
 # Dependencies (if added later)
 node_modules/
 
+# Wrangler local state
+.wrangler/
+
 # Build outputs (if added later)
 dist/
 build/
