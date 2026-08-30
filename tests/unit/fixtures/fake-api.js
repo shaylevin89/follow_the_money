@@ -8,6 +8,14 @@ export function makeFakeApi(initialData) {
   let nextId = 1000;
 
   const api = {
+    me: vi.fn(async () => ({ username: 'alice', mustChangePassword: false })),
+
+    login: vi.fn(async () => ({ ok: true, mustChangePassword: false })),
+
+    logout: vi.fn(async () => null),
+
+    changePassword: vi.fn(async () => ({ ok: true })),
+
     loadPortfolio: vi.fn(async () => data),
 
     createAsset: vi.fn(async (fields) => {

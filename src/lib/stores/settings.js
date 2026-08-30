@@ -1,4 +1,4 @@
-// User settings persisted to localStorage (token is handled in data/token.js).
+// User settings persisted to localStorage.
 import { writable } from 'svelte/store';
 
 const SETTINGS_KEY = 'ftm_settings';

@@ -48,8 +48,8 @@ describe('CheckIn view', () => {
 
 describe('Settings view', () => {
   it('adds a new investment type', async () => {
-    const { store } = await makePortfolio();
-    render(Settings, { portfolio: store, onclearToken: vi.fn() });
+    const { store, api } = await makePortfolio();
+    render(Settings, { portfolio: store, api, username: 'alice', onlogout: vi.fn() });
 
     await userEvent.type(screen.getByLabelText(/new type name/i), 'gold');
     await userEvent.click(screen.getByRole('button', { name: /add type/i }));
@@ -58,19 +58,18 @@ describe('Settings view', () => {
     expect(meta.investment_types.some((t) => t.name === 'gold')).toBe(true);
   });
 
-  it('disconnect clears the token', async () => {
-    const removeItem = vi.fn();
-    vi.stubGlobal('localStorage', {
-      getItem: () => null,
-      setItem: vi.fn(),
-      removeItem,
-    });
-    const { store } = await makePortfolio();
-    const onclearToken = vi.fn();
-    render(Settings, { portfolio: store, onclearToken });
-    await userEvent.click(screen.getByRole('button', { name: /disconnect token/i }));
-    expect(removeItem).toHaveBeenCalledWith('ftm_github_token');
-    expect(onclearToken).toHaveBeenCalled();
-    vi.unstubAllGlobals();
+  it('shows the signed-in username', async () => {
+    const { store, api } = await makePortfolio();
+    render(Settings, { portfolio: store, api, username: 'alice', onlogout: vi.fn() });
+    expect(screen.getByText(/signed in as alice/i)).toBeInTheDocument();
+  });
+
+  it('logout calls api.logout and onlogout', async () => {
+    const { store, api } = await makePortfolio();
+    const onlogout = vi.fn();
+    render(Settings, { portfolio: store, api, username: 'alice', onlogout });
+    await userEvent.click(screen.getByRole('button', { name: /log out/i }));
+    expect(api.logout).toHaveBeenCalled();
+    expect(onlogout).toHaveBeenCalled();
   });
 });
