@@ -78,8 +78,12 @@ function dedupeInvestment(inv) {
 // Installs mocks for the /api/* backend + the exchange-rate API. Returns
 // `{ posted, currentData }` — `posted` records the bodies of every mutating
 // request so specs can assert on exactly what was sent to the server.
-export async function installApiMocks(page, { data = e2eData(), loggedIn = true } = {}) {
+export async function installApiMocks(
+  page,
+  { data = e2eData(), loggedIn = true, mustChangePassword = false } = {}
+) {
   let authed = loggedIn;
+  let requiresPasswordChange = mustChangePassword;
   let investments = data.investments.map(dedupeInvestment);
   let metadata = structuredClone(data.metadata);
   const posted = { assets: [], updates: [], patches: [] };
@@ -91,7 +95,7 @@ export async function installApiMocks(page, { data = e2eData(), loggedIn = true 
   await page.route('**/api/me', async (route) => {
     if (route.request().method() !== 'GET') return route.fallback();
     if (authed) {
-      await route.fulfill({ json: { username: 'shay', mustChangePassword: false } });
+      await route.fulfill({ json: { username: 'shay', mustChangePassword: requiresPasswordChange } });
     } else {
       await route.fulfill({ status: 401, json: { error: 'unauthorized' } });
     }
@@ -102,7 +106,7 @@ export async function installApiMocks(page, { data = e2eData(), loggedIn = true 
     const { username, password } = route.request().postDataJSON() || {};
     if (username === 'shay' && password === 'test1234') {
       authed = true;
-      await route.fulfill({ json: { ok: true, mustChangePassword: false } });
+      await route.fulfill({ json: { ok: true, mustChangePassword: requiresPasswordChange } });
     } else {
       await route.fulfill({ status: 401, json: { error: 'Invalid username or password' } });
     }
@@ -116,6 +120,7 @@ export async function installApiMocks(page, { data = e2eData(), loggedIn = true 
 
   await page.route('**/api/password', async (route) => {
     if (route.request().method() !== 'POST') return route.fallback();
+    requiresPasswordChange = false;
     await route.fulfill({ json: { ok: true } });
   });
 

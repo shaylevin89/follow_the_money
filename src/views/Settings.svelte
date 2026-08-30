@@ -31,8 +31,11 @@
   }
 
   async function logout() {
-    await api.logout();
-    onlogout();
+    try {
+      await api.logout();
+    } finally {
+      onlogout();
+    }
   }
 </script>
 

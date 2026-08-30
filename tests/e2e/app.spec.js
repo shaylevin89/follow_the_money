@@ -14,6 +14,24 @@ test.describe('login', () => {
     await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
   });
 
+  test('forced password change reaches the dashboard after submitting a new password', async ({ page }) => {
+    await installApiMocks(page, { loggedIn: false, mustChangePassword: true });
+    await page.goto('/');
+
+    await page.getByLabel('Username').fill('shay');
+    await page.getByLabel('Password').fill('test1234');
+    await page.getByRole('button', { name: 'Sign in' }).click();
+
+    await expect(page.getByRole('heading', { name: 'Choose a new password' })).toBeVisible();
+
+    await page.getByLabel('Current password').fill('test1234');
+    await page.getByLabel('New password', { exact: true }).fill('new-password-1');
+    await page.getByLabel('Confirm new password').fill('new-password-1');
+    await page.getByRole('button', { name: /change password/i }).click();
+
+    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+  });
+
   test('wrong password shows an error', async ({ page }) => {
     await installApiMocks(page, { loggedIn: false });
     await page.goto('/');

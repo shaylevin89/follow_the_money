@@ -1,9 +1,13 @@
 #!/usr/bin/env node
 // Generates a random temporary password for a new user, hashes it with the
-// same PBKDF2 scheme functions/lib/auth.js uses, and prints an
-// INSERT OR REPLACE statement to stdout. The plaintext temp password is
-// printed to stderr ONLY (never stdout, never written to the SQL file) so it
-// doesn't end up in migration.sql or shell redirection targets meant for SQL.
+// same PBKDF2 scheme functions/lib/auth.js uses, and prints an upsert
+// statement to stdout. Uses INSERT ... ON CONFLICT DO UPDATE (not INSERT OR
+// REPLACE) so re-seeding an existing username preserves its row id instead
+// of deleting and recreating it — INSERT OR REPLACE would cascade-orphan
+// that user's sessions and any created_by references. The plaintext temp
+// password is printed to stderr ONLY (never stdout, never written to the
+// SQL file) so it doesn't end up in migration.sql or shell redirection
+// targets meant for SQL.
 //
 // Usage: node scripts/seed-user.mjs <username>
 
@@ -36,9 +40,10 @@ async function main() {
   const tempPassword = generateTempPassword();
   const passwordHash = await hashPassword(tempPassword);
 
-  const sql = `INSERT OR REPLACE INTO users (username, password_hash, must_change_password) VALUES (${sqlString(
+  const sql = `INSERT INTO users (username, password_hash, must_change_password) VALUES (${sqlString(
     username
-  )}, ${sqlString(passwordHash)}, 1);\n`;
+  )}, ${sqlString(passwordHash)}, 1)
+ON CONFLICT(username) DO UPDATE SET password_hash = excluded.password_hash, must_change_password = 1;\n`;
 
   process.stdout.write(sql);
   process.stderr.write(`${username}:${tempPassword}\n`);

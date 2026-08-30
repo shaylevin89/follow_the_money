@@ -30,7 +30,7 @@ function findDuplicate(existingAssets, name, startDate, excludeId) {
  * @param {object} fields
  * @param {Array<{id: string, name: string, start_date: string}>} existingAssets - non-deleted assets
  * @param {string|null} excludeId - asset id to exclude from the duplicate check (edits)
- * @returns {{valid: boolean, errors: object}}
+ * @returns {{valid: boolean, errors: object, normalized: {start_date: string|null}}}
  */
 export function validateAssetFields(fields, existingAssets, excludeId = null) {
   const errors = {};
@@ -67,5 +67,5 @@ export function validateAssetFields(fields, existingAssets, excludeId = null) {
     }
   }
 
-  return { valid: Object.keys(errors).length === 0, errors };
+  return { valid: Object.keys(errors).length === 0, errors, normalized: { start_date: startDate } };
 }

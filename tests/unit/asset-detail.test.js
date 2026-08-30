@@ -71,6 +71,29 @@ describe('AssetDetail — existing asset', () => {
   });
 });
 
+describe('AssetDetail — edit mode initial_amount is read-only', () => {
+  it('renders the initial amount input as disabled and excludes it from the PATCH payload', async () => {
+    const { store, api } = await makePortfolio();
+    render(AssetDetail, { portfolio: store, rate: 2, id: 'fund1' });
+
+    await userEvent.click(screen.getByRole('button', { name: /edit details/i }));
+    const amountInput = screen.getByLabelText(/initial amount/i);
+    expect(amountInput).toBeDisabled();
+    expect(amountInput.value).toBe('10000');
+
+    await userEvent.click(screen.getByRole('button', { name: /save changes/i }));
+
+    expect(api.patchAsset).toHaveBeenCalledTimes(1);
+    const [, fields] = api.patchAsset.mock.calls[0];
+    expect(fields).not.toHaveProperty('initial_amount');
+
+    // The amount itself is untouched.
+    expect(get(store.state).data.investments.find((i) => i.id === 'fund1').initial_amount).toBe(
+      10000
+    );
+  });
+});
+
 describe('AssetDetail — staleness reminder toggle', () => {
   it('persists opting out of the staleness reminder', async () => {
     const { store } = await makePortfolio();

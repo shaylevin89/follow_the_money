@@ -111,6 +111,34 @@ describe('mutation endpoints', () => {
       });
       expect(res.status).toBe(400);
     });
+
+    it('stores a parseable-but-non-ISO start_date normalized to ISO format', async () => {
+      const cookie = await loginCookie(env);
+      const res = await callFn(assetsIndex, {
+        env,
+        cookie,
+        path: '/api/assets',
+        body: {
+          name: 'Slash Date Asset',
+          investment_type: 'real_estate_loan',
+          currency: 'USD',
+          start_date: '2024/01/15',
+          initial_amount: 100,
+          profit_type: 'price',
+        },
+      });
+      expect(res.status).toBe(200);
+      const body = await res.json();
+      expect(body.start_date).toBe('2024-01-15');
+      expect(body.updates).toEqual([{ date: '2024-01-15', amount: 100 }]);
+
+      const row = await env.DB.prepare('SELECT start_date FROM assets WHERE id = ?').bind(body.id).first();
+      expect(row.start_date).toBe('2024-01-15');
+      const update = await env.DB.prepare('SELECT date FROM asset_updates WHERE asset_id = ?')
+        .bind(body.id)
+        .first();
+      expect(update.date).toBe('2024-01-15');
+    });
   });
 
   describe('PATCH /api/assets/:id', () => {
@@ -163,6 +191,86 @@ describe('mutation endpoints', () => {
         body: { amount: 999 },
       });
       expect(res.status).toBe(400);
+    });
+
+    it('400 when body contains initial_amount (settings fields only, no amounts)', async () => {
+      const cookie = await loginCookie(env);
+      const id = await seedAsset(env.DB, { id: 'p-amount' });
+      const res = await callFn(assetsId, {
+        env,
+        cookie,
+        method: 'PATCH',
+        path: `/api/assets/${id}`,
+        params: { id },
+        body: { initial_amount: 500 },
+      });
+      expect(res.status).toBe(400);
+      const body = await res.json();
+      expect(body.error).toMatch(/not allowed/i);
+
+      const row = await env.DB.prepare('SELECT initial_amount FROM assets WHERE id = ?').bind(id).first();
+      expect(row.initial_amount).toBe(1000);
+    });
+
+    it('400 on empty name', async () => {
+      const cookie = await loginCookie(env);
+      const id = await seedAsset(env.DB, { id: 'p-empty-name', name: 'Has A Name' });
+      const res = await callFn(assetsId, {
+        env,
+        cookie,
+        method: 'PATCH',
+        path: `/api/assets/${id}`,
+        params: { id },
+        body: { name: '  ' },
+      });
+      expect(res.status).toBe(400);
+      const body = await res.json();
+      expect(body.error).toBeTruthy();
+
+      const row = await env.DB.prepare('SELECT name FROM assets WHERE id = ?').bind(id).first();
+      expect(row.name).toBe('Has A Name');
+    });
+
+    it('400 when renaming to a duplicate name+start_date of another asset', async () => {
+      const cookie = await loginCookie(env);
+      await seedAsset(env.DB, { id: 'other-asset', name: 'Other Asset', start_date: '2021-06-01' });
+      const id = await seedAsset(env.DB, { id: 'p-dup', name: 'Renameable', start_date: '2021-06-01' });
+
+      const res = await callFn(assetsId, {
+        env,
+        cookie,
+        method: 'PATCH',
+        path: `/api/assets/${id}`,
+        params: { id },
+        body: { name: 'Other Asset' },
+      });
+      expect(res.status).toBe(400);
+      const body = await res.json();
+      expect(body.error).toMatch(/already exists/i);
+
+      const row = await env.DB.prepare('SELECT name FROM assets WHERE id = ?').bind(id).first();
+      expect(row.name).toBe('Renameable');
+    });
+
+    it('valid rename still works and normalizes a non-ISO start_date', async () => {
+      const cookie = await loginCookie(env);
+      const id = await seedAsset(env.DB, { id: 'p-rename', name: 'Old Name', start_date: '2020-01-01' });
+
+      const res = await callFn(assetsId, {
+        env,
+        cookie,
+        method: 'PATCH',
+        path: `/api/assets/${id}`,
+        params: { id },
+        body: { name: 'New Name', start_date: '2020/02/03' },
+      });
+      expect(res.status).toBe(200);
+      const body = await res.json();
+      expect(body).toEqual({ ok: true });
+
+      const row = await env.DB.prepare('SELECT name, start_date FROM assets WHERE id = ?').bind(id).first();
+      expect(row.name).toBe('New Name');
+      expect(row.start_date).toBe('2020-02-03');
     });
 
     it('404 for unknown or deleted id', async () => {

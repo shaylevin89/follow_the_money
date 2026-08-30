@@ -1,6 +1,14 @@
 import { getSessionUser, json } from '../../lib/auth.js';
 import { validateAssetFields } from '../../lib/validate.js';
 
+// Timestamp + a short random suffix, so two assets created within the same
+// millisecond (e.g. rapid test seeding) don't collide on the primary key.
+function generateAssetId() {
+  const bytes = crypto.getRandomValues(new Uint8Array(2));
+  const suffix = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+  return `${Date.now()}-${suffix}`;
+}
+
 export async function onRequestPost({ request, env }) {
   const user = await getSessionUser(env.DB, request);
   if (!user) return json({ error: 'Not authenticated' }, 401);
@@ -19,13 +27,13 @@ export async function onRequestPost({ request, env }) {
     await env.DB.prepare('SELECT id, name, start_date FROM assets WHERE deleted_at IS NULL').all()
   ).results;
 
-  const { valid, errors } = validateAssetFields(fields, existingAssets, null);
+  const { valid, errors, normalized } = validateAssetFields(fields, existingAssets, null);
   if (!valid) {
     return json({ error: Object.values(errors)[0], errors }, 400);
   }
 
-  const id = Date.now().toString();
-  const startDate = fields.start_date;
+  const id = generateAssetId();
+  const startDate = normalized.start_date;
   const initialAmount = Number(fields.initial_amount);
   const isActive = fields.is_active === undefined ? 1 : fields.is_active ? 1 : 0;
   const isLiquid = fields.is_liquid ? 1 : 0;
