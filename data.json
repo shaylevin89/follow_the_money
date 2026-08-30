@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-08-30T08:16:45.425Z",
+  "lastUpdated": "2026-08-30T08:17:03.909Z",
   "investments": [
     {
       "id": "usa1",
@@ -912,7 +912,7 @@
     {
       "id": "1747955338901",
       "name": "pepper bank account",
-      "is_active": true,
+      "is_active": false,
       "track_profit": false,
       "start_date": "2025-05-23",
       "end_date": null,
