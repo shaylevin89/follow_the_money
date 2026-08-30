@@ -88,7 +88,11 @@
 
 <LoginGate {authed} {mustChange} onlogin={handleLogin} onchangepassword={handleChangePassword}>
   {#snippet children()}
-    <NavBar />
+    <NavBar {username} />
+    <header class="appbar">
+      <span class="app-name">Follow the Money</span>
+      <span class="whoami muted">@{username}</span>
+    </header>
     <main>
       {#if $pstate.loading || (!$pstate.data && !$pstate.error)}
         <p class="muted loading">Loading your portfolio…</p>
@@ -125,6 +129,31 @@
   .loading {
     text-align: center;
     padding: 3rem 0;
+  }
+
+  .appbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0.75rem 1rem 0;
+  }
+
+  .app-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  .whoami {
+    font-size: 0.85rem;
+  }
+
+  @media (min-width: 768px) {
+    /* Desktop shows the username in the top nav instead. */
+    .appbar {
+      display: none;
+    }
   }
 
   @media (min-width: 768px) {

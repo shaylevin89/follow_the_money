@@ -1,6 +1,8 @@
 <script>
   import { view, navigate } from '../stores/ui.js';
 
+  let { username = '' } = $props();
+
   const items = [
     { name: 'dashboard', label: 'Dashboard', icon: 'M3 13h4v8H3zM10 9h4v12h-4zM17 4h4v17h-4z' },
     { name: 'assets', label: 'Assets', icon: 'M4 5h16v4H4zM4 11h16v4H4zM4 17h10v3H4z' },
@@ -26,6 +28,9 @@
       <span>{item.label}</span>
     </button>
   {/each}
+  {#if username}
+    <span class="whoami muted">@{username}</span>
+  {/if}
 </nav>
 
 <style>
@@ -60,6 +65,11 @@
     font-weight: 600;
   }
 
+  /* Username lives in the mobile appbar below 768px. */
+  .whoami {
+    display: none;
+  }
+
   @media (min-width: 768px) {
     nav {
       top: 0;
@@ -78,6 +88,13 @@
       padding: 0 1.1rem;
       font-size: 0.9rem;
       min-height: 56px;
+    }
+
+    .whoami {
+      display: flex;
+      align-items: center;
+      font-size: 0.88rem;
+      margin-left: 0.75rem;
     }
   }
 </style>

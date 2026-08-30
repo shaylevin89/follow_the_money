@@ -3,6 +3,8 @@ import {
   portfolioHistoryConfig,
   liquidityConfig,
   typeConfig,
+  currencyConfig,
+  topAssetsConfig,
 } from '../../src/lib/charts.js';
 import { sampleData } from './fixtures/sample-data.js';
 
@@ -38,6 +40,28 @@ describe('liquidityConfig', () => {
     expect(cfg.data.labels).toEqual(['Liquid', 'Not liquid']);
     // liquid: fund1 13000; non-liquid: usa1 35000*2 + pension1 60000
     expect(cfg.data.datasets[0].data).toEqual([13000, 130000]);
+  });
+});
+
+describe('currencyConfig', () => {
+  it('splits active holdings into ILS vs USD (in ₪ equivalent)', () => {
+    const { investments } = sampleData();
+    const cfg = currencyConfig(investments, 2, THEME);
+    expect(cfg.type).toBe('doughnut');
+    expect(cfg.data.labels).toEqual(['ILS', 'USD']);
+    // ILS: fund1 13000 + pension1 60000; USD: usa1 35000*2
+    expect(cfg.data.datasets[0].data).toEqual([73000, 70000]);
+  });
+});
+
+describe('topAssetsConfig', () => {
+  it('ranks the top active assets by ILS value, descending', () => {
+    const { investments } = sampleData();
+    const cfg = topAssetsConfig(investments, 2, THEME, 2);
+    expect(cfg.type).toBe('bar');
+    expect(cfg.options.indexAxis).toBe('y');
+    expect(cfg.data.labels).toEqual(['USA Real Estate Loan 1', 'Pension X']); // 70000, 60000
+    expect(cfg.data.datasets[0].data).toEqual([70000, 60000]);
   });
 });
 
